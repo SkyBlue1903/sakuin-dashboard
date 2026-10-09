@@ -9,8 +9,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "MitraPay Dashboard",
-  description: "MitraPay Admin Dashboard",
+  title: "Sakuin Dashboard",
+  description: "Sakuin Admin Dashboard",
 };
 
 export default function RootLayout({

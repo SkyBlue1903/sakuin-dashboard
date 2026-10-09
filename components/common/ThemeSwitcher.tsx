@@ -196,10 +196,12 @@ export const ThemeSwitcher: React.FC = () => {
                       {item.icon}
                     </span>
                     <div className="text-left">
-                      <div>{item.label}</div>
-                      <div className="text-[11px] font-normal text-gray-400 dark:text-gray-500">
-                        {item.description}
-                      </div>
+                      <div className="leading-tight">{item.label}</div>
+                      {item.description ? (
+                        <div className="text-[11px] font-normal text-gray-400 dark:text-gray-500">
+                          {item.description}
+                        </div>
+                      ) : null}
                     </div>
                   </div>
 

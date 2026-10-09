@@ -1,0 +1,125 @@
+"use client";
+
+import React, { useState } from "react";
+import { AlertCircle, Info, AlertOctagon, X } from "lucide-react";
+import { cn } from "@/utils";
+
+export type BannerVariant = "warning" | "info" | "danger";
+
+export interface NoticeBannerProps {
+  /**
+   * Pengondisian tipe banner:
+   * - "warning" (kuning): Peringatan yang bisa dihilangkan (ada tombol X)
+   * - "info" (biru): Informasi yang bisa dihilangkan (ada tombol X)
+   * - "danger" (merah): Peringatan yang tidak bisa dihilangkan (tanpa tombol X)
+   */
+  variant?: BannerVariant;
+  title?: string;
+  message?: React.ReactNode;
+  dismissible?: boolean; // Override opsional: default true untuk warning & info, false untuk danger
+  onDismiss?: () => void;
+  className?: string;
+}
+
+export const NoticeBanner: React.FC<NoticeBannerProps> = ({
+  variant = "warning",
+  title = "Pemberitahuan",
+  message = "Ini adalah papan informasi yang bisa dihilangkan",
+  dismissible,
+  onDismiss,
+  className,
+}) => {
+  const [isVisible, setIsVisible] = useState(true);
+  const [isClosing, setIsClosing] = useState(false);
+
+  // Merah (danger) tidak bisa dihilangkan secara default; Kuning (warning) & Biru (info) bisa dihilangkan
+  const isDismissible =
+    dismissible !== undefined ? dismissible : variant !== "danger";
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsVisible(false);
+      onDismiss?.();
+    }, 200);
+  };
+
+  if (!isVisible) return null;
+
+  const variantStyles = {
+    // Kuning: Peringatan yang bisa dihilangkan
+    warning: {
+      container:
+        "bg-amber-50/90 dark:bg-amber-950/25 border-amber-200/80 dark:border-amber-800/50 text-amber-900 dark:text-amber-200",
+      icon: "text-amber-600 dark:text-amber-400",
+      title: "text-amber-900 dark:text-amber-300",
+      message: "text-amber-700 dark:text-amber-400",
+      closeBtn:
+        "text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-200 hover:bg-amber-100/80 dark:hover:bg-amber-900/40",
+      IconComponent: AlertCircle,
+    },
+    // Biru: Informasi yang bisa dihilangkan
+    info: {
+      container:
+        "bg-blue-50/90 dark:bg-blue-950/25 border-blue-200/80 dark:border-blue-800/50 text-blue-900 dark:text-blue-200",
+      icon: "text-blue-600 dark:text-blue-400",
+      title: "text-blue-900 dark:text-blue-300",
+      message: "text-blue-700 dark:text-blue-400",
+      closeBtn:
+        "text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-200 hover:bg-blue-100/80 dark:hover:bg-blue-900/40",
+      IconComponent: Info,
+    },
+    // Merah: Peringatan yang tidak bisa dihilangkan
+    danger: {
+      container:
+        "bg-red-50/90 dark:bg-red-950/25 border-red-200/80 dark:border-red-800/50 text-red-900 dark:text-red-200",
+      icon: "text-red-600 dark:text-red-400",
+      title: "text-red-900 dark:text-red-300",
+      message: "text-red-700 dark:text-red-400",
+      closeBtn: "",
+      IconComponent: AlertOctagon,
+    },
+  };
+
+  const style = variantStyles[variant] || variantStyles.warning;
+  const { IconComponent } = style;
+
+  return (
+    <div
+      className={cn(
+        "relative flex items-start gap-3 rounded-2xl p-4 border shadow-2xs transition-all duration-200",
+        style.container,
+        isClosing && "opacity-0 -translate-y-2 scale-98 pointer-events-none",
+        className
+      )}
+      role="alert"
+    >
+      <IconComponent className={cn("h-5 w-5 shrink-0 mt-0.5", style.icon)} />
+
+      <div className={cn("text-xs sm:text-sm flex-1 min-w-0", isDismissible && "pr-6")}>
+        <p className={cn("font-semibold leading-tight", style.title)}>{title}</p>
+        <div className={cn("mt-0.5 leading-relaxed text-xs sm:text-[13px]", style.message)}>
+          {message}
+        </div>
+      </div>
+
+      {/* Tombol Silang (X) di pojok kanan atas - hanya tampil jika bisa dihilangkan */}
+      {isDismissible && (
+        <button
+          type="button"
+          onClick={handleClose}
+          aria-label="Tutup pemberitahuan"
+          title="Tutup pemberitahuan"
+          className={cn(
+            "absolute top-3 right-3 p-1 rounded-xl transition-all cursor-pointer active:scale-95",
+            style.closeBtn
+          )}
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
+    </div>
+  );
+};
+
+export default NoticeBanner;

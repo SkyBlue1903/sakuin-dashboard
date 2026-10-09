@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
+import Link from "next/link";
 import { useSidebar } from "@/context/SidebarContext";
 import ThemeSwitcher from "@/components/common/ThemeSwitcher";
 import Image from "next/image";
@@ -9,20 +10,22 @@ export const AppHeader: React.FC = () => {
   const { isMobileOpen, isExpanded, toggleSidebar, toggleMobileSidebar } = useSidebar();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleToggle = () => {
-    if (window.innerWidth >= 1280) {
-      toggleSidebar();
-    } else {
-      toggleMobileSidebar();
-    }
-  };
+  // const handleToggle = () => {
+  //   if (window.innerWidth >= 1280) {
+  //     toggleSidebar();
+  //   } else {
+  //     toggleMobileSidebar();
+  //   }
+  // };
 
   return (
-    <header className="sticky top-0 z-40 flex w-full border-b border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/80">
-      <div className="flex grow items-center justify-between px-4 py-3 md:px-6">
+    <header className="flex h-16 w-full items-center border-b border-black/[0.06] dark:border-white/[0.08] bg-white/65 dark:bg-gray-950/65 backdrop-blur-2xl backdrop-saturate-[180%] shadow-[0_4px_24px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.25)] transition-colors">
+      <div className="flex grow items-center justify-between px-4 py-2 md:px-6">
+        {/* pake yang bawah kalo mau header lebarnya sama kayak konten */}
+      {/* <div className="mx-auto flex w-full max-w-7xl 2xl:max-w-[1440px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8"> */}
         {/* Left: Sidebar toggle + Search */}
         <div className="flex items-center gap-3 sm:gap-4">
-          <button
+          {/* <button
             onClick={handleToggle}
             aria-label="Toggle Sidebar"
             className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white transition-colors"
@@ -40,10 +43,16 @@ export const AppHeader: React.FC = () => {
                 d="M4 6h16M4 12h16M4 18h7"
               />
             </svg>
-          </button>
+          </button> */}
+
+          <Link href="/" className="flex items-center gap-2">
+            <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+              Sakuin
+            </span>
+          </Link>
 
           {/* Search bar mockup matching screenshot */}
-          <div className="relative hidden sm:block">
+          {/* <div className="relative hidden sm:block">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
               <svg
                 className="h-4 w-4"
@@ -70,7 +79,7 @@ export const AppHeader: React.FC = () => {
                 ⌘ K
               </kbd>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Right side icons */}
@@ -99,7 +108,7 @@ export const AppHeader: React.FC = () => {
           {/* User Profile Avatar Mockup */}
           <div className="flex items-center gap-3 pl-2">
             <div className="h-9 w-9 rounded-full bg-brand-500 flex items-center justify-center text-white font-medium text-sm">
-              E
+              EA
             </div>
             <span className="hidden text-sm font-medium text-gray-700 dark:text-gray-300 md:block">
               Erlangga Anugrah Arifin

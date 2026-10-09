@@ -2,6 +2,12 @@
 
 @custom-variant dark (&:is(.dark, .dark *));
 
+html,
+body {
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+}
+
 @theme {
   --text-title-2xl: 72px;
   --text-title-2xl--line-height: 90px;
@@ -56,6 +62,7 @@
   --color-gray-600: #475467;
   --color-gray-700: #344054;
   --color-gray-800: #1d2939;
+  --color-gray-850: #151f2e;
   --color-gray-900: #101828;
   --color-gray-950: #0c111d;
 
@@ -119,6 +126,11 @@
   :is(.dark, .dark *) body {
     background-color: #0c111d;
     color: #f9fafb;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
   }
 }
 
@@ -188,4 +200,33 @@
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@utility custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.4);
+    border-radius: 9999px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(156, 163, 175, 0.7);
+  }
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
 }

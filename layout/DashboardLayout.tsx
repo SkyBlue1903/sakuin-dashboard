@@ -14,28 +14,33 @@ export default function DashboardLayout({
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
 
   // Dynamic class for main content margin based on sidebar state
-  const mainContentMargin = isMobileOpen
-    ? "ml-0"
-    : isExpanded || isHovered
-    ? "xl:ml-[290px]"
-    : "xl:ml-[90px]";
+  // const mainContentMargin = isMobileOpen
+  //   ? "ml-0"
+  //   : isExpanded || isHovered
+  //   ? "xl:ml-[290px]"
+  //   : "xl:ml-[90px]";
+  const mainContentMargin = "";
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 font-sans">
+    <div className="relative h-screen w-full flex flex-col bg-gray-50 dark:bg-gray-950 font-sans overflow-hidden overscroll-none">
       {/* Sidebar and Backdrop */}
-      <AppSidebar />
+      {/* <AppSidebar /> */}
       <Backdrop />
 
       {/* Main Content Area */}
       <div
-        className={`flex min-h-screen flex-col transition-all duration-300 ease-in-out ${mainContentMargin}`}
+        className={`relative h-full w-full flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${mainContentMargin}`}
       >
-        {/* Header */}
-        <AppHeader />
+        {/* iOS SwiftUI Glass Header - Positioned at top, content passes underneath */}
+        <div className="absolute top-0 inset-x-0 z-40">
+          <AppHeader />
+        </div>
 
-        {/* Page Content */}
-        <main className="flex-1 p-4 md:p-6 lg:p-8">
-          <div className="mx-auto max-w-7xl">{children}</div>
+        {/* Page Content - Full height, zero top padding under header */}
+        <main className="flex-1 w-full h-full min-h-0 overflow-hidden px-4 sm:px-6 lg:px-8 pt-0 pb-0">
+          <div className="mx-auto w-full max-w-7xl 2xl:max-w-[1440px] h-full">
+            {children}
+          </div>
         </main>
       </div>
     </div>
