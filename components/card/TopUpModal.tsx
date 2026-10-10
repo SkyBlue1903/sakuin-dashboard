@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { X, Wallet, ArrowDownToLine, Check, Sparkles } from "lucide-react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 
 interface TopUpModalProps {
   isOpen: boolean;

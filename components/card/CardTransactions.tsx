@@ -18,7 +18,7 @@ import {
   Gamepad2,
   Cloud,
 } from "lucide-react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 
 export interface Transaction {
   id: string;

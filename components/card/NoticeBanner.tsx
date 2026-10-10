@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { AlertCircle, Info, AlertOctagon, X } from "lucide-react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 
 export type BannerVariant = "warning" | "info" | "danger";
 

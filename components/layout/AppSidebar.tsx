@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useSidebar } from "@/context/SidebarContext";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import {
   BoxCubeIcon,
   CalenderIcon,

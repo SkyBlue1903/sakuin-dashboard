@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { X, ShieldCheck, Globe, ShoppingBag, Sliders, Lock, Check } from "lucide-react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 
 interface CardSettingsModalProps {
   isOpen: boolean;

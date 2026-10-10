@@ -29,7 +29,7 @@ import EditCardNameModal from "@/components/card/EditCardNameModal";
 import AddCardModal from "@/components/card/AddCardModal";
 import VerifyPinModal from "@/components/card/VerifyPinModal";
 import NoticeBanner from "@/components/card/NoticeBanner";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 
 const INITIAL_CARDS = [
   {

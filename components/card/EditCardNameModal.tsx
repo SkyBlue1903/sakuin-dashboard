@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { X, Pencil, Check, Sparkles } from "lucide-react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 
 interface EditCardNameModalProps {
   isOpen: boolean;

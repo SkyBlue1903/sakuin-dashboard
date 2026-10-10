@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import DashboardLayout from "@/layout/DashboardLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import CardPageContent from "@/components/card/CardPageContent";
 
 export const metadata: Metadata = {

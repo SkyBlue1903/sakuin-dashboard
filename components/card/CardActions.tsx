@@ -13,7 +13,7 @@ import {
   ShieldCheck,
   Pencil,
 } from "lucide-react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 
 interface CardActionsProps {
   isFrozen: boolean;

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { ThemeMode, useTheme } from "@/context/ThemeContext";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 
 export const ThemeSwitcher: React.FC = () => {
   const { theme, themeMode, setThemeMode } = useTheme();
