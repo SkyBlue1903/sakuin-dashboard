@@ -12,6 +12,7 @@ import {
   X,
   ShieldCheck,
   Pencil,
+  Palette,
 } from "lucide-react";
 import { cn } from "@/utils";
 
@@ -25,6 +26,7 @@ interface CardActionsProps {
   onOpenChangePin: () => void;
   onOpenDeleteCard: () => void;
   onOpenEditCardName?: () => void;
+  onOpenEditIllustration?: () => void;
   cardName?: string;
   cardLast4?: string;
   className?: string;
@@ -40,6 +42,7 @@ export const CardActions: React.FC<CardActionsProps> = ({
   onOpenChangePin,
   onOpenDeleteCard,
   onOpenEditCardName,
+  onOpenEditIllustration,
   cardName = "SakuCard",
   cardLast4 = "8820",
   className,
@@ -158,10 +161,10 @@ export const CardActions: React.FC<CardActionsProps> = ({
             <div className="hidden md:block absolute right-0 top-full mt-2 w-64 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-xl p-1.5 z-40 animate-in fade-in zoom-in-95 duration-150">
               <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800 mb-1">
                 <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
-                  Opsi Kartu
+                  Atur Kartu
                 </span>
                 <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 block truncate">
-                  {cardName} • **** {cardLast4}
+                  {cardName}
                 </span>
               </div>
 
@@ -178,8 +181,21 @@ export const CardActions: React.FC<CardActionsProps> = ({
                   <span className="font-semibold text-gray-900 dark:text-white block">
                     Atur Limit Transaksi
                   </span>
-                  <span className="text-[11px] text-gray-400 block truncate">
-                    Batas harian & izin online
+                </div>
+              </button>
+
+              {/* 2. Edit Ilustrasi Kartu */}
+              <button
+                type="button"
+                onClick={() => handleAction(() => onOpenEditIllustration?.())}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-xs cursor-pointer group"
+              >
+                <div className="p-2 rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 group-hover:bg-purple-50 group-hover:text-purple-600 dark:group-hover:bg-purple-950/40 dark:group-hover:text-purple-400 transition-colors">
+                  <Palette className="h-4 w-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className="font-semibold text-gray-900 dark:text-white block">
+                    Edit Tema Kartu
                   </span>
                 </div>
               </button>
@@ -197,9 +213,6 @@ export const CardActions: React.FC<CardActionsProps> = ({
                   <span className="font-semibold text-gray-900 dark:text-white block">
                     Edit Nama Kartu
                   </span>
-                  <span className="text-[11px] text-gray-400 block truncate">
-                    Ubah label atau nama kartu
-                  </span>
                 </div>
               </button>
 
@@ -216,9 +229,6 @@ export const CardActions: React.FC<CardActionsProps> = ({
                   <span className="font-semibold text-gray-900 dark:text-white block">
                     Ganti PIN
                   </span>
-                  <span className="text-[11px] text-gray-400 block truncate">
-                    Perbarui 6 digit PIN kartu
-                  </span>
                 </div>
               </button>
 
@@ -234,9 +244,6 @@ export const CardActions: React.FC<CardActionsProps> = ({
                 <div className="flex-1 min-w-0">
                   <span className="font-semibold text-red-600 dark:text-red-400 block">
                     Hapus Kartu
-                  </span>
-                  <span className="text-[11px] text-red-400 dark:text-red-500/80 block truncate">
-                    Hapus dari daftar akun
                   </span>
                 </div>
               </button>
@@ -261,10 +268,10 @@ export const CardActions: React.FC<CardActionsProps> = ({
                 <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800 mb-3">
                   <div>
                     <h4 className="font-bold text-gray-900 dark:text-white text-base">
-                      Pengaturan Kartu
+                      Atur Kartu
                     </h4>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {cardName} • **** {cardLast4}
+                      {cardName}
                     </p>
                   </div>
                   <button
@@ -292,8 +299,24 @@ export const CardActions: React.FC<CardActionsProps> = ({
                         <span className="font-semibold text-sm text-gray-900 dark:text-white block">
                           Atur Limit Transaksi
                         </span>
-                        <span className="text-xs text-gray-400 block">
-                          Batas harian & pembayaran online
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                  </button>
+
+                  {/* 2. Edit Ilustrasi Kartu */}
+                  <button
+                    type="button"
+                    onClick={() => handleAction(() => onOpenEditIllustration?.())}
+                    className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800/80 active:bg-gray-100 transition-colors cursor-pointer text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 rounded-xl bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                        <Palette className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <span className="font-semibold text-sm text-gray-900 dark:text-white block">
+                          Edit Temas Kartu
                         </span>
                       </div>
                     </div>
@@ -314,9 +337,6 @@ export const CardActions: React.FC<CardActionsProps> = ({
                         <span className="font-semibold text-sm text-gray-900 dark:text-white block">
                           Edit Nama Kartu
                         </span>
-                        <span className="text-xs text-gray-400 block">
-                          Ubah label atau nama panggilan kartu
-                        </span>
                       </div>
                     </div>
                     <ChevronRight className="w-4 h-4 text-gray-400" />
@@ -336,9 +356,6 @@ export const CardActions: React.FC<CardActionsProps> = ({
                         <span className="font-semibold text-sm text-gray-900 dark:text-white block">
                           Ganti PIN
                         </span>
-                        <span className="text-xs text-gray-400 block">
-                          Perbarui 6 digit PIN keamanan
-                        </span>
                       </div>
                     </div>
                     <ChevronRight className="w-4 h-4 text-gray-400" />
@@ -357,9 +374,6 @@ export const CardActions: React.FC<CardActionsProps> = ({
                       <div>
                         <span className="font-semibold text-sm text-red-600 dark:text-red-400 block">
                           Hapus Kartu
-                        </span>
-                        <span className="text-xs text-red-400 dark:text-red-500/80 block">
-                          Hapus kartu ini dari akun Anda
                         </span>
                       </div>
                     </div>

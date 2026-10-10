@@ -223,11 +223,11 @@ export const formatAmount = (amount: string, currency: string = "Rp") => {
   return `${amount} ${currency}`;
 };
 
-interface CardTransactionsProps {
+interface RightSidebarContentProps {
   className?: string;
 }
 
-export const CardTransactions: React.FC<CardTransactionsProps> = ({
+export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
   className,
 }) => {
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
@@ -282,7 +282,7 @@ export const CardTransactions: React.FC<CardTransactionsProps> = ({
       {/* Section Header (Sticky Pinned Header - Pepet ke Atas: Title + Filters + Search Bar) */}
       <div
         className={cn(
-          "sticky top-16 z-20",
+          "sticky top-16 md:top-0 z-20",
           "w-full pt-2 pb-3.5",
           "space-y-3",
           "bg-gray-50/95 dark:bg-gray-950/95 backdrop-blur-md",
@@ -291,7 +291,7 @@ export const CardTransactions: React.FC<CardTransactionsProps> = ({
         )}
       >
         {/* Row 1: Title & Filter Tabs */}
-        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-2.5">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-2.5 w-full lg:max-w-none mx-auto px-4 sm:pr-6 lg:pr-8 xl:pr-10">
           <div>
             <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
               Transaksi Kartu
@@ -343,72 +343,77 @@ export const CardTransactions: React.FC<CardTransactionsProps> = ({
         </div>
 
         {/* Row 2: Search Input (Ikut sticky di atas) */}
-        <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari transaksi, merchant, atau kategori..."
-            className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl bg-white dark:bg-gray-900/90 border border-gray-200/80 dark:border-gray-800 text-gray-800 dark:text-white placeholder-gray-400 shadow-2xs focus:outline-none focus:ring-1 focus:ring-brand-500"
-          />
+        <div className="w-full lg:max-w-none mx-auto px-4 sm:pr-6 lg:pr-8 xl:pr-10">
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari transaksi, merchant, atau kategori..."
+              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl bg-white dark:bg-gray-900/90 border border-gray-200/80 dark:border-gray-800 text-gray-800 dark:text-white placeholder-gray-400 shadow-2xs focus:outline-none focus:ring-1 focus:ring-brand-500 "
+            />
+          </div>
         </div>
       </div>
 
       {/* Main Transactions Container */}
-      <div className="rounded-2xl sm:rounded-3xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 p-2 sm:p-4">
-        {/* Transaction List (Natural flow without nested scrollbar) */}
-        <div className="divide-y divide-gray-100 dark:divide-gray-800/80">
-          {filteredTransactions.length === 0 ? (
-            <div className="py-12 text-center text-sm text-gray-400">
-              Tidak ada transaksi yang cocok dengan pencarian atau filter Anda.
-            </div>
-          ) : (
-            filteredTransactions.map((tx) => (
-              <div
-                key={tx.id}
-                onClick={() => setSelectedTx(tx)}
-                className="group flex items-center justify-between p-3 sm:p-3.5 rounded-2xl hover:bg-gray-50/80 dark:hover:bg-gray-800/50 cursor-pointer transition-all"
-              >
-                {/* Left: Icon + Merchant & Category / Date */}
-                <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 transition-transform group-hover:scale-105">
-                    {getTransactionIcon(tx.iconType)}
-                  </div>
-
-                  <div className="min-w-0">
-                    <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white truncate">
-                      {tx.merchant}
-                    </h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
-                      {tx.category} • {tx.date}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Right: Amount + Status Badge */}
-                <div className="text-right shrink-0 pl-3">
-                  <div className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">
-                    {formatAmount(tx.amount, tx.currency)}
-                  </div>
-
-                  {tx.status === "Declined" ? (
-                    <span className="inline-block mt-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-[11px] font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-                      Ditolak
-                    </span>
-                  ) : tx.status === "Success" ? (
-                    <span className="inline-block mt-1 rounded-full bg-success-50 px-2.5 py-0.5 text-[11px] font-medium text-success-600 dark:bg-success-500/10 dark:text-success-400">
-                      Berhasil
-                    </span>
-                  ) : (
-                    <span className="inline-block mt-1 rounded-full bg-warning-50 px-2.5 py-0.5 text-[11px] font-medium text-warning-600 dark:bg-warning-500/10 dark:text-warning-400">
-                      Menunggu
-                    </span>
-                  )}
-                </div>
+      <div className="w-full lg:max-w-none mx-auto px-4 sm:pr-6 lg:pr-8 xl:pr-10">
+        <div className="rounded-2xl sm:rounded-3xl border border-gray-100 bg-white shadow-sm
+         dark:border-gray-800 dark:bg-gray-900 p-2 sm:p-4">
+          {/* Transaction List (Natural flow without nested scrollbar) */}
+          <div className="divide-y divide-gray-100 dark:divide-gray-800/80">
+            {filteredTransactions.length === 0 ? (
+              <div className="py-12 text-center text-sm text-gray-400">
+                Tidak ada transaksi yang cocok dengan pencarian atau filter Anda.
               </div>
-            ))
-          )}
+            ) : (
+              filteredTransactions.map((tx) => (
+                <div
+                  key={tx.id}
+                  onClick={() => setSelectedTx(tx)}
+                  className="group flex items-center justify-between p-3 sm:p-3.5 rounded-2xl hover:bg-gray-50/80 dark:hover:bg-gray-800/50 cursor-pointer transition-all"
+                >
+                  {/* Left: Icon + Merchant & Category / Date */}
+                  <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 transition-transform group-hover:scale-105">
+                      {getTransactionIcon(tx.iconType)}
+                    </div>
+
+                    <div className="min-w-0">
+                      <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white truncate">
+                        {tx.merchant}
+                      </h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                        {tx.category} • {tx.date}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right: Amount + Status Badge */}
+                  <div className="text-right shrink-0 pl-3">
+                    <div className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">
+                      {formatAmount(tx.amount, tx.currency)}
+                    </div>
+
+                    {tx.status === "Declined" ? (
+                      <span className="inline-block mt-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-[11px] font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                        Ditolak
+                      </span>
+                    ) : tx.status === "Success" ? (
+                      <span className="inline-block mt-1 rounded-full bg-success-50 px-2.5 py-0.5 text-[11px] font-medium text-success-600 dark:bg-success-500/10 dark:text-success-400">
+                        Berhasil
+                      </span>
+                    ) : (
+                      <span className="inline-block mt-1 rounded-full bg-warning-50 px-2.5 py-0.5 text-[11px] font-medium text-warning-600 dark:bg-warning-500/10 dark:text-warning-400">
+                        Menunggu
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
 
@@ -498,4 +503,4 @@ export const CardTransactions: React.FC<CardTransactionsProps> = ({
   );
 };
 
-export default CardTransactions;
+export default RightSidebarContent;

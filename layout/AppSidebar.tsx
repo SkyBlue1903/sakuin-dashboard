@@ -70,7 +70,7 @@ const templateNavItems: NavItem[] = [
   // },
   {
     icon: <UserCircleIcon />,
-    name: "Customer List",
+    name: "Daftar Pelanggan",
     path: "/profile",
   },
   // {
@@ -449,7 +449,7 @@ const AppSidebar: React.FC = () => {
             {/* Template Navigation */}
             <div>
               <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
-                ADMIN DASHBOARD
+                DASHBOARD UNTUK ADMIN
               </h2>
               {renderMenuItems(templateNavItems, "template")}
             </div>

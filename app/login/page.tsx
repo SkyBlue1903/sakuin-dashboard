@@ -1,285 +1,285 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
-import {
-  CreditCard,
-  Lock,
-  Mail,
-  Eye,
-  EyeOff,
-  ArrowRight,
-  ShieldCheck,
-  Sparkles,
-  Loader2,
-  CheckCircle2,
-  HelpCircle,
-  AlertCircle,
-} from "lucide-react";
-import ThemeSwitcher from "@/components/common/ThemeSwitcher";
-import { cn } from "@/utils";
+import { useRouter } from "next/navigation";
+import { ChevronLeft, Eye, EyeOff, Loader2 } from "lucide-react";
+import ThemeTogglerTwo from "@/components/common/ThemeTogglerTwo";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("erlangga@sakuin.id");
+  const [email, setEmail] = useState("info@gmail.com");
   const [password, setPassword] = useState("password123");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage(null);
-
-    if (!email.trim() || !password.trim()) {
-      setErrorMessage("Silakan masukkan email dan kata sandi Anda.");
-      return;
-    }
-
     setIsLoading(true);
 
-    // Simulate authenticating and redirect to /card
     setTimeout(() => {
       setIsLoading(false);
-      setIsSuccess(true);
-      setTimeout(() => {
-        router.push("/card");
-      }, 700);
-    }, 1100);
+      router.push("/card");
+    }, 600);
   };
 
-  const handleQuickDemoLogin = () => {
-    setEmail("erlangga@sakuin.id");
-    setPassword("password123");
-    setErrorMessage(null);
+  const handleSocialSignIn = () => {
     setIsLoading(true);
-
     setTimeout(() => {
       setIsLoading(false);
-      setIsSuccess(true);
-      setTimeout(() => {
-        router.push("/card");
-      }, 600);
-    }, 800);
+      router.push("/card");
+    }, 500);
   };
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col justify-between bg-gray-50 dark:bg-gray-950 font-sans text-gray-900 dark:text-gray-100 overflow-x-hidden selection:bg-brand-500 selection:text-white">
-      {/* Background Decorative Ambient Glows */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full bg-gradient-to-tr from-brand-500/20 via-blue-500/15 to-purple-500/10 blur-[130px] dark:from-brand-600/25 dark:via-purple-600/15 dark:to-transparent" />
-        <div className="absolute top-1/2 -left-40 w-96 h-96 rounded-full bg-yellow-400/10 blur-[110px] dark:bg-yellow-400/5" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-brand-500/10 blur-[120px] dark:bg-brand-500/10" />
+    <div className="relative min-h-screen w-full bg-brand-950 dark:bg-gray-950 lg:bg-white lg:dark:bg-gray-900 overflow-x-hidden selection:bg-brand-500 selection:text-white">
+      {/* Mobile-Only Background: desktop brand color + dashboard.login.png watermark */}
+      <div className="absolute inset-0 z-0 lg:hidden overflow-hidden pointer-events-none select-none">
+        {/* Background color matching desktop right brand panel */}
+        <div className="absolute inset-0 bg-brand-950 dark:bg-[#0c0e2b]" />
+
+        {/* Background image: dashboard.login.png */}
+        <div className="absolute inset-0 flex items-center justify-center p-4">
+          <Image
+            src="/images/dashboard.login.png"
+            alt="Sakuin Background"
+            fill
+            priority
+            sizes="100vw"
+            className="object-contain object-center opacity-30 sm:opacity-35 scale-105"
+          />
+        </div>
+
+        {/* Ambient subtle vignette gradient for optimal text contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-brand-950/80 via-brand-950/45 to-brand-950/90 dark:from-[#0c0e2b]/85 dark:via-transparent dark:to-[#0c0e2b]/95" />
       </div>
 
-      {/* Top Navigation Bar */}
-      <header className="relative z-20 flex w-full items-center justify-between px-6 py-5 max-w-7xl mx-auto">
-        {/* Brand Logo */}
-        <Link href="/card" className="flex items-center gap-2.5 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 text-white shadow-md shadow-brand-500/25 transition-transform group-hover:scale-105">
-            <CreditCard className="h-5 w-5" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white leading-none">
-              Sakuin
-            </span>
-            <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500 tracking-wider uppercase mt-0.5">
-              Card Dashboard
-            </span>
-          </div>
-        </Link>
-
-        {/* Right Tools: Theme Switcher & Help */}
-        <div className="flex items-center gap-3">
-          <ThemeSwitcher />
-        </div>
-      </header>
-
-      {/* Main Login Form Container */}
-      <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-8 sm:px-6">
-        <div className="w-full max-w-[440px] animate-in fade-in zoom-in-95 duration-300">
-          {/* Card Container */}
-          <div className="rounded-3xl border border-gray-200/80 bg-white/85 p-7 sm:p-9 shadow-xl shadow-gray-200/40 backdrop-blur-2xl dark:border-gray-800 dark:bg-gray-900/85 dark:shadow-black/50 transition-all">
-            {/* Header */}
-            <div className="text-center space-y-2 mb-7">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 dark:bg-brand-950/60 border border-brand-200/80 dark:border-brand-800/60 text-brand-600 dark:text-brand-400 text-xs font-semibold mb-1">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Portal Akses Kartu Sakuin</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-                Selamat Datang
-              </h1>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                Masuk untuk mengelola kartu virtual Visa S-Card dan riwayat transaksi Anda.
-              </p>
-            </div>
-
-            {/* Error Message */}
-            {errorMessage && (
-              <div className="mb-5 flex items-center gap-2.5 rounded-xl border border-error-200 bg-error-50/80 p-3 text-xs text-error-700 dark:border-error-900/50 dark:bg-error-950/40 dark:text-error-300 animate-in fade-in duration-200">
-                <AlertCircle className="h-4 w-4 shrink-0 text-error-600 dark:text-error-400" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email / Username Input */}
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="email"
-                  className="block text-xs font-semibold text-gray-700 dark:text-gray-300"
-                >
-                  Email atau ID Pengguna
-                </label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 dark:text-gray-500">
-                    <Mail className="h-4 w-4" />
-                  </div>
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="nama@sakuin.id"
-                    disabled={isLoading || isSuccess}
-                    required
-                    className="w-full rounded-xl border border-gray-200 bg-white/70 py-2.5 pl-10 pr-3.5 text-xs sm:text-sm text-gray-900 placeholder-gray-400 shadow-2xs transition-colors focus:border-brand-500 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:bg-gray-800/70 dark:text-white dark:placeholder-gray-500"
-                  />
-                </div>
-              </div>
-
-              {/* Password Input */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="password"
-                    className="block text-xs font-semibold text-gray-700 dark:text-gray-300"
-                  >
-                    Kata Sandi
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => alert("Untuk mode demo, gunakan kata sandi default atau klik 'Masuk Demo 1-Klik'.")}
-                    className="text-[11px] font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 cursor-pointer"
-                  >
-                    Lupa sandi?
-                  </button>
-                </div>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 dark:text-gray-500">
-                    <Lock className="h-4 w-4" />
-                  </div>
-                  <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    disabled={isLoading || isSuccess}
-                    required
-                    className="w-full rounded-xl border border-gray-200 bg-white/70 py-2.5 pl-10 pr-10 text-xs sm:text-sm text-gray-900 placeholder-gray-400 shadow-2xs transition-colors focus:border-brand-500 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:bg-gray-800/70 dark:text-white dark:placeholder-gray-500 font-mono"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-300 cursor-pointer"
-                    aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Options: Remember Me */}
-              <div className="flex items-center justify-between pt-1">
-                <label className="flex items-center gap-2 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 rounded-md border-gray-300 text-brand-600 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-800"
-                  />
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
-                    Ingat sesi saya
-                  </span>
-                </label>
-              </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isLoading || isSuccess}
-                className={cn(
-                  "w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold text-xs sm:text-sm shadow-md transition-all cursor-pointer active:scale-[0.99] mt-2",
-                  isSuccess
-                    ? "bg-emerald-600 text-white shadow-emerald-500/25"
-                    : "bg-brand-500 hover:bg-brand-600 text-white shadow-brand-500/25",
-                  (isLoading || isSuccess) && "opacity-95"
-                )}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Memverifikasi akun...</span>
-                  </>
-                ) : isSuccess ? (
-                  <>
-                    <CheckCircle2 className="h-4 w-4 animate-bounce" />
-                    <span>Login Berhasil! Mengalihkan ke /card...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Masuk ke Dashboard</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
-              </button>
-            </form>
-
-            {/* Divider */}
-            <div className="relative my-6 text-center">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200/80 dark:border-gray-800" />
-              </div>
-              <span className="relative bg-white dark:bg-gray-900 px-3 text-[11px] font-medium text-gray-400 uppercase tracking-wider">
-                Atau Akses Cepat
-              </span>
-            </div>
-
-            {/* Quick Demo Login Button */}
-            <button
-              type="button"
-              onClick={handleQuickDemoLogin}
-              disabled={isLoading || isSuccess}
-              className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl border border-gray-200/80 bg-gray-50/70 hover:bg-gray-100/80 dark:border-gray-800 dark:bg-gray-800/60 dark:hover:bg-gray-800 text-xs font-semibold text-gray-700 dark:text-gray-200 shadow-2xs active:scale-[0.99] transition-all cursor-pointer"
+      <div className="relative z-10 flex min-h-screen w-full flex-col lg:flex-row">
+        {/* Left Column: Sign In Form */}
+        <div className="flex w-full flex-1 flex-col justify-between p-6 sm:p-10 lg:w-1/2 lg:p-12 xl:p-16">
+          {/* Top navigation link */}
+          <div className="mx-auto mb-5 w-full max-w-md sm:pt-4">
+            <Link
+              href="/card"
+              className="inline-flex items-center text-sm font-medium text-gray-300 hover:text-white lg:text-gray-500 lg:hover:text-gray-700 lg:dark:text-gray-400 lg:dark:hover:text-gray-300 transition-colors"
             >
-              <div className="h-5 w-5 rounded-full bg-brand-500/15 text-brand-600 dark:text-brand-400 flex items-center justify-center text-[10px] font-bold">
-                EA
-              </div>
-              <span>Masuk Demo 1-Klik (Erlangga A. Arifin)</span>
-            </button>
+              <ChevronLeft className="mr-1 h-5 w-5 rtl:rotate-180" />
+              Kembali ke Dashboard
+            </Link>
+          </div>
 
-            {/* Bank-Grade Security Assurance Footer */}
-            {/* <div className="mt-7 pt-4 border-t border-gray-100 dark:border-gray-800/80 flex items-center justify-center gap-2 text-[11px] text-gray-400 dark:text-gray-500">
-              <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />
-              <span>Enkripsi 256-Bit • Dilindungi Visa 3D Secure</span>
-            </div> */}
+          {/* Form container (glassmorphic on mobile, clean flat on desktop) */}
+          <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-4 sm:py-8">
+            <div className="rounded-3xl border border-white/10 bg-brand-950/70 p-6 shadow-2xl backdrop-blur-xl sm:p-8 lg:rounded-none lg:border-none lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none">
+              {/* Header Title & Subtitle */}
+              <div className="mb-5 sm:mb-8">
+                <h1 className="mb-2 text-title-sm font-semibold text-white lg:text-gray-800 lg:dark:text-white/90 sm:text-title-md">
+                  Masuk
+                </h1>
+                <p className="text-sm text-gray-300 lg:text-gray-500 lg:dark:text-gray-400">
+                  Masukkan email dan kata sandi Anda untuk masuk!
+                </p>
+              </div>
+
+              {/* Social Login Button (Full width) */}
+              <div>
+                <button
+                  type="button"
+                  onClick={handleSocialSignIn}
+                  className="w-full inline-flex items-center justify-center gap-3 rounded-lg bg-white/10 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/15 border border-white/10 lg:bg-gray-100 lg:text-gray-700 lg:hover:bg-gray-200 lg:hover:text-gray-800 lg:dark:bg-white/5 lg:dark:text-white/90 lg:dark:hover:bg-white/10 lg:border-transparent cursor-pointer shadow-2xs"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M18.7511 10.1944C18.7511 9.47495 18.6915 8.94995 18.5626 8.40552H10.1797V11.6527H15.1003C15.0011 12.4597 14.4654 13.675 13.2749 14.4916L13.2582 14.6003L15.9087 16.6126L16.0924 16.6305C17.7788 15.1041 18.7511 12.8583 18.7511 10.1944Z"
+                      fill="#4285F4"
+                    />
+                    <path
+                      d="M10.1788 18.75C12.5895 18.75 14.6133 17.9722 16.0915 16.6305L13.274 14.4916C12.5201 15.0068 11.5081 15.3666 10.1788 15.3666C7.81773 15.3666 5.81379 13.8402 5.09944 11.7305L4.99473 11.7392L2.23868 13.8295L2.20264 13.9277C3.67087 16.786 6.68674 18.75 10.1788 18.75Z"
+                      fill="#34A853"
+                    />
+                    <path
+                      d="M5.10014 11.7305C4.91165 11.186 4.80257 10.6027 4.80257 9.99992C4.80257 9.3971 4.91165 8.81379 5.09022 8.26935L5.08523 8.1534L2.29464 6.02954L2.20333 6.0721C1.5982 7.25823 1.25098 8.5902 1.25098 9.99992C1.25098 11.4096 1.5982 12.7415 2.20333 13.9277L5.10014 11.7305Z"
+                      fill="#FBBC05"
+                    />
+                    <path
+                      d="M10.1789 4.63331C11.8554 4.63331 12.9864 5.34303 13.6312 5.93612L16.1511 3.525C14.6035 2.11528 12.5895 1.25 10.1789 1.25C6.68676 1.25 3.67088 3.21387 2.20264 6.07218L5.08953 8.26943C5.81381 6.15972 7.81776 4.63331 10.1789 4.63331Z"
+                      fill="#EB4335"
+                    />
+                  </svg>
+                  <span>Masuk dengan Google</span>
+                </button>
+
+                {/* Divider */}
+                <div className="relative py-3 sm:py-5">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-white/15 lg:border-gray-200 lg:dark:border-gray-800"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="bg-brand-950/90 lg:bg-white dark:bg-gray-900 px-3 sm:px-5 py-1 text-gray-300 lg:text-gray-400 rounded-full lg:rounded-none">
+                      Atau
+                    </span>
+                  </div>
+                </div>
+
+                {/* Form Fields */}
+                <form onSubmit={handleSubmit}>
+                  <div className="space-y-5 sm:space-y-6">
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-gray-200 lg:text-gray-700 lg:dark:text-gray-400">
+                        Email <span className="text-red-400 lg:text-red-500">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="info@gmail.com"
+                        required
+                        disabled={isLoading}
+                        className="h-11 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-2.5 text-sm text-white placeholder:text-gray-400 focus:border-brand-400 focus:ring-3 focus:ring-brand-400/20 focus:outline-hidden lg:border-gray-300 lg:bg-transparent lg:text-gray-800 lg:dark:border-gray-700 lg:dark:bg-gray-900 lg:dark:text-white/90 lg:dark:placeholder:text-gray-500 lg:focus:border-brand-500 transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-gray-200 lg:text-gray-700 lg:dark:text-gray-400">
+                        Kata Sandi <span className="text-red-400 lg:text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="Masukkan kata sandi Anda"
+                          required
+                          disabled={isLoading}
+                          className="h-11 w-full rounded-lg border border-white/20 bg-white/10 ps-4 pe-11 py-2.5 text-sm text-white placeholder:text-gray-400 focus:border-brand-400 focus:ring-3 focus:ring-brand-400/20 focus:outline-hidden lg:border-gray-300 lg:bg-transparent lg:text-gray-800 lg:dark:border-gray-700 lg:dark:bg-gray-900 lg:dark:text-white/90 lg:dark:placeholder:text-gray-500 lg:focus:border-brand-500 transition-colors"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-300 hover:text-white lg:text-gray-400 lg:hover:text-gray-600 lg:dark:text-gray-500 lg:dark:hover:text-gray-300 cursor-pointer"
+                          aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Ingat saya & Lupa kata sandi */}
+                    <div className="flex items-center justify-between">
+                      <label className="group flex cursor-pointer items-center gap-3 select-none">
+                        <div className="relative h-5 w-5">
+                          <input
+                            type="checkbox"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                            className="h-5 w-5 cursor-pointer appearance-none rounded-md border border-white/30 bg-white/10 checked:bg-brand-500 checked:border-transparent lg:border-gray-300 lg:bg-transparent lg:dark:border-gray-700 transition-colors focus:outline-hidden"
+                          />
+                          {rememberMe && (
+                            <svg
+                              className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="14"
+                              height="14"
+                              viewBox="0 0 14 14"
+                              fill="none"
+                            >
+                              <path
+                                d="M11.6666 3.5L5.24992 9.91667L2.33325 7"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                        <span className="block text-sm font-normal text-gray-200 lg:text-gray-700 lg:dark:text-gray-400">
+                          Ingat saya
+                        </span>
+                      </label>
+
+                      <Link
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          alert("Untuk demonstrasi, akun default telah terisi otomatis.");
+                        }}
+                        className="text-sm font-medium text-brand-300 hover:text-brand-200 lg:text-brand-500 lg:hover:text-brand-600 lg:dark:text-brand-400 transition-colors"
+                      >
+                        Lupa kata sandi?
+                      </Link>
+                    </div>
+
+                    {/* Submit Button */}
+                    <div>
+                      <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full flex items-center justify-center gap-2 rounded-lg bg-brand-500 py-3 px-4 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20 active:scale-[0.99] cursor-pointer disabled:opacity-70"
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>Memproses...</span>
+                          </>
+                        ) : (
+                          <span>Masuk</span>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+
+                {/* Footer Sign Up Link */}
+                <div className="mt-5">
+                  <p className="text-center text-sm font-normal text-gray-300 sm:text-start lg:text-gray-700 lg:dark:text-gray-400">
+                    Belum punya akun?{" "}
+                    <Link
+                      href="/card"
+                      className="text-brand-300 hover:text-brand-200 lg:text-brand-500 lg:hover:text-brand-600 lg:dark:text-brand-400 transition-colors font-medium"
+                    >
+                      Daftar
+                    </Link>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </main>
 
-      {/* Footer */}
-      <footer className="relative z-10 py-5 text-center text-xs text-gray-400 dark:text-gray-600">
-        <p>© 2026 Sakuin. Seluruh hak cipta dilindungi.</p>
-      </footer>
+        {/* Right Column: Brand Banner with Sakuin Cards Image and Clean Background (Desktop only) */}
+        <div className="lg:w-1/2 w-full min-h-screen bg-brand-950 dark:bg-white/5 lg:flex items-center justify-center hidden p-8 lg:p-12 xl:p-16 select-none">
+          <div className="relative flex flex-col items-center justify-center max-w-lg text-center">
+            <div className="block mb-6 transition-transform duration-500 hover:scale-[1.02]">
+              <Image
+                width={540}
+                height={600}
+                src="/images/dashboard.login.png"
+                alt="Sakuin Cards"
+                priority
+                className="w-full max-w-[440px] xl:max-w-[500px] 2xl:max-w-[560px] h-auto object-contain drop-shadow-2xl"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Floating Theme Switcher at bottom-right */}
+        <div className="fixed bottom-6 right-6 z-50">
+          <ThemeTogglerTwo />
+        </div>
+      </div>
     </div>
   );
 }

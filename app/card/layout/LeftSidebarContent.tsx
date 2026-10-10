@@ -20,12 +20,13 @@ import {
 } from "lucide-react";
 import SCard from "@/components/card/SCard";
 import CardActions from "@/components/card/CardActions";
-import CardTransactions from "@/components/card/CardTransactions";
+import CardTransactionsContent from "@/app/card/layout/RightSidebarContent";
 import CardSettingsModal from "@/components/card/CardSettingsModal";
 import TopUpModal from "@/components/card/TopUpModal";
 import ChangePinModal from "@/components/card/ChangePinModal";
 import DeleteCardModal from "@/components/card/DeleteCardModal";
 import EditCardNameModal from "@/components/card/EditCardNameModal";
+import EditIllustrationModal from "@/components/card/EditIllustrationModal";
 import AddCardModal from "@/components/card/AddCardModal";
 import VerifyPinModal from "@/components/card/VerifyPinModal";
 import NoticeBanner from "@/components/card/NoticeBanner";
@@ -42,6 +43,7 @@ const INITIAL_CARDS = [
     cvv: "832",
     balance: 2450000,
     pin: "111111",
+    image: "/images/card/gradient/card.gradient.1.png",
   },
   {
     id: 2,
@@ -53,6 +55,7 @@ const INITIAL_CARDS = [
     cvv: "419",
     balance: 850000,
     pin: "111111",
+    image: "/images/card/gradient/card.gradient.2.png",
   },
   {
     id: 3,
@@ -64,10 +67,11 @@ const INITIAL_CARDS = [
     cvv: "651",
     balance: 15750000,
     pin: "111111",
+    image: "/images/card/gradient/card.gradient.3.png",
   },
 ];
 
-export const CardPageContent: React.FC = () => {
+export const LeftSidebarContent: React.FC = () => {
   const [cards, setCards] = useState(INITIAL_CARDS);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [copiedNumber, setCopiedNumber] = useState(false);
@@ -80,6 +84,7 @@ export const CardPageContent: React.FC = () => {
   const [isVerifyPinOpen, setIsVerifyPinOpen] = useState(false);
   const [isDeleteCardOpen, setIsDeleteCardOpen] = useState(false);
   const [isEditNameOpen, setIsEditNameOpen] = useState(false);
+  const [isEditIllustrationOpen, setIsEditIllustrationOpen] = useState(false);
   const [isAddCardOpen, setIsAddCardOpen] = useState(false);
   const [showNoticeBanner, setShowNoticeBanner] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -125,6 +130,7 @@ export const CardPageContent: React.FC = () => {
       cvv: String(Math.floor(100 + Math.random() * 900)),
       balance: initialDeposit,
       pin: "111111",
+      image: `/images/card/gradient/card.gradient.${((nextNum - 1) % 6) + 1}.png`,
     };
     setCards((prev) => [...prev, newCard]);
     setActiveCardIndex(cards.length);
@@ -151,6 +157,15 @@ export const CardPageContent: React.FC = () => {
     showToast(`Nama kartu berhasil diubah menjadi "${newName}"`);
   };
 
+  const handleSaveCardIllustration = (newImage: string) => {
+    setCards((prev) =>
+      prev.map((c, idx) =>
+        idx === activeCardIndex ? { ...c, image: newImage } : c
+      )
+    );
+    showToast(`Ilustrasi ${currentCard.name} berhasil diperbarui.`);
+  };
+
   const handleDeleteCard = () => {
     if (cards.length <= 1) {
       const resetCard = {
@@ -163,6 +178,7 @@ export const CardPageContent: React.FC = () => {
         cvv: "832",
         balance: 2450000,
         pin: "111111",
+        image: "/images/card/gradient/card.gradient.1.png",
       };
       setCards([resetCard]);
       setActiveCardIndex(0);
@@ -251,7 +267,7 @@ export const CardPageContent: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full overflow-x-hidden overflow-y-auto lg:overflow-hidden custom-scrollbar overscroll-contain pt-0 pb-8 lg:pb-0">
+    <div className="w-full md:h-full md:overflow-hidden pt-0 pb-8 md:pb-0">
       {/* Toast Notification with Fluid In & Out Animation */}
       {toastMessage && (
         <div
@@ -270,20 +286,18 @@ export const CardPageContent: React.FC = () => {
       )}
 
       {/* Main Responsive Layout:
-          - Mobile / Tablet (< lg): stacked single column
-          - Desktop (>= lg): 2 columns side-by-side with sidebar:
-            Left: Detail SakuCard (fixed optimal width 380px-430px)
-            Right: Daftar Transaksi (flex-1 fills all remaining space)
+          - Mobile (< md): stacked single column with natural document scroll
+          - Tablet / Desktop (>= md): 2 columns side-by-side with independent split scroll:
+            Left: Detail SakuCard (scrolls independently)
+            Right: Daftar Transaksi (scrolls independently)
       */}
-      <div className="flex flex-col lg:flex-row gap-6 xl:gap-8 items-start w-full max-w-[500px] lg:max-w-none mx-auto lg:h-full lg:overflow-hidden">
-        {/* Left Column: Detail SakuCard (Passes underneath glass header on scroll) */}
-        <div className="w-full lg:w-[400px] xl:w-[430px] 2xl:w-[460px] shrink-0 lg:h-full lg:overflow-y-auto custom-scrollbar overscroll-contain lg:pr-2 pt-0 pb-10">
-          {/* Spacer below AppHeader so initial content starts cleanly below header when not scrolled */}
-          <div className="h-16 shrink-0 pointer-events-none" />
+      <div className="flex flex-col md:flex-row items-stretch w-full md:h-full md:overflow-hidden mx-auto">
+        {/* Left Column: Detail SakuCard (Scrolls independently on tablet/desktop) */}
+        <div className="w-full md:w-[360px] lg:w-[400px] xl:w-[430px] 2xl:w-[460px] shrink-0 md:h-full md:overflow-y-auto custom-scrollbar isolate pt-0 pb-10">
 
           {/* MOBILE ONLY: Papan Pemberitahuan ditampilkan di atas "SakuCard 1" */}
           {showNoticeBanner && (
-            <div className="block lg:hidden pt-3 pb-1">
+            <div className="block md:hidden pt-3 pb-1 w-full max-w-[500px] mx-auto px-4 sm:pl-6">
               <NoticeBanner
                 variant="danger"
                 title="Pemberitahuan"
@@ -296,16 +310,11 @@ export const CardPageContent: React.FC = () => {
           {/* Sticky Header Bar: Tombol Pindah Kartu (< >) & Tambah Kartu di Baris 1, Judul & Subtitle di Baris 2 */}
           <div
             className={cn(
-              "sticky top-16 z-20",
-              "w-full pt-2 pb-3",
-              "space-y-2.5",
-              "bg-gray-50/95 dark:bg-gray-950/95 backdrop-blur-md",
-              "border-b border-gray-200/80 dark:border-gray-800/80 shadow-xs",
-              "transition-all"
+              "sticky top-16 md:top-0 z-20 w-full pt-2 pb-3.5 space-y-3 bg-gray-50/95 dark:bg-gray-950/95 backdrop-blur-md border-b border-gray-200/80 dark:border-gray-800/80 shadow-xs transition-all"
             )}
           >
             {/* Baris 1: < Kartu 1 dari 3 > {jarak selebar sidebar} <Tambah kartu */}
-            <div className="flex items-center justify-between w-full gap-2 sm:gap-3">
+            <div className="flex items-center justify-between gap-2 sm:gap-3 w-full max-w-[500px] lg:max-w-none mx-auto px-4 sm:pl-6 lg:pl-8 xl:pl-10">
               {/* < Kartu 1 dari 3 > */}
               <div className="flex h-9 items-center gap-0.5 sm:gap-1 px-1 bg-white dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700 rounded-full shadow-2xs shrink-0">
                 <button
@@ -346,7 +355,7 @@ export const CardPageContent: React.FC = () => {
             </div>
 
             {/* Baris 2: SakuCard 1 <aktif/dibekukan> */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full max-w-[500px] lg:max-w-none mx-auto px-4 sm:pl-6 lg:pl-8 xl:pl-10">
               <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {currentCard.name}
               </h2>
@@ -370,7 +379,7 @@ export const CardPageContent: React.FC = () => {
           </div>
 
           {/* Left Column Content (Scrolls underneath sticky header) */}
-          <div className="space-y-5 pt-3 w-full">
+          <div className="space-y-5 pt-3 w-full max-w-[500px] lg:max-w-none mx-auto px-4 sm:pl-6 lg:pl-8 xl:pl-10">
             {/* Card Presentation */}
             <div className="w-full">
               <SCard
@@ -384,6 +393,7 @@ export const CardPageContent: React.FC = () => {
                 expiryDate={currentCard.exp}
                 cvv={currentCard.cvv}
                 balance={currentCard.balance}
+                cardImage={currentCard.image || "/images/card/gradient/card.gradient.1.png"}
                 className="w-full"
               />
             </div>
@@ -399,6 +409,7 @@ export const CardPageContent: React.FC = () => {
               onOpenChangePin={() => setIsChangePinOpen(true)}
               onOpenDeleteCard={() => setIsDeleteCardOpen(true)}
               onOpenEditCardName={() => setIsEditNameOpen(true)}
+              onOpenEditIllustration={() => setIsEditIllustrationOpen(true)}
               cardName={currentCard.name}
               cardLast4={currentCard.last4}
               className="w-full"
@@ -505,55 +516,13 @@ export const CardPageContent: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column: Daftar Transaksi & Metrik (Passes underneath glass header on scroll) */}
-        <div className="flex-1 min-w-0 w-full max-w-[500px] lg:max-w-none mx-auto lg:h-full lg:overflow-y-auto custom-scrollbar overscroll-contain lg:pr-1.5 pt-0 pb-10">
-          {/* Spacer below AppHeader so initial content starts cleanly below header when not scrolled */}
-          <div className="hidden lg:block h-16 shrink-0 pointer-events-none" />
+        {/* Right Column: Daftar Transaksi & Metrik (Scrolls independently on tablet/desktop) */}
+        <div className="flex-1 min-w-0 w-full md:h-full md:overflow-y-auto custom-scrollbar isolate pb-10">
 
           <div className="space-y-6">
-            {/* Quick Metrics (GUNAKAN BILA PERLU!) */}
-            {/* <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-4">
-              <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                <span className="text-xs text-gray-500 dark:text-gray-400 block truncate">
-                  Total Tagihan Ditolak
-                </span>
-                <div className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mt-1">
-                  -$176.27 USD
-                </div>
-                <span className="text-[11px] text-error-600 dark:text-error-400 mt-1 block">
-                  4 Transaksi Declined
-                </span>
-              </div>
-
-              <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                <span className="text-xs text-gray-500 dark:text-gray-400 block truncate">
-                  Sisa Limit Harian
-                </span>
-                <div className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mt-1">
-                  $411.22 USD
-                </div>
-                <span className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1 block">
-                  Aman digunakan
-                </span>
-              </div>
-
-              <div className="col-span-2 sm:col-span-1 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                <span className="text-xs text-gray-500 dark:text-gray-400 block truncate">
-                  Keamanan 3D Secure
-                </span>
-                <div className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mt-1 flex items-center gap-1.5">
-                  <ShieldCheck className="h-5 w-5 text-emerald-500" />
-                  Aktif
-                </div>
-                <span className="text-[11px] text-gray-400 mt-1 block">
-                  OTP Otomatis
-                </span>
-              </div>
-            </div> */}
-
             {/* DESKTOP ONLY: Notice Banner (Papan Peringatan) di atas "Transaksi Kartu" */}
             {showNoticeBanner && (
-              <div className="hidden lg:block pt-2">
+              <div className="hidden md:block pt-3 pb-1 w-full max-w-[500px] lg:max-w-none mx-auto px-4 sm:pr-6 lg:pr-8 xl:pr-10">
                 <NoticeBanner
                   variant="danger"
                   title="Pemberitahuan"
@@ -564,7 +533,7 @@ export const CardPageContent: React.FC = () => {
             )}
 
             {/* "Transaksi kartu" Section */}
-            <CardTransactions />
+            <CardTransactionsContent />
           </div>
         </div>
       </div>
@@ -618,6 +587,16 @@ export const CardPageContent: React.FC = () => {
         onSave={handleSaveCardName}
       />
 
+      {/* Edit Card Illustration Modal */}
+      <EditIllustrationModal
+        isOpen={isEditIllustrationOpen}
+        onClose={() => setIsEditIllustrationOpen(false)}
+        currentImage={currentCard.image || "/images/card/gradient/card.gradient.1.png"}
+        cardName={currentCard.name}
+        cardLast4={currentCard.last4}
+        onSave={handleSaveCardIllustration}
+      />
+
       {/* Add Card Modal with Custom Name & Simultaneous Top Up */}
       <AddCardModal
         isOpen={isAddCardOpen}
@@ -637,4 +616,4 @@ export const CardPageContent: React.FC = () => {
   );
 };
 
-export default CardPageContent;
+export default LeftSidebarContent;
