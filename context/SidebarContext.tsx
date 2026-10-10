@@ -3,16 +3,36 @@
 import { usePathname } from "next/navigation";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
+const ROUTE_TITLE_MAP: Record<string, string> = {
+  "/card": "SakuCard",
+  "/promo": "Informasi & Promo",
+  "/profile": "Detail Profil",
+  "/customers": "Customer List",
+  "/customer-list": "Customer List",
+  "/calendar": "Calendar",
+  "/form-elements": "Form Elements",
+  "/basic-tables": "Basic Tables",
+  "/blank": "Blank Page",
+  "/error-404": "404 Error",
+  "/login": "Login",
+  "/": "SakuCard",
+};
+
 type SidebarContextType = {
+  isOpen: boolean;
   isExpanded: boolean;
   isMobileOpen: boolean;
   isHovered: boolean;
   activeItem: string | null;
+  activeTitle: string;
   openSubmenu: string | null;
   toggleSidebar: () => void;
+  openSidebar: () => void;
+  closeSidebar: () => void;
   toggleMobileSidebar: () => void;
   setIsHovered: (isHovered: boolean) => void;
   setActiveItem: (item: string | null) => void;
+  setActiveTitle: (title: string) => void;
   toggleSubmenu: (item: string) => void;
 };
 
@@ -29,42 +49,56 @@ export const useSidebar = () => {
 export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
-  const pathname = usePathname();
+  const [activeTitle, setActiveTitle] = useState<string>(() => {
+    return ROUTE_TITLE_MAP[pathname] || "SakuCard";
+  });
 
-  // Close sidebar on route change (for mobile)
+  // Close sidebar and sync title on route change
   useEffect(() => {
-    setIsMobileOpen(false);
+    setIsOpen(false);
+    if (ROUTE_TITLE_MAP[pathname]) {
+      setActiveTitle((prev) => {
+        if (pathname === "/profile" && prev === "Customer List") {
+          return prev;
+        }
+        return ROUTE_TITLE_MAP[pathname];
+      });
+    }
   }, [pathname]);
 
+  // Close sidebar on Escape key
   useEffect(() => {
-    const handleResize = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      if (!mobile) {
-        setIsMobileOpen(false);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
       }
     };
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
   const toggleSidebar = () => {
-    setIsExpanded((prev) => !prev);
+    setIsOpen((prev) => !prev);
+  };
+
+  const openSidebar = () => {
+    setIsOpen(true);
+  };
+
+  const closeSidebar = () => {
+    setIsOpen(false);
   };
 
   const toggleMobileSidebar = () => {
-    setIsMobileOpen((prev) => !prev);
+    setIsOpen((prev) => !prev);
   };
 
   const toggleSubmenu = (item: string) => {
@@ -74,15 +108,20 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
   return (
     <SidebarContext.Provider
       value={{
-        isExpanded: isMobile ? false : isExpanded,
-        isMobileOpen,
+        isOpen,
+        isExpanded: isOpen,
+        isMobileOpen: isOpen,
         isHovered,
         activeItem,
+        activeTitle,
         openSubmenu,
         toggleSidebar,
+        openSidebar,
+        closeSidebar,
         toggleMobileSidebar,
         setIsHovered,
         setActiveItem,
+        setActiveTitle,
         toggleSubmenu,
       }}
     >

@@ -251,7 +251,7 @@ export const CardPageContent: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto md:overflow-hidden custom-scrollbar overscroll-contain pt-20 pb-8 md:pt-0 md:pb-0">
+    <div className="w-full h-full overflow-x-hidden overflow-y-auto lg:overflow-hidden custom-scrollbar overscroll-contain pt-0 pb-8 lg:pb-0">
       {/* Toast Notification with Fluid In & Out Animation */}
       {toastMessage && (
         <div
@@ -269,33 +269,45 @@ export const CardPageContent: React.FC = () => {
         </div>
       )}
 
-      {/* Main Responsive Grid Layout:
-          - Mobile (screen < md): stacked single column
-          - Tablet / Laptop / Desktop (screen >= md): 2 columns
-            Left: Sidebar Kartu (independent scroll & bouncy overscroll)
-            Right: Daftar Transaksi (independent scroll & bouncy overscroll)
+      {/* Main Responsive Layout:
+          - Mobile / Tablet (< lg): stacked single column
+          - Desktop (>= lg): 2 columns side-by-side with sidebar:
+            Left: Detail SakuCard (fixed optimal width 380px-430px)
+            Right: Daftar Transaksi (flex-1 fills all remaining space)
       */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 xl:gap-10 items-start w-full max-w-[500px] md:max-w-none mx-auto md:h-full md:overflow-hidden">
-        {/* Left Column: Sidebar Kartu (Passes underneath glass header on scroll) */}
-        <div className="md:col-span-5 lg:col-span-5 w-full md:h-full md:overflow-y-auto custom-scrollbar overscroll-contain md:pr-2.5 pt-4 md:pt-0 pb-10">
+      <div className="flex flex-col lg:flex-row gap-6 xl:gap-8 items-start w-full max-w-[500px] lg:max-w-none mx-auto lg:h-full lg:overflow-hidden">
+        {/* Left Column: Detail SakuCard (Passes underneath glass header on scroll) */}
+        <div className="w-full lg:w-[400px] xl:w-[430px] 2xl:w-[460px] shrink-0 lg:h-full lg:overflow-y-auto custom-scrollbar overscroll-contain lg:pr-2 pt-0 pb-10">
           {/* Spacer below AppHeader so initial content starts cleanly below header when not scrolled */}
-          <div className="hidden md:block h-16 shrink-0 pointer-events-none" />
+          <div className="h-16 shrink-0 pointer-events-none" />
+
+          {/* MOBILE ONLY: Papan Pemberitahuan ditampilkan di atas "SakuCard 1" */}
+          {showNoticeBanner && (
+            <div className="block lg:hidden pt-3 pb-1">
+              <NoticeBanner
+                variant="danger"
+                title="Pemberitahuan"
+                message="Untuk mengganti tipe papan, silakan ganti bagian `variant` pada komponen NoticeBanner, terdapat beberapa opsi seperti: `danger`, `warning`, dan `info`."
+                onDismiss={() => setShowNoticeBanner(false)}
+              />
+            </div>
+          )}
 
           {/* Sticky Header Bar: Tombol Pindah Kartu (< >) & Tambah Kartu di Baris 1, Judul & Subtitle di Baris 2 */}
           <div
             className={cn(
               "sticky top-16 z-20",
-              "-mx-1 sm:-mx-2 px-2.5 sm:px-3.5 pt-2.5 pb-3.5",
+              "w-full pt-2 pb-3",
               "space-y-2.5",
-              "bg-gray-50 dark:bg-gray-950",
+              "bg-gray-50/95 dark:bg-gray-950/95 backdrop-blur-md",
               "border-b border-gray-200/80 dark:border-gray-800/80 shadow-xs",
               "transition-all"
             )}
           >
             {/* Baris 1: < Kartu 1 dari 3 > {jarak selebar sidebar} <Tambah kartu */}
-            <div className="flex items-center justify-between w-full gap-3">
+            <div className="flex items-center justify-between w-full gap-2 sm:gap-3">
               {/* < Kartu 1 dari 3 > */}
-              <div className="flex h-9 items-center gap-1 px-1 bg-white dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700 rounded-full shadow-2xs">
+              <div className="flex h-9 items-center gap-0.5 sm:gap-1 px-1 bg-white dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700 rounded-full shadow-2xs shrink-0">
                 <button
                   type="button"
                   onClick={handlePrevCard}
@@ -305,7 +317,7 @@ export const CardPageContent: React.FC = () => {
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <span className="px-2 text-xs font-semibold text-gray-800 dark:text-gray-200 select-none whitespace-nowrap">
+                <span className="px-1.5 sm:px-2 text-xs font-semibold text-gray-800 dark:text-gray-200 select-none whitespace-nowrap">
                   Kartu {activeCardIndex + 1} dari {cards.length}
                 </span>
                 <button
@@ -320,13 +332,13 @@ export const CardPageContent: React.FC = () => {
               </div>
 
               {/* Jarak selebar sidebar */}
-              <div className="flex-1" />
+              <div className="flex-1 min-w-0" />
 
               {/* <Tambah kartu */}
               <button
                 type="button"
                 onClick={() => setIsAddCardOpen(true)}
-                className="flex h-9 items-center gap-1.5 px-4 rounded-full border border-gray-200/80 bg-white hover:bg-gray-50 text-xs font-semibold text-gray-800 shadow-2xs dark:border-gray-700 dark:bg-gray-800/90 dark:text-gray-200 dark:hover:bg-gray-700 active:scale-95 transition-all cursor-pointer shrink-0"
+                className="flex h-9 items-center gap-1.5 px-3 sm:px-4 rounded-full border border-gray-200/80 bg-white hover:bg-gray-50 text-xs font-semibold text-gray-800 shadow-2xs dark:border-gray-700 dark:bg-gray-800/90 dark:text-gray-200 dark:hover:bg-gray-700 active:scale-95 transition-all cursor-pointer shrink-0"
               >
                 <Plus className="w-3.5 h-3.5 text-brand-500" />
                 <span>Tambah kartu</span>
@@ -335,9 +347,9 @@ export const CardPageContent: React.FC = () => {
 
             {/* Baris 2: SakuCard 1 <aktif/dibekukan> */}
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {currentCard.name}
-              </h1>
+              </h2>
               <span
                 className={cn(
                   "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide",
@@ -494,9 +506,9 @@ export const CardPageContent: React.FC = () => {
         </div>
 
         {/* Right Column: Daftar Transaksi & Metrik (Passes underneath glass header on scroll) */}
-        <div className="md:col-span-7 lg:col-span-7 w-full max-w-[500px] md:max-w-none mx-auto md:h-full md:overflow-y-auto custom-scrollbar overscroll-contain md:pr-1.5 pt-4 md:pt-0 pb-10">
+        <div className="flex-1 min-w-0 w-full max-w-[500px] lg:max-w-none mx-auto lg:h-full lg:overflow-y-auto custom-scrollbar overscroll-contain lg:pr-1.5 pt-0 pb-10">
           {/* Spacer below AppHeader so initial content starts cleanly below header when not scrolled */}
-          <div className="hidden md:block h-16 shrink-0 pointer-events-none" />
+          <div className="hidden lg:block h-16 shrink-0 pointer-events-none" />
 
           <div className="space-y-6">
             {/* Quick Metrics (GUNAKAN BILA PERLU!) */}
@@ -539,9 +551,9 @@ export const CardPageContent: React.FC = () => {
               </div>
             </div> */}
 
-            {/* Notice Banner (Papan Peringatan) diletakkan di atas "Transaksi Kartu" */}
+            {/* DESKTOP ONLY: Notice Banner (Papan Peringatan) di atas "Transaksi Kartu" */}
             {showNoticeBanner && (
-              <div className="pt-2">
+              <div className="hidden lg:block pt-2">
                 <NoticeBanner
                   variant="danger"
                   title="Pemberitahuan"

@@ -283,15 +283,15 @@ export const CardTransactions: React.FC<CardTransactionsProps> = ({
       <div
         className={cn(
           "sticky top-16 z-20",
-          "-mx-1 sm:-mx-2 px-2.5 sm:px-3.5 pt-2 pb-3.5",
+          "w-full pt-2 pb-3.5",
           "space-y-3",
-          "bg-gray-50 dark:bg-gray-950",
+          "bg-gray-50/95 dark:bg-gray-950/95 backdrop-blur-md",
           "border-b border-gray-200/80 dark:border-gray-800/80 shadow-xs",
           "transition-all"
         )}
       >
         {/* Row 1: Title & Filter Tabs */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-2.5">
           <div>
             <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
               Transaksi Kartu
@@ -302,12 +302,12 @@ export const CardTransactions: React.FC<CardTransactionsProps> = ({
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex items-center gap-1 self-start sm:self-auto bg-gray-100/90 dark:bg-gray-800/90 p-1 rounded-xl text-xs backdrop-blur-xs">
+          <div className="flex items-center gap-1 self-start xl:self-auto bg-gray-100/90 dark:bg-gray-800/90 p-1 rounded-xl text-xs backdrop-blur-xs shrink-0 max-w-full overflow-x-auto no-scrollbar">
             <button
               type="button"
               onClick={() => setFilter("all")}
               className={cn(
-                "px-3 py-1 rounded-lg font-medium transition-all cursor-pointer",
+                "px-2.5 sm:px-3 py-1 rounded-lg font-medium transition-all cursor-pointer whitespace-nowrap",
                 filter === "all"
                   ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-xs"
                   : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -319,7 +319,7 @@ export const CardTransactions: React.FC<CardTransactionsProps> = ({
               type="button"
               onClick={() => setFilter("declined")}
               className={cn(
-                "px-3 py-1 rounded-lg font-medium transition-all cursor-pointer",
+                "px-2.5 sm:px-3 py-1 rounded-lg font-medium transition-all cursor-pointer whitespace-nowrap",
                 filter === "declined"
                   ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-xs"
                   : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -331,7 +331,7 @@ export const CardTransactions: React.FC<CardTransactionsProps> = ({
               type="button"
               onClick={() => setFilter("success")}
               className={cn(
-                "px-3 py-1 rounded-lg font-medium transition-all cursor-pointer",
+                "px-2.5 sm:px-3 py-1 rounded-lg font-medium transition-all cursor-pointer whitespace-nowrap",
                 filter === "success"
                   ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-xs"
                   : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"

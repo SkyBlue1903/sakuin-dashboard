@@ -11,7 +11,6 @@ import {
   CalenderIcon,
   ChevronDownIcon,
   GridIcon,
-  HorizontaLDots,
   ListIcon,
   PageIcon,
   PieChartIcon,
@@ -19,6 +18,8 @@ import {
   TableIcon,
   UserCircleIcon,
 } from "@/icons";
+import { CreditCard, Sparkles, X } from "lucide-react";
+import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
   name: string;
@@ -35,96 +36,148 @@ type NavItem = {
   }[];
 };
 
-const navItems: NavItem[] = [
+// Menu Utama Sakuin
+const sakuinNavItems: NavItem[] = [
   {
-    icon: <GridIcon />,
-    name: "Dashboard",
-    subItems: [{ name: "eCommerce", path: "/" }],
+    name: "SakuCard",
+    icon: <CreditCard className="w-5 h-5" />,
+    path: "/card",
   },
   {
-    icon: <CalenderIcon />,
-    name: "Calendar",
-    path: "/calendar",
+    name: "Informasi & Promo",
+    icon: <Sparkles className="w-5 h-5" />,
+    path: "/promo",
+    new: true,
   },
   {
+    name: "Detail Profil",
     icon: <UserCircleIcon />,
-    name: "User Profile",
     path: "/profile",
   },
-  {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-  },
-  {
-    name: "Tables",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-  },
-  {
-    name: "Pages",
-    icon: <PageIcon />,
-    subItems: [
-      { name: "Blank Page", path: "/blank" },
-      { name: "404 Error", path: "/error-404" },
-    ],
-  },
 ];
 
-const othersItems: NavItem[] = [
+// Menu Bawaan Template (TailAdmin)
+const templateNavItems: NavItem[] = [
+  // {
+  //   icon: <GridIcon />,
+  //   name: "Dashboard",
+  //   subItems: [{ name: "eCommerce", path: "/" }],
+  // },
+  // {
+  //   icon: <CalenderIcon />,
+  //   name: "Calendar",
+  //   path: "/calendar",
+  // },
   {
-    icon: <PieChartIcon />,
-    name: "Charts",
-    subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
-    ],
+    icon: <UserCircleIcon />,
+    name: "Customer List",
+    path: "/profile",
   },
-  {
-    icon: <BoxCubeIcon />,
-    name: "UI Elements",
-    subItems: [
-      { name: "Alerts", path: "/alerts" },
-      { name: "Avatar", path: "/avatars" },
-      { name: "Badge", path: "/badge" },
-      { name: "Buttons", path: "/buttons" },
-      { name: "Images", path: "/images" },
-      { name: "Videos", path: "/videos" },
-    ],
-  },
-  {
-    icon: <PlugInIcon />,
-    name: "Authentication",
-    subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
-    ],
-  },
+  // {
+  //   name: "Forms",
+  //   icon: <ListIcon />,
+  //   subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
+  // },
+  // {
+  //   name: "Tables",
+  //   icon: <TableIcon />,
+  //   subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
+  // },
+  // {
+  //   name: "Pages",
+  //   icon: <PageIcon />,
+  //   subItems: [
+  //     { name: "Blank Page", path: "/blank" },
+  //     { name: "404 Error", path: "/error-404" },
+  //   ],
+  // },
 ];
+
+// const othersItems: NavItem[] = [
+//   {
+//     icon: <PieChartIcon />,
+//     name: "Charts",
+//     subItems: [
+//       { name: "Line Chart", path: "/line-chart", pro: false },
+//       { name: "Bar Chart", path: "/bar-chart", pro: false },
+//     ],
+//   },
+//   {
+//     icon: <BoxCubeIcon />,
+//     name: "UI Elements",
+//     subItems: [
+//       { name: "Alerts", path: "/alerts" },
+//       { name: "Avatar", path: "/avatars" },
+//       { name: "Badge", path: "/badge" },
+//       { name: "Buttons", path: "/buttons" },
+//       { name: "Images", path: "/images" },
+//       { name: "Videos", path: "/videos" },
+//     ],
+//   },
+//   {
+//     icon: <PlugInIcon />,
+//     name: "Authentication",
+//     subItems: [
+//       { name: "Sign In", path: "/login", pro: false },
+//       { name: "Sign Up", path: "/signup", pro: false },
+//     ],
+//   },
+// ];
 
 const AppSidebar: React.FC = () => {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { isOpen, closeSidebar, activeTitle, setActiveTitle } = useSidebar();
   const pathname = usePathname();
 
   const [openSubmenu, setOpenSubmenu] = useState<{
-    type: "main" | "others";
+    type: "sakuin" | "template" | "others";
     index: number;
-  } | null>({ type: "main", index: 0 }); // default to dashboard open
+  } | null>(null);
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  const isActive = useCallback((path: string) => path === pathname, [pathname]);
+  const isActive = useCallback(
+    (path: string) => {
+      if (!path) return false;
+      return pathname === path;
+    },
+    [pathname]
+  );
+
+  const isItemActive = useCallback(
+    (nav: NavItem) => {
+      if (activeTitle) {
+        return activeTitle === nav.name;
+      }
+      return nav.path ? pathname === nav.path : false;
+    },
+    [activeTitle, pathname]
+  );
+
+  const isSubItemActive = useCallback(
+    (subItem: { name: string; path: string }) => {
+      if (activeTitle) {
+        return activeTitle === subItem.name;
+      }
+      return pathname === subItem.path;
+    },
+    [activeTitle, pathname]
+  );
 
   useEffect(() => {
     let submenuMatched = false;
-    (["main", "others"] as const).forEach((menuType) => {
-      const items = menuType === "main" ? navItems : othersItems;
+    const groups: { type: "sakuin" | "template" | "others"; items: NavItem[] }[] = [
+      { type: "sakuin", items: sakuinNavItems },
+      { type: "template", items: templateNavItems },
+      // { type: "others", items: othersItems },
+    ];
+
+    groups.forEach(({ type, items }) => {
       items.forEach((nav, index) => {
         if (nav.subItems) {
           nav.subItems.forEach((subItem) => {
             if (isActive(subItem.path)) {
               setOpenSubmenu({
-                type: menuType,
+                type,
                 index,
               });
               submenuMatched = true;
@@ -134,8 +187,8 @@ const AppSidebar: React.FC = () => {
       });
     });
 
-    if (!submenuMatched && pathname !== "/") {
-      // keep current or close
+    if (!submenuMatched) {
+      // Keep state
     }
   }, [pathname, isActive]);
 
@@ -153,7 +206,7 @@ const AppSidebar: React.FC = () => {
 
   const handleSubmenuToggle = (
     index: number,
-    menuType: "main" | "others",
+    menuType: "sakuin" | "template" | "others"
   ) => {
     setOpenSubmenu((prevOpenSubmenu) => {
       if (
@@ -169,7 +222,7 @@ const AppSidebar: React.FC = () => {
 
   const renderMenuItems = (
     items: NavItem[],
-    menuType: "main" | "others",
+    menuType: "sakuin" | "template" | "others"
   ) => (
     <ul className="flex flex-col gap-1">
       {items.map((nav, index) => (
@@ -181,25 +234,20 @@ const AppSidebar: React.FC = () => {
                 "group menu-item cursor-pointer",
                 openSubmenu?.type === menuType && openSubmenu?.index === index
                   ? "menu-item-active"
-                  : "menu-item-inactive",
-                !isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "lg:justify-start",
+                  : "menu-item-inactive"
               )}
             >
               <span
                 className={cn(
                   openSubmenu?.type === menuType && openSubmenu?.index === index
                     ? "menu-item-icon-active"
-                    : "menu-item-icon-inactive",
+                    : "menu-item-icon-inactive"
                 )}
               >
                 {nav.icon}
               </span>
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <span className="menu-item-text">{nav.name}</span>
-              )}
-              {nav.new && (isExpanded || isHovered || isMobileOpen) && (
+              <span className="menu-item-text">{nav.name}</span>
+              {nav.new && (
                 <span
                   className={cn(
                     "inset-e-10 absolute ms-auto",
@@ -207,52 +255,64 @@ const AppSidebar: React.FC = () => {
                       openSubmenu?.index === index
                       ? "menu-dropdown-badge-active"
                       : "menu-dropdown-badge-inactive",
-                    "menu-dropdown-badge",
+                    "menu-dropdown-badge"
                   )}
                 >
                   NEW
                 </span>
               )}
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <ChevronDownIcon
-                  className={cn(
-                    "ms-auto h-5 w-5 transition-transform duration-200",
-                    openSubmenu?.type === menuType &&
-                      openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : "",
-                  )}
-                />
-              )}
+              <ChevronDownIcon
+                className={cn(
+                  "ms-auto h-5 w-5 transition-transform duration-200",
+                  openSubmenu?.type === menuType &&
+                    openSubmenu?.index === index
+                    ? "rotate-180 text-brand-500"
+                    : ""
+                )}
+              />
             </button>
           ) : (
             nav.path && (
               <Link
                 href={nav.path}
                 target={nav.target}
+                onClick={() => {
+                  setActiveTitle(nav.name);
+                  closeSidebar();
+                }}
                 className={cn(
                   "group menu-item",
-                  isActive(nav.path)
+                  isItemActive(nav)
                     ? "menu-item-active"
-                    : "menu-item-inactive",
+                    : "menu-item-inactive"
                 )}
               >
                 <span
                   className={cn(
-                    isActive(nav.path)
+                    isItemActive(nav)
                       ? "menu-item-icon-active"
-                      : "menu-item-icon-inactive",
+                      : "menu-item-icon-inactive"
                   )}
                 >
                   {nav.icon}
                 </span>
-                {(isExpanded || isHovered || isMobileOpen) && (
-                  <span className="menu-item-text">{nav.name}</span>
+                <span className="menu-item-text">{nav.name}</span>
+                {nav.new && (
+                  <span
+                    className={cn(
+                      "ms-auto menu-dropdown-badge",
+                      isItemActive(nav)
+                        ? "menu-dropdown-badge-active"
+                        : "menu-dropdown-badge-inactive"
+                    )}
+                  >
+                    NEW
+                  </span>
                 )}
               </Link>
             )
           )}
-          {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
+          {nav.subItems && (
             <div
               ref={(el) => {
                 subMenuRefs.current[`${menuType}-${index}`] = el;
@@ -271,11 +331,15 @@ const AppSidebar: React.FC = () => {
                     <Link
                       href={subItem.path}
                       target={subItem.target}
+                      onClick={() => {
+                        setActiveTitle(subItem.name);
+                        closeSidebar();
+                      }}
                       className={cn(
                         "menu-dropdown-item",
-                        isActive(subItem.path)
+                        isSubItemActive(subItem)
                           ? "menu-dropdown-item-active"
-                          : "menu-dropdown-item-inactive",
+                          : "menu-dropdown-item-inactive"
                       )}
                     >
                       {subItem.name}
@@ -284,9 +348,9 @@ const AppSidebar: React.FC = () => {
                           <span
                             className={cn(
                               "ms-auto menu-dropdown-badge",
-                              isActive(subItem.path)
+                              isSubItemActive(subItem)
                                 ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive",
+                                : "menu-dropdown-badge-inactive"
                             )}
                           >
                             NEW
@@ -296,9 +360,9 @@ const AppSidebar: React.FC = () => {
                           <span
                             className={cn(
                               "ms-auto menu-dropdown-badge-pro",
-                              isActive(subItem.path)
+                              isSubItemActive(subItem)
                                 ? "menu-dropdown-badge-pro-active"
-                                : "menu-dropdown-badge-pro-inactive",
+                                : "menu-dropdown-badge-pro-inactive"
                             )}
                           >
                             PRO
@@ -319,101 +383,89 @@ const AppSidebar: React.FC = () => {
   return (
     <aside
       className={cn(
-        "fixed top-0 left-0 z-50 flex h-full flex-col border-r border-gray-200 bg-white px-5 text-gray-900 transition-all duration-300 ease-in-out xl:mt-0 dark:border-gray-800 dark:bg-gray-900",
-        isExpanded || isMobileOpen
-          ? "w-[290px]"
-          : isHovered
-          ? "w-[290px]"
-          : "w-[90px]",
-        isMobileOpen ? "translate-x-0" : "-translate-x-full",
-        "xl:translate-x-0",
+        "fixed top-0 left-0 z-50 flex h-full flex-col border-r border-gray-200/80 bg-white text-gray-900 shadow-2xl transition-transform duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-900",
+        "w-[290px] sm:w-[310px]",
+        isOpen ? "translate-x-0" : "-translate-x-full"
       )}
-      onMouseEnter={() => !isExpanded && setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Logo */}
-      <div
-        className={cn(
-          "flex py-8",
-          !isExpanded && !isHovered ? "xl:justify-center" : "justify-start",
-        )}
-      >
-        <Link href="/">
-          {isExpanded || isHovered || isMobileOpen ? (
-            <>
-              <Image
-                className="dark:hidden"
-                src="/images/logo/logo.svg"
-                alt="TailAdmin"
-                width={150}
-                height={40}
-                priority
-                style={{ width: "auto", height: "auto" }}
-              />
-              <Image
-                className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
-                alt="TailAdmin"
-                width={150}
-                height={40}
-                priority
-                style={{ width: "auto", height: "auto" }}
-              />
-            </>
-          ) : (
-            <Image
-              src="/images/logo/logo-icon.svg"
-              alt="TailAdmin"
-              width={32}
-              height={32}
-              priority
-              style={{ width: "auto", height: "auto" }}
-            />
-          )}
+      {/* Top Header: Logo + Close Button */}
+      <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-gray-800 shrink-0">
+        <Link
+          href="/card"
+          onClick={() => {
+            setActiveTitle("SakuCard");
+            closeSidebar();
+          }}
+          className="flex items-center gap-2.5"
+        >
+          {/* <Image
+            className="dark:hidden"
+            src="/images/logo/logo.svg"
+            alt="Sakuin"
+            width={130}
+            height={36}
+            priority
+            style={{ width: "auto", height: "auto" }}
+          />
+          <Image
+            className="hidden dark:block"
+            src="/images/logo/logo-dark.svg"
+            alt="Sakuin"
+            width={130}
+            height={36}
+            priority
+            style={{ width: "auto", height: "auto" }}
+          /> */}
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg font-bold tracking-tight text-gray-900 dark:text-white truncate">
+              Sakuin.id
+            </h1>
+          </div>
         </Link>
+
+        <button
+          type="button"
+          onClick={closeSidebar}
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+          title="Tutup Menu"
+          aria-label="Tutup Menu"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
 
-      {/* Nav List */}
-      <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+      {/* Nav List with custom scrollbar */}
+      <div className="no-scrollbar flex flex-1 flex-col overflow-y-auto px-5 py-4 duration-300 ease-linear">
         <nav className="mb-6">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-5">
+            {/* Sakuin Menu */}
             <div>
-              <h2
-                className={cn(
-                  "mb-4 flex text-xs font-semibold uppercase tracking-wider text-gray-400",
-                  !isExpanded && !isHovered
-                    ? "xl:justify-center"
-                    : "justify-start",
-                )}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "MENU"
-                ) : (
-                  <HorizontaLDots />
-                )}
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                MENU
               </h2>
-              {renderMenuItems(navItems, "main")}
+              {renderMenuItems(sakuinNavItems, "sakuin")}
             </div>
 
+            {/* Template Navigation */}
             <div>
-              <h2
-                className={cn(
-                  "mb-4 flex text-xs font-semibold uppercase tracking-wider text-gray-400",
-                  !isExpanded && !isHovered
-                    ? "xl:justify-center"
-                    : "justify-start",
-                )}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "OTHERS"
-                ) : (
-                  <HorizontaLDots />
-                )}
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                ADMIN DASHBOARD
+              </h2>
+              {renderMenuItems(templateNavItems, "template")}
+            </div>
+
+            {/* Others */}
+            {/* <div>
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                OTHERS
               </h2>
               {renderMenuItems(othersItems, "others")}
-            </div>
+            </div> */}
           </div>
         </nav>
+
+        {/* Sidebar Widget Banner */}
+        {/* <SidebarWidget /> */}
       </div>
     </aside>
   );

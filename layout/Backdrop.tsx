@@ -1,17 +1,22 @@
 "use client";
 
-import { useSidebar } from "@/context/SidebarContext";
 import React from "react";
+import { useSidebar } from "@/context/SidebarContext";
+import { cn } from "@/utils";
 
 const Backdrop: React.FC = () => {
-  const { isMobileOpen, toggleMobileSidebar } = useSidebar();
-
-  if (!isMobileOpen) return null;
+  const { isOpen, closeSidebar } = useSidebar();
 
   return (
     <div
-      className="fixed inset-0 z-40 bg-gray-900/50 xl:hidden"
-      onClick={toggleMobileSidebar}
+      className={cn(
+        "fixed inset-0 z-40 bg-black/50 dark:bg-black/75 backdrop-blur-[2px] transition-opacity duration-300 ease-in-out cursor-pointer",
+        isOpen
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
+      )}
+      onClick={closeSidebar}
+      aria-hidden="true"
     />
   );
 };
