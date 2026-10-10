@@ -269,9 +269,9 @@ export const CardTransactions: React.FC<CardTransactionsProps> = ({
       case "design":
         return <Palette className="h-5 w-5 text-indigo-600 dark:text-indigo-400" strokeWidth={1.75} />;
       case "gaming":
-        return <Gamepad2 className="h-5 w-5 text-amber-600 dark:text-amber-400" strokeWidth={1.75} />;
+        return <Gamepad2 className="h-5 w-5 text-warning-600 dark:text-warning-400" strokeWidth={1.75} />;
       case "food":
-        return <Coffee className="h-5 w-5 text-emerald-600 dark:text-emerald-400" strokeWidth={1.75} />;
+        return <Coffee className="h-5 w-5 text-success-600 dark:text-success-400" strokeWidth={1.75} />;
       default:
         return <CreditCard className="h-5 w-5 text-gray-800 dark:text-gray-200" strokeWidth={1.75} />;
     }

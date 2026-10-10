@@ -126,7 +126,7 @@ export const VerifyPinModal: React.FC<VerifyPinModalProps> = ({
             className={cn(
               "flex h-13 w-13 sm:h-14 sm:w-14 items-center justify-center rounded-2xl mb-3 shadow-xs transition-colors",
               isSuccess
-                ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400"
+                ? "bg-success-50 text-success-600 dark:bg-success-950/50 dark:text-success-400"
                 : isValidating
                 ? "bg-brand-50 text-brand-600 dark:bg-brand-950/50 dark:text-brand-400"
                 : "bg-brand-50 text-brand-600 dark:bg-brand-950/50 dark:text-brand-400"
@@ -181,7 +181,7 @@ export const VerifyPinModal: React.FC<VerifyPinModalProps> = ({
         <form onSubmit={handleSubmit} className="mt-2.5 space-y-4">
           {/* Error Alert */}
           {error && (
-            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/60 text-red-600 dark:text-red-400 text-xs animate-in fade-in duration-150">
+            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-error-50 dark:bg-error-950/50 border border-error-200 dark:border-error-800/60 text-error-600 dark:text-error-400 text-xs animate-in fade-in duration-150">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span className="font-medium">{error}</span>
             </div>
@@ -208,9 +208,9 @@ export const VerifyPinModal: React.FC<VerifyPinModalProps> = ({
                   "caret-brand-500 dark:caret-brand-400",
                   "focus:outline-none focus:ring-4 focus:ring-brand-500/20 focus:border-brand-500 dark:focus:border-brand-400",
                   error
-                    ? "border-red-500 text-red-600 dark:border-red-500 dark:text-red-400 focus:border-red-500 focus:ring-red-500/20"
+                    ? "border-error-500 text-error-600 dark:border-error-500 dark:text-error-400 focus:border-error-500 focus:ring-error-500/20"
                     : isSuccess
-                    ? "border-emerald-500 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400 bg-emerald-50/30 dark:bg-emerald-950/20"
+                    ? "border-success-500 text-success-600 dark:border-success-400 dark:text-success-400 bg-success-50/30 dark:bg-success-950/20"
                     : isValidating
                     ? "border-brand-500/60 dark:border-brand-400/60 bg-brand-50/20 dark:bg-brand-950/10"
                     : "border-gray-200 dark:border-gray-700"

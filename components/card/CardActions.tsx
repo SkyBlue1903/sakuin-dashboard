@@ -115,14 +115,14 @@ export const CardActions: React.FC<CardActionsProps> = ({
             "shadow-xs hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-850",
             "active:scale-95 transition-all text-xs sm:text-sm font-medium cursor-pointer",
             isFrozen
-              ? "text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-950/20"
+              ? "text-blue-light-600 dark:text-blue-light-400 border-blue-light-200 dark:border-blue-light-900/40 bg-blue-light-50/50 dark:bg-blue-light-950/20"
               : "text-gray-800 dark:text-gray-200 border-gray-200/80 dark:border-gray-800"
           )}
         >
           <Snowflake
             className={cn(
               "h-4 w-4 shrink-0 transition-transform group-hover:scale-110",
-              isFrozen ? "text-blue-500 animate-pulse" : "text-gray-500 dark:text-gray-400"
+              isFrozen ? "text-blue-light-500 animate-pulse" : "text-gray-500 dark:text-gray-400"
             )}
           />
           <span>{isFrozen ? "Buka Blokir" : "Bekukan"}</span>
@@ -190,7 +190,7 @@ export const CardActions: React.FC<CardActionsProps> = ({
                 onClick={() => handleAction(() => onOpenEditCardName?.())}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-xs cursor-pointer group"
               >
-                <div className="p-2 rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 group-hover:bg-blue-50 group-hover:text-blue-600 dark:group-hover:bg-blue-950/40 dark:group-hover:text-blue-400 transition-colors">
+                <div className="p-2 rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 group-hover:bg-blue-light-50 group-hover:text-blue-light-600 dark:group-hover:bg-blue-light-950/40 dark:group-hover:text-blue-light-400 transition-colors">
                   <Pencil className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -209,7 +209,7 @@ export const CardActions: React.FC<CardActionsProps> = ({
                 onClick={() => handleAction(onOpenChangePin)}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-xs cursor-pointer group"
               >
-                <div className="p-2 rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 group-hover:bg-amber-50 group-hover:text-amber-600 dark:group-hover:bg-amber-950/40 dark:group-hover:text-amber-400 transition-colors">
+                <div className="p-2 rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 group-hover:bg-warning-50 group-hover:text-warning-600 dark:group-hover:bg-warning-950/40 dark:group-hover:text-warning-400 transition-colors">
                   <KeyRound className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -226,16 +226,16 @@ export const CardActions: React.FC<CardActionsProps> = ({
               <button
                 type="button"
                 onClick={() => handleAction(onOpenDeleteCard)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors text-xs cursor-pointer group"
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-error-50 dark:hover:bg-error-950/40 transition-colors text-xs cursor-pointer group"
               >
-                <div className="p-2 rounded-lg bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400 group-hover:bg-red-100 dark:group-hover:bg-red-900/60 transition-colors">
+                <div className="p-2 rounded-lg bg-error-50 text-error-600 dark:bg-error-950/40 dark:text-error-400 group-hover:bg-error-100 dark:group-hover:bg-error-900/60 transition-colors">
                   <Trash2 className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="font-semibold text-red-600 dark:text-red-400 block">
+                  <span className="font-semibold text-error-600 dark:text-error-400 block">
                     Hapus Kartu
                   </span>
-                  <span className="text-[11px] text-red-400 dark:text-red-500/80 block truncate">
+                  <span className="text-[11px] text-error-400 dark:text-error-500/80 block truncate">
                     Hapus dari daftar akun
                   </span>
                 </div>
@@ -348,22 +348,22 @@ export const CardActions: React.FC<CardActionsProps> = ({
                   <button
                     type="button"
                     onClick={() => handleAction(onOpenDeleteCard)}
-                    className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-red-50 dark:hover:bg-red-950/30 active:bg-red-100 transition-colors cursor-pointer text-left"
+                    className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-error-50 dark:hover:bg-error-950/30 active:bg-error-100 transition-colors cursor-pointer text-left"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-xl bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400">
+                      <div className="p-2.5 rounded-xl bg-error-50 text-error-600 dark:bg-error-950/40 dark:text-error-400">
                         <Trash2 className="h-5 w-5" />
                       </div>
                       <div>
-                        <span className="font-semibold text-sm text-red-600 dark:text-red-400 block">
+                        <span className="font-semibold text-sm text-error-600 dark:text-error-400 block">
                           Hapus Kartu
                         </span>
-                        <span className="text-xs text-red-400 dark:text-red-500/80 block">
+                        <span className="text-xs text-error-400 dark:text-error-500/80 block">
                           Hapus kartu ini dari akun Anda
                         </span>
                       </div>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-red-400" />
+                    <ChevronRight className="w-4 h-4 text-error-400" />
                   </button>
                 </div>
               </div>

@@ -40,7 +40,7 @@ export const DeleteCardModal: React.FC<DeleteCardModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
       <div className="relative w-full max-w-sm rounded-3xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-100 dark:border-gray-800 animate-in zoom-in-95 duration-200 text-center">
         {/* Warning Icon */}
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-error-50 text-error-600 dark:bg-error-950/40 dark:text-error-400">
           <Trash2 className="h-7 w-7" />
         </div>
 
@@ -52,7 +52,7 @@ export const DeleteCardModal: React.FC<DeleteCardModalProps> = ({
         {/* Description */}
         <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
           {isLastCard ? (
-            <p className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40">
+            <p className="p-3 rounded-xl bg-warning-50 dark:bg-warning-950/30 text-warning-700 dark:text-warning-400 border border-warning-200 dark:border-warning-800/40">
               Ini adalah satu-satunya kartu aktif Anda. Jika dihapus, data kartu akan direset ke pengaturan default.
             </p>
           ) : (
@@ -76,7 +76,7 @@ export const DeleteCardModal: React.FC<DeleteCardModalProps> = ({
             onClick={handleConfirm}
             disabled={isDeleting}
             className={cn(
-              "flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-red-600 hover:bg-red-700 transition-all cursor-pointer shadow-xs",
+              "flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-error-600 hover:bg-error-700 transition-all cursor-pointer shadow-xs",
               "disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
             )}
           >

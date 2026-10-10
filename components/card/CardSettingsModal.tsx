@@ -59,7 +59,7 @@ export const CardSettingsModal: React.FC<CardSettingsModalProps> = ({
           {/* Status Kartu */}
           <div className="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 dark:bg-gray-800/60">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400">
+              <div className="p-2 rounded-xl bg-blue-light-50 dark:bg-blue-light-950/40 text-blue-light-600 dark:text-blue-light-400">
                 <ShieldCheck className="h-5 w-5" />
               </div>
               <div>
@@ -77,8 +77,8 @@ export const CardSettingsModal: React.FC<CardSettingsModalProps> = ({
               className={cn(
                 "px-3 py-1.5 rounded-xl text-xs font-semibold transition-all",
                 isFrozen
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-950/30 dark:text-red-400"
+                  ? "bg-blue-light-600 text-white hover:bg-blue-light-700"
+                  : "bg-error-50 text-error-600 hover:bg-error-100 dark:bg-error-950/30 dark:text-error-400"
               )}
             >
               {isFrozen ? "Buka Blokir" : "Bekukan Kartu"}
@@ -114,7 +114,7 @@ export const CardSettingsModal: React.FC<CardSettingsModalProps> = ({
           {/* Transaksi Online E-Commerce */}
           <div className="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 dark:bg-gray-800/60">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
+              <div className="p-2 rounded-xl bg-success-50 dark:bg-success-950/40 text-success-600 dark:text-success-400">
                 <ShoppingBag className="h-5 w-5" />
               </div>
               <div>
@@ -182,7 +182,7 @@ export const CardSettingsModal: React.FC<CardSettingsModalProps> = ({
           >
             {isSaved ? (
               <>
-                <Check className="h-4 w-4 text-emerald-500" />
+                <Check className="h-4 w-4 text-success-500" />
                 Tersimpan!
               </>
             ) : (

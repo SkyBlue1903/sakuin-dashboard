@@ -342,14 +342,14 @@ export const CardPageContent: React.FC = () => {
                 className={cn(
                   "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide",
                   isFrozen
-                    ? "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50"
-                    : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50"
+                    ? "bg-warning-100 text-warning-700 dark:bg-warning-950/60 dark:text-warning-300 border border-warning-200 dark:border-warning-800/50"
+                    : "bg-success-100 text-success-700 dark:bg-success-950/60 dark:text-success-300 border border-success-200 dark:border-success-800/50"
                 )}
               >
                 <span
                   className={cn(
                     "w-1.5 h-1.5 rounded-full",
-                    isFrozen ? "bg-amber-500" : "bg-emerald-500 animate-pulse"
+                    isFrozen ? "bg-warning-500" : "bg-success-500 animate-pulse"
                   )}
                 />
                 {isFrozen ? "Dibekukan" : "Aktif"}
@@ -432,7 +432,7 @@ export const CardPageContent: React.FC = () => {
                         className="p-1 rounded text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
                       >
                         {copiedNumber ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          <Check className="w-3.5 h-3.5 text-success-500" />
                         ) : (
                           <Copy className="w-3.5 h-3.5" />
                         )}
@@ -466,7 +466,7 @@ export const CardPageContent: React.FC = () => {
                         className="p-1 rounded text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
                       >
                         {copiedCvv ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          <Check className="w-3.5 h-3.5 text-success-500" />
                         ) : (
                           <Copy className="w-3.5 h-3.5" />
                         )}
@@ -520,7 +520,7 @@ export const CardPageContent: React.FC = () => {
                 <div className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mt-1">
                   $411.22 USD
                 </div>
-                <span className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1 block">
+                <span className="text-[11px] text-success-600 dark:text-success-400 mt-1 block">
                   Aman digunakan
                 </span>
               </div>
@@ -530,7 +530,7 @@ export const CardPageContent: React.FC = () => {
                   Keamanan 3D Secure
                 </span>
                 <div className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mt-1 flex items-center gap-1.5">
-                  <ShieldCheck className="h-5 w-5 text-emerald-500" />
+                  <ShieldCheck className="h-5 w-5 text-success-500" />
                   Aktif
                 </div>
                 <span className="text-[11px] text-gray-400 mt-1 block">

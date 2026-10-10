@@ -58,7 +58,7 @@ export const EditCardNameModal: React.FC<EditCardNameModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-950/40 dark:text-blue-light-400">
               <Pencil className="h-5 w-5" />
             </div>
             <div>

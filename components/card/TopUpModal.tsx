@@ -99,7 +99,7 @@ export const TopUpModal: React.FC<TopUpModalProps> = ({
           {/* Sumber Dana */}
           <div className="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+              <div className="p-2 rounded-xl bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-950/40 dark:text-blue-light-400">
                 <Wallet className="h-4 w-4" />
               </div>
               <div>
@@ -109,7 +109,7 @@ export const TopUpModal: React.FC<TopUpModalProps> = ({
                 </span>
               </div>
             </div>
-            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+            <span className="text-xs font-semibold text-success-600 dark:text-success-400">
               Rp 18.450.000
             </span>
           </div>
