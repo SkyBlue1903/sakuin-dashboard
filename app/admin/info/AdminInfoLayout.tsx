@@ -148,7 +148,7 @@ export const AdminInfoLayout: React.FC = () => {
             title="Reset ke dummy bawaan"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Reset Sampel</span>
+            <span className="hidden sm:inline">Reset Sampel (#DEV)</span>
           </button>
 
           <button

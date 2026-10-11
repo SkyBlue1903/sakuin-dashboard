@@ -66,7 +66,7 @@ export const ChangePinModal: React.FC<ChangePinModalProps> = ({
       {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-warning-50 text-warning-600 dark:bg-warning-950/40 dark:text-warning-400">
               <KeyRound className="h-5 w-5" />
             </div>
             <div>
@@ -90,7 +90,7 @@ export const ChangePinModal: React.FC<ChangePinModalProps> = ({
         {/* Form */}
         <form onSubmit={handleSave} className="py-4 space-y-4">
           {error && (
-            <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 text-xs">
+            <div className="p-3 rounded-xl bg-error-50 dark:bg-error-950/40 border border-error-200 dark:border-error-800/50 text-error-600 dark:text-error-400 text-xs">
               {error}
             </div>
           )}

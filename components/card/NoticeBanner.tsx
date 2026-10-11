@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { AlertCircle, Info, AlertOctagon, X } from "lucide-react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 
 export type BannerVariant = "warning" | "info" | "danger";
 
@@ -50,32 +50,32 @@ export const NoticeBanner: React.FC<NoticeBannerProps> = ({
     // Kuning: Peringatan yang bisa dihilangkan
     warning: {
       container:
-        "bg-amber-50/90 dark:bg-amber-950/25 border-amber-200/80 dark:border-amber-800/50 text-amber-900 dark:text-amber-200",
-      icon: "text-amber-600 dark:text-amber-400",
-      title: "text-amber-900 dark:text-amber-300",
-      message: "text-amber-700 dark:text-amber-400",
+        "bg-warning-50/90 dark:bg-warning-950/25 border-warning-200/80 dark:border-warning-800/50 text-warning-900 dark:text-warning-200",
+      icon: "text-warning-600 dark:text-warning-400",
+      title: "text-warning-900 dark:text-warning-300",
+      message: "text-warning-700 dark:text-warning-400",
       closeBtn:
-        "text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-200 hover:bg-amber-100/80 dark:hover:bg-amber-900/40",
+        "text-warning-600 dark:text-warning-400 hover:text-warning-900 dark:hover:text-warning-200 hover:bg-warning-100/80 dark:hover:bg-warning-900/40",
       IconComponent: AlertCircle,
     },
     // Biru: Informasi yang bisa dihilangkan
     info: {
       container:
-        "bg-blue-50/90 dark:bg-blue-950/25 border-blue-200/80 dark:border-blue-800/50 text-blue-900 dark:text-blue-200",
-      icon: "text-blue-600 dark:text-blue-400",
-      title: "text-blue-900 dark:text-blue-300",
-      message: "text-blue-700 dark:text-blue-400",
+        "bg-blue-light-50/90 dark:bg-blue-light-950/25 border-blue-light-200/80 dark:border-blue-light-800/50 text-blue-light-900 dark:text-blue-light-200",
+      icon: "text-blue-light-600 dark:text-blue-light-400",
+      title: "text-blue-light-900 dark:text-blue-light-300",
+      message: "text-blue-light-700 dark:text-blue-light-400",
       closeBtn:
-        "text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-200 hover:bg-blue-100/80 dark:hover:bg-blue-900/40",
+        "text-blue-light-600 dark:text-blue-light-400 hover:text-blue-light-900 dark:hover:text-blue-light-200 hover:bg-blue-light-100/80 dark:hover:bg-blue-light-900/40",
       IconComponent: Info,
     },
     // Merah: Peringatan yang tidak bisa dihilangkan
     danger: {
       container:
-        "bg-red-50/90 dark:bg-red-950/25 border-red-200/80 dark:border-red-800/50 text-red-900 dark:text-red-200",
-      icon: "text-red-600 dark:text-red-400",
-      title: "text-red-900 dark:text-red-300",
-      message: "text-red-700 dark:text-red-400",
+        "bg-error-50/90 dark:bg-error-950/25 border-error-200/80 dark:border-error-800/50 text-error-900 dark:text-error-200",
+      icon: "text-error-600 dark:text-error-400",
+      title: "text-error-900 dark:text-error-300",
+      message: "text-error-700 dark:text-error-400",
       closeBtn: "",
       IconComponent: AlertOctagon,
     },

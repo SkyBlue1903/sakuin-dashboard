@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { X, CreditCard, Wallet, Plus, Check, Sparkles } from "lucide-react";
 import { cn } from "@/utils";
 import { Modal } from "@/components/ui/modal";
+import { SCard } from "@/components/card/SCard";
 
 interface AddCardModalProps {
   isOpen: boolean;
@@ -121,31 +122,22 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="py-4 space-y-4">
-          {/* Mini Card Preview */}
-          <div className="rounded-2xl bg-[#FAFF00] p-4 text-black shadow-sm flex flex-col justify-between h-32 relative overflow-hidden">
-            <div className="flex items-center justify-between">
-              <span className="font-extrabold text-sm tracking-tight truncate max-w-[200px]">
-                {cardName || `SakuCard ${defaultCardNumber}`}
-              </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider bg-black/10 px-2 py-0.5 rounded-full">
-                VIRTUAL
-              </span>
-            </div>
-            <div className="flex items-end justify-between">
-              <div>
-                <span className="text-[9px] font-semibold text-black/60 uppercase block leading-none">
-                  Saldo Awal
-                </span>
-                <span className="font-black text-black text-base block leading-tight mt-0.5">
-                  {formatRupiah(currentAmount)}
-                </span>
-                <span className="text-xs font-mono tracking-widest text-black/90 block mt-1">
-                  **** ••••
-                </span>
-              </div>
-              <span className="font-bold text-black text-xs font-sans">VISA</span>
-            </div>
+        <form onSubmit={handleSubmit} className="py-4 space-y-4 p-6">
+          {/* Card Preview — uses the real SCard component */}
+          <div className="w-full">
+            <SCard
+              balance={currentAmount}
+              maskedNumber="**** ••••"
+              cardHolder="ERLANGGA A. ARIFIN"
+              expiryDate="**/**"
+              cvv="***"
+              showDetails={false}
+              className="w-full pointer-events-none"
+            />
+            {/* Card name label below card */}
+            <p className="mt-2 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 tracking-wide truncate">
+              {cardName || `SakuCard ${defaultCardNumber}`}
+            </p>
           </div>
 
           {/* 1. Nama Kartu Input */}
@@ -180,7 +172,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
           {/* 2. Sumber Dana */}
           <div className="flex items-center justify-between p-3 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+              <div className="p-2 rounded-xl bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-950/40 dark:text-blue-light-400">
                 <Wallet className="h-4 w-4" />
               </div>
               <div>
@@ -190,7 +182,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
                 </span>
               </div>
             </div>
-            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+            <span className="text-xs font-semibold text-success-600 dark:text-success-400">
               Rp 18.450.000
             </span>
           </div>
@@ -242,11 +234,11 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex gap-2.5">
+          <div className="sticky bottom-0 left-0 right-0 bg-white dark:bg-gray-900  z-50 pt-3 border-t border-gray-100 dark:border-gray-800 flex flex-col-reverse gap-3 ">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all cursor-pointer"
+              className="bg-white dark:bg-gray-900 flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all cursor-pointer"
             >
               Batal
             </button>

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Snowflake, Copy, Check, Eye, EyeOff } from "lucide-react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 
 interface SCardProps {
   isFrozen?: boolean;

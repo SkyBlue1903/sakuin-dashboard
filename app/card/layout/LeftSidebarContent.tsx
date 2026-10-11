@@ -30,7 +30,7 @@ import EditIllustrationModal from "@/components/card/EditIllustrationModal";
 import AddCardModal from "@/components/card/AddCardModal";
 import VerifyPinModal from "@/components/card/VerifyPinModal";
 import NoticeBanner from "@/components/card/NoticeBanner";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 
 const INITIAL_CARDS = [
   {
@@ -363,14 +363,14 @@ export const LeftSidebarContent: React.FC = () => {
                 className={cn(
                   "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide",
                   isFrozen
-                    ? "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50"
-                    : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50"
+                    ? "bg-warning-100 text-warning-700 dark:bg-warning-950/60 dark:text-warning-300 border border-warning-200 dark:border-warning-800/50"
+                    : "bg-success-100 text-success-700 dark:bg-success-950/60 dark:text-success-300 border border-success-200 dark:border-success-800/50"
                 )}
               >
                 <span
                   className={cn(
                     "w-1.5 h-1.5 rounded-full",
-                    isFrozen ? "bg-amber-500" : "bg-emerald-500 animate-pulse"
+                    isFrozen ? "bg-warning-500" : "bg-success-500 animate-pulse"
                   )}
                 />
                 {isFrozen ? "Dibekukan" : "Aktif"}
@@ -455,7 +455,7 @@ export const LeftSidebarContent: React.FC = () => {
                         className="p-1 rounded text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
                       >
                         {copiedNumber ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          <Check className="w-3.5 h-3.5 text-success-500" />
                         ) : (
                           <Copy className="w-3.5 h-3.5" />
                         )}
@@ -489,7 +489,7 @@ export const LeftSidebarContent: React.FC = () => {
                         className="p-1 rounded text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
                       >
                         {copiedCvv ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          <Check className="w-3.5 h-3.5 text-success-500" />
                         ) : (
                           <Copy className="w-3.5 h-3.5" />
                         )}
@@ -520,7 +520,47 @@ export const LeftSidebarContent: React.FC = () => {
         <div className="flex-1 min-w-0 w-full md:h-full md:overflow-y-auto custom-scrollbar isolate pb-10">
 
           <div className="space-y-6">
-            {/* DESKTOP ONLY: Notice Banner (Papan Peringatan) di atas "Transaksi Kartu" */}
+            {/* Quick Metrics (GUNAKAN BILA PERLU!) */}
+            {/* <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-4">
+              <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <span className="text-xs text-gray-500 dark:text-gray-400 block truncate">
+                  Total Tagihan Ditolak
+                </span>
+                <div className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mt-1">
+                  -$176.27 USD
+                </div>
+                <span className="text-[11px] text-error-600 dark:text-error-400 mt-1 block">
+                  4 Transaksi Declined
+                </span>
+              </div>
+
+              <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <span className="text-xs text-gray-500 dark:text-gray-400 block truncate">
+                  Sisa Limit Harian
+                </span>
+                <div className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mt-1">
+                  $411.22 USD
+                </div>
+                <span className="text-[11px] text-success-600 dark:text-success-400 mt-1 block">
+                  Aman digunakan
+                </span>
+              </div>
+
+              <div className="col-span-2 sm:col-span-1 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <span className="text-xs text-gray-500 dark:text-gray-400 block truncate">
+                  Keamanan 3D Secure
+                </span>
+                <div className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mt-1 flex items-center gap-1.5">
+                  <ShieldCheck className="h-5 w-5 text-success-500" />
+                  Aktif
+                </div>
+                <span className="text-[11px] text-gray-400 mt-1 block">
+                  OTP Otomatis
+                </span>
+              </div>
+            </div> */}
+
+            {/* Notice Banner (Papan Peringatan) diletakkan di atas "Transaksi Kartu" */}
             {showNoticeBanner && (
               <div className="hidden md:block pt-3 pb-1 w-full max-w-[500px] lg:max-w-none mx-auto px-4 sm:pr-6 lg:pr-8 xl:pr-10">
                 <NoticeBanner
