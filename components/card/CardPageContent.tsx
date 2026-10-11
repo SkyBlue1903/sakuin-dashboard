@@ -251,7 +251,9 @@ export const CardPageContent: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto md:overflow-hidden custom-scrollbar overscroll-contain pt-20 pb-8 md:pt-0 md:pb-0">
+    <div className="w-full h-full overflow-y-auto tablet:overflow-hidden custom-scrollbar overscroll-contain pt-0 pb-8 tablet:pt-0 tablet:pb-0">
+      {/* Anti-bleed block to prevent content from bleeding through the glass AppHeader (0-64px) */}
+      <div className="fixed top-0 inset-x-0 h-16 bg-gray-50 dark:bg-gray-950 z-30 pointer-events-none" />
       {/* Toast Notification with Fluid In & Out Animation */}
       {toastMessage && (
         <div
@@ -270,21 +272,21 @@ export const CardPageContent: React.FC = () => {
       )}
 
       {/* Main Responsive Grid Layout:
-          - Mobile (screen < md): stacked single column
-          - Tablet / Laptop / Desktop (screen >= md): 2 columns
+          - Mobile (screen < tablet/1032px): stacked single column
+          - Desktop (screen >= tablet/1032px): 2 columns
             Left: Sidebar Kartu (independent scroll & bouncy overscroll)
             Right: Daftar Transaksi (independent scroll & bouncy overscroll)
       */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 xl:gap-10 items-start w-full max-w-[500px] md:max-w-none mx-auto md:h-full md:overflow-hidden">
+      <div className="grid grid-cols-1 tablet:grid-cols-12 gap-6 lg:gap-8 xl:gap-10 items-start w-full max-w-[500px] tablet:max-w-none mx-auto tablet:h-full tablet:overflow-hidden">
         {/* Left Column: Sidebar Kartu (Passes underneath glass header on scroll) */}
-        <div className="md:col-span-5 lg:col-span-5 w-full md:h-full md:overflow-y-auto custom-scrollbar overscroll-contain md:pr-2.5 pt-4 md:pt-0 pb-10">
+        <div className="tablet:col-span-5 lg:col-span-5 w-full tablet:h-full tablet:overflow-y-auto custom-scrollbar overscroll-contain tablet:pr-2.5 pt-0 pb-10">
           {/* Spacer below AppHeader so initial content starts cleanly below header when not scrolled */}
-          <div className="hidden md:block h-16 shrink-0 pointer-events-none" />
+          <div className="hidden tablet:block h-16 shrink-0 pointer-events-none" />
 
-          {/* Sticky Header Bar: Tombol Pindah Kartu (< >) & Tambah Kartu di Baris 1, Judul & Subtitle di Baris 2 */}
+          {/* left Column: Sticky Header Bar */}
           <div
             className={cn(
-              "sticky top-16 z-20",
+              "sticky top-16 z-20 tablet:z-20",
               "-mx-1 sm:-mx-2 px-2.5 sm:px-3.5 pt-2.5 pb-3.5",
               "space-y-2.5",
               "bg-gray-50 dark:bg-gray-950",
@@ -357,10 +359,10 @@ export const CardPageContent: React.FC = () => {
             </div>
           </div>
 
-          {/* Left Column Content (Scrolls underneath sticky header) */}
-          <div className="space-y-5 pt-3 w-full">
-            {/* Card Presentation */}
-            <div className="w-full">
+          {/* Content Column */}
+          <div className="space-y-5 pt-24 tablet:pt-3 w-full">
+            {/* Card Presentation — px+pb gives shadow room to breathe */}
+            <div className="w-full px-4 pb-4">
               <SCard
                 isFrozen={isFrozen}
                 showDetails={showDetails}
@@ -494,9 +496,9 @@ export const CardPageContent: React.FC = () => {
         </div>
 
         {/* Right Column: Daftar Transaksi & Metrik (Passes underneath glass header on scroll) */}
-        <div className="md:col-span-7 lg:col-span-7 w-full max-w-[500px] md:max-w-none mx-auto md:h-full md:overflow-y-auto custom-scrollbar overscroll-contain md:pr-1.5 pt-4 md:pt-0 pb-10">
+        <div className="tablet:col-span-7 lg:col-span-7 w-full max-w-[500px] tablet:max-w-none mx-auto tablet:h-full tablet:overflow-y-auto custom-scrollbar overscroll-contain tablet:pr-1.5 pt-4 tablet:pt-0 pb-10">
           {/* Spacer below AppHeader so initial content starts cleanly below header when not scrolled */}
-          <div className="hidden md:block h-16 shrink-0 pointer-events-none" />
+          <div className="hidden tablet:block h-16 shrink-0 pointer-events-none" />
 
           <div className="space-y-6">
             {/* Quick Metrics (GUNAKAN BILA PERLU!) */}

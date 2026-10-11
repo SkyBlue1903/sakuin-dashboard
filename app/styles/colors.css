@@ -1,4 +1,6 @@
 @theme {
+  /* Custom Breakpoints */
+  --breakpoint-tablet: 1032px;
   /* Brand Colors */
   --color-brand-25: #f2f7ff;
   --color-brand-50: #ecf3ff;

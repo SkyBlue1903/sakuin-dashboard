@@ -52,20 +52,31 @@ export const SCard: React.FC<SCardProps> = ({
   return (
     <div
       className={cn(
-        "relative w-full aspect-[1.586/1] rounded-3xl p-6 sm:p-7 md:p-8 shadow-2xl transition-all duration-300 select-none overflow-hidden",
-        "bg-[#FAFF00] text-black",
+        "relative w-full aspect-[1.586/1] rounded-3xl p-6 sm:p-7 md:p-8 shadow-2xl transition-all duration-300 select-none",
         isFrozen && "saturate-[0.35] brightness-95",
         className
       )}
       style={{
         boxShadow: isFrozen
-          ? "0 10px 30px -10px rgba(100, 116, 139, 0.25)"
-          : "0 15px 35px -10px rgba(250, 255, 0, 0.35), 0 4px 12px -2px rgba(0, 0, 0, 0.08)",
+          ? "0 10px 30px -10px rgba(0, 0, 0, 0.4)"
+          : "0 20px 40px -12px rgba(0, 0, 0, 0.5), 0 6px 16px -4px rgba(0, 0, 0, 0.25)",
       }}
     >
-      {/* Subtle glossy sheen reflection effect */}
-      <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/20 blur-2xl" />
-      <div className="pointer-events-none absolute -left-12 -bottom-12 h-48 w-48 rounded-full bg-black/[0.03] blur-xl" />
+      {/* Background Image — wrapped in overflow-hidden so image is clipped to rounded corners
+           while the outer div stays overflow-visible to let shadow spread */}
+      <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+        <Image
+          src="/images/Design-Kartu.png"
+          alt=""
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover object-center select-none"
+          priority
+          aria-hidden
+        />
+        {/* Subtle dark overlay for depth */}
+        <div className="absolute inset-0 bg-black/10" />
+      </div>
 
       {/* Frozen Overlay */}
       {isFrozen && (
@@ -84,21 +95,21 @@ export const SCard: React.FC<SCardProps> = ({
         {/* Top Header: Brand Name + Virtual Badge */}
         <div className="flex items-end justify-between">
           <div>
-            <span className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-black uppercase leading-none block">
+            <span className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white uppercase leading-none block">
               
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 rounded-full bg-black/10 px-3 py-1 text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wider text-black backdrop-blur-xs">
+          <div className="flex items-center gap-1.5 rounded-full bg-white/15 border border-white/20 px-3 py-1 text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wider text-white backdrop-blur-xs">
             VIRTUAL
           </div>
         </div>
 
         {/* Middle Section: Subtle Contactless Waves Icon */}
         <div className="my-auto py-1">
-          <div className="flex items-center gap-2 opacity-30">
+          <div className="flex items-center gap-2 opacity-40">
             <svg
-              className="w-6 h-6 text-black"
+              className="w-6 h-6 text-white"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -117,11 +128,11 @@ export const SCard: React.FC<SCardProps> = ({
           <div className="flex flex-col">
             {/* Saldo Kartu */}
             <div className="mb-1.5 sm:mb-2">
-              <span className="text-[10px] sm:text-xs font-semibold text-black/60 uppercase tracking-wider block leading-none">
+              <span className="text-[10px] sm:text-xs font-semibold text-white/60 uppercase tracking-wider block leading-none">
                 Saldo Kartu
               </span>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-black block leading-none">
+                <span className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white block leading-none">
                   {showBalance ? formattedBalance : "Rp ••••••••"}
                 </span>
                 <button
@@ -132,7 +143,7 @@ export const SCard: React.FC<SCardProps> = ({
                   }}
                   title={showBalance ? "Sembunyikan saldo" : "Tampilkan saldo"}
                   aria-label={showBalance ? "Sembunyikan saldo" : "Tampilkan saldo"}
-                  className="rounded-full p-1 text-black/60 hover:text-black hover:bg-black/10 active:scale-95 transition-all cursor-pointer"
+                  className="rounded-full p-1 text-white/60 hover:text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
                 >
                   {showBalance ? (
                     <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -145,7 +156,7 @@ export const SCard: React.FC<SCardProps> = ({
 
             {/* Nomor Kartu: Selalu **** xxxx (tidak ditampilkan lengkap saat lihat detail) */}
             <div className="flex items-center gap-2">
-              <span className="font-mono text-sm sm:text-base md:text-lg font-bold tracking-widest text-black">
+              <span className="font-mono text-sm sm:text-base md:text-lg font-bold tracking-widest text-white">
                 {maskedNumber}
               </span>
             </div>
@@ -159,9 +170,9 @@ export const SCard: React.FC<SCardProps> = ({
               alt="Visa"
               width={75}
               height={24}
-              className="h-6 sm:h-7 w-auto object-contain brightness-0"
+              className="h-6 sm:h-7 w-auto object-contain"
             />
-            <span className="text-[10px] sm:text-xs font-normal tracking-wide pt-1.5 text-black -mt-0.5">
+            <span className="text-[10px] sm:text-xs font-normal tracking-wide pt-1.5 text-white/80 -mt-0.5">
               Platinum
             </span>
           </div>
