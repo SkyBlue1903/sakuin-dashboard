@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { X, ShieldCheck, Globe, ShoppingBag, Sliders, Lock, Check } from "lucide-react";
 import { cn } from "@/utils";
+import { Modal } from "@/components/ui/modal";
 
 interface CardSettingsModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export const CardSettingsModal: React.FC<CardSettingsModalProps> = ({
   isFrozen,
   onToggleFreeze,
 }) => {
+
   const [onlineTx, setOnlineTx] = useState(true);
   const [internationalTx, setInternationalTx] = useState(false);
   const [dailyLimit, setDailyLimit] = useState("500");
@@ -33,9 +35,8 @@ export const CardSettingsModal: React.FC<CardSettingsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-100 dark:border-gray-800 animate-in zoom-in-95 duration-200">
-        {/* Header */}
+    <Modal isOpen={isOpen} onClose={onClose} maxWidth="lg" className="p-6">
+      {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
           <div>
             <h3 className="text-lg font-bold text-gray-900 dark:text-white">
@@ -190,8 +191,7 @@ export const CardSettingsModal: React.FC<CardSettingsModalProps> = ({
             )}
           </button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { X, Palette, Check, Info, Sparkles } from "lucide-react";
 import { cn } from "@/utils";
+import { Modal } from "@/components/ui/modal";
 
 export interface CardIllustrationOption {
   id: string;
@@ -150,9 +151,13 @@ export const EditIllustrationModal: React.FC<EditIllustrationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-gray-900 p-5 sm:p-6 shadow-2xl border border-gray-100 dark:border-gray-800 animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-        {/* Header */}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      maxWidth="lg"
+      className="p-5 sm:p-6 flex flex-col max-h-[90vh]"
+    >
+      {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400">
@@ -178,7 +183,7 @@ export const EditIllustrationModal: React.FC<EditIllustrationModalProps> = ({
         </div>
 
         {/* Modal Body - Scrollable */}
-        <div className="overflow-y-auto py-4 space-y-4 pr-0.5 custom-scrollbar flex-1 min-h-0">
+        <div className="overflow-y-auto overscroll-contain py-4 space-y-4 pr-0.5 custom-scrollbar flex-1 min-h-0">
           {/* Category Tabs: Gradient vs Geometric */}
           <div className="flex items-center gap-1.5 p-1 bg-gray-100 dark:bg-gray-800/90 rounded-2xl">
             <button
@@ -307,8 +312,7 @@ export const EditIllustrationModal: React.FC<EditIllustrationModalProps> = ({
             )}
           </button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

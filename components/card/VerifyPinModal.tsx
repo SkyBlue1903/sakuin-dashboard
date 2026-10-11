@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, Lock, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { cn } from "@/utils";
+import { Modal } from "@/components/ui/modal";
 
 interface VerifyPinModalProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ export const VerifyPinModal: React.FC<VerifyPinModalProps> = ({
   onSuccess,
   onForgotPin,
 }) => {
+
   const [pin, setPin] = useState("");
   const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,21 +97,18 @@ export const VerifyPinModal: React.FC<VerifyPinModalProps> = ({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
-      onClick={isValidating || isSuccess ? undefined : onClose}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      maxWidth="md"
+      closeOnBackdropClick={!isValidating && !isSuccess}
+      closeOnEscape={!isValidating && !isSuccess}
+      className={cn(
+        "p-5 sm:p-7 transition-all",
+        isShaking && "animate-shake"
+      )}
     >
-      <div
-        className={cn(
-          "relative w-full max-w-[92vw] sm:max-w-md rounded-3xl bg-white dark:bg-gray-900 p-5 sm:p-7 shadow-2xl border border-gray-100 dark:border-gray-800 transition-all",
-          "animate-in zoom-in-95 duration-200",
-          isShaking && "animate-shake"
-        )}
-        onClick={(e) => e.stopPropagation()}
-      >
         {/* Close Button */}
         <button
           type="button"
@@ -249,8 +248,7 @@ export const VerifyPinModal: React.FC<VerifyPinModalProps> = ({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

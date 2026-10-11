@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { X, CreditCard, Wallet, Plus, Check, Sparkles } from "lucide-react";
 import { cn } from "@/utils";
+import { Modal } from "@/components/ui/modal";
 
 interface AddCardModalProps {
   isOpen: boolean;
@@ -89,9 +90,13 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-100 dark:border-gray-800 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
-        {/* Header */}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      maxWidth="lg"
+      className="p-6 max-h-[90vh] overflow-y-auto overscroll-contain"
+    >
+      {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-400">
@@ -265,8 +270,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

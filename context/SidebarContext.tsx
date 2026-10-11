@@ -5,7 +5,12 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 const ROUTE_TITLE_MAP: Record<string, string> = {
   "/card": "SakuCard",
-  "/promo": "Informasi & Promo",
+  "/info": "Informasi",
+  "/panduan": "Panduan",
+  "/promo": "Promo",
+  "/admin/info": "Informasi",
+  "/admin/panduan": "Panduan",
+  "/admin/promo": "Promo",
   "/profile": "Detail Profil",
   "/customers": "Customer List",
   "/customer-list": "Customer List",

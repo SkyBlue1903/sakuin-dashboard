@@ -18,6 +18,7 @@ import {
   CategoryItem,
   MerchantItem,
 } from "@/context/CategoryContext";
+import { Modal } from "@/components/ui/modal";
 
 export interface Transaction {
   id: string;
@@ -520,9 +521,14 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
       </div>
 
       {/* Transaction Detail Modal */}
-      {selectedTx && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="relative w-full max-w-md rounded-3xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-100 dark:border-gray-800 animate-in zoom-in-95 duration-200">
+      <Modal
+        isOpen={!!selectedTx}
+        onClose={() => setSelectedTx(null)}
+        maxWidth="md"
+        className="p-6"
+      >
+        {selectedTx && (
+          <>
             <button
               type="button"
               onClick={() => setSelectedTx(null)}
@@ -631,9 +637,9 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
             >
               Tutup
             </button>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </Modal>
     </div>
   );
 };

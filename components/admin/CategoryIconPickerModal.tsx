@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import Image from "next/image";
 import {
   X,
@@ -19,6 +18,7 @@ import {
 } from "./CategoryIcon";
 import { CategoryItem } from "@/context/CategoryContext";
 import { cn } from "@/utils";
+import { Modal } from "@/components/ui/modal";
 
 interface CategoryIconPickerModalProps {
   isOpen: boolean;
@@ -118,10 +118,16 @@ export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (
     onClose();
   };
 
-  return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-gray-900 p-5 sm:p-6 shadow-2xl border border-gray-100 dark:border-gray-800 animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-        {/* Header */}
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      portal={true}
+      maxWidth="lg"
+      backdropClassName="z-[9999]"
+      className="p-5 sm:p-6 flex flex-col max-h-[90vh]"
+    >
+      {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-400">
@@ -146,7 +152,7 @@ export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (
         </div>
 
         {/* Scrollable Body */}
-        <form onSubmit={handleSubmit} className="overflow-y-auto py-4 space-y-4 pr-1 custom-scrollbar flex-1 min-h-0">
+        <form onSubmit={handleSubmit} className="overflow-y-auto overscroll-contain py-4 space-y-4 pr-1 custom-scrollbar flex-1 min-h-0">
           {/* Live Preview Box */}
           <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-850/60 p-3.5 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -393,9 +399,7 @@ export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (
             <span>{categoryToEdit ? "Simpan Perubahan" : "Buat Kategori"}</span>
           </button>
         </div>
-      </div>
-    </div>,
-    document.body
+    </Modal>
   );
 };
 

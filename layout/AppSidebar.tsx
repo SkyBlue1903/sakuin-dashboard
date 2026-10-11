@@ -18,7 +18,7 @@ import {
   TableIcon,
   UserCircleIcon,
 } from "@/icons";
-import { CreditCard, InfoIcon, Sparkles, X } from "lucide-react";
+import { BookOpen, CreditCard, InfoIcon, Sparkles, X } from "lucide-react";
 import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
@@ -44,8 +44,18 @@ const sakuinNavItems: NavItem[] = [
     path: "/card",
   },
   {
-    name: "Informasi & Promo",
+    name: "Panduan",
+    icon: <BookOpen className="w-5 h-5" />,
+    path: "/panduan",
+  },
+  {
+    name: "Informasi",
     icon: <InfoIcon className="w-5 h-5" />,
+    path: "/info",
+  },
+  {
+    name: "Promo",
+    icon: <Sparkles className="w-5 h-5" />,
     path: "/promo",
     new: true,
   },
@@ -74,9 +84,19 @@ const templateNavItems: NavItem[] = [
     path: "/profile",
   },
   {
-    name: "Informasi & Promo",
-    icon: <InfoIcon />,
-    path: "/admin/merchant",
+    name: "Informasi",
+    icon: <InfoIcon className="w-5 h-5" />,
+    path: "/admin/info",
+  },
+  {
+    name: "Panduan",
+    icon: <BookOpen className="w-5 h-5" />,
+    path: "/admin/panduan",
+  },
+  {
+    name: "Promo",
+    icon: <Sparkles className="w-5 h-5" />,
+    path: "/admin/promo",
   },
   {
     name: "Kategori Merchant",
@@ -150,22 +170,22 @@ const AppSidebar: React.FC = () => {
 
   const isItemActive = useCallback(
     (nav: NavItem) => {
-      if (activeTitle) {
-        return activeTitle === nav.name;
+      if (nav.path) {
+        return pathname === nav.path;
       }
-      return nav.path ? pathname === nav.path : false;
+      if (nav.subItems) {
+        return nav.subItems.some((sub) => pathname === sub.path);
+      }
+      return false;
     },
-    [activeTitle, pathname]
+    [pathname]
   );
 
   const isSubItemActive = useCallback(
     (subItem: { name: string; path: string }) => {
-      if (activeTitle) {
-        return activeTitle === subItem.name;
-      }
       return pathname === subItem.path;
     },
-    [activeTitle, pathname]
+    [pathname]
   );
 
   useEffect(() => {
@@ -446,7 +466,7 @@ const AppSidebar: React.FC = () => {
             {/* Sakuin Menu */}
             <div>
               <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
-                MENU
+                MENU PENGGUNA
               </h2>
               {renderMenuItems(sakuinNavItems, "sakuin")}
             </div>
@@ -454,7 +474,7 @@ const AppSidebar: React.FC = () => {
             {/* Template Navigation */}
             <div>
               <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
-                DASHBOARD UNTUK ADMIN
+                MENU ADMINISTRASI
               </h2>
               {renderMenuItems(templateNavItems, "template")}
             </div>

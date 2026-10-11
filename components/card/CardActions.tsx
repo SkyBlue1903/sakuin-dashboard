@@ -15,6 +15,7 @@ import {
   Palette,
 } from "lucide-react";
 import { cn } from "@/utils";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 interface CardActionsProps {
   isFrozen: boolean;
@@ -49,6 +50,9 @@ export const CardActions: React.FC<CardActionsProps> = ({
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // Lock background scroll when mobile bottom sheet is open
+  useLockBodyScroll(isMenuOpen);
 
   // Close dropdown on outside click (for desktop)
   useEffect(() => {
@@ -252,10 +256,10 @@ export const CardActions: React.FC<CardActionsProps> = ({
 
           {/* MOBILE BOTTOM SHEET (md:hidden) */}
           {isMenuOpen && (
-            <div className="md:hidden fixed inset-0 z-50 flex items-end justify-center">
+            <div className="md:hidden fixed inset-0 z-50 flex items-end justify-center overscroll-contain">
               {/* Dimmed backdrop */}
               <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+                className="fixed inset-0 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 overscroll-contain"
                 onClick={() => setIsMenuOpen(false)}
               />
 

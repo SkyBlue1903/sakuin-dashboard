@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import { X, ArrowRightLeft, Check } from "lucide-react";
 import { useCategory, CategoryItem, MerchantItem } from "@/context/CategoryContext";
 import CategoryIcon from "./CategoryIcon";
 import MerchantLogo from "./MerchantLogo";
 import { cn } from "@/utils";
+import { Modal } from "@/components/ui/modal";
 
 interface MoveMerchantModalProps {
   isOpen: boolean;
@@ -23,6 +23,7 @@ export const MoveMerchantModal: React.FC<MoveMerchantModalProps> = ({
   currentCategory,
   onSuccess,
 }) => {
+
   const { categories, moveMerchant } = useCategory();
   const availableCategories = categories.filter((c) => c.id !== currentCategory.id);
   const [targetCategoryId, setTargetCategoryId] = useState<string>(
@@ -46,10 +47,16 @@ export const MoveMerchantModal: React.FC<MoveMerchantModalProps> = ({
     onClose();
   };
 
-  return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="relative w-full max-w-md rounded-3xl bg-white dark:bg-gray-900 p-5 sm:p-6 shadow-2xl border border-gray-100 dark:border-gray-800 animate-in zoom-in-95 duration-200">
-        {/* Header */}
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      portal={true}
+      maxWidth="md"
+      backdropClassName="z-[9999]"
+      className="p-5 sm:p-6"
+    >
+      {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-3">
             <MerchantLogo name={merchantObj.name} logoUrl={merchantObj.logoUrl} size="lg" />
@@ -95,7 +102,7 @@ export const MoveMerchantModal: React.FC<MoveMerchantModalProps> = ({
             <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 block">
               Pilih Kategori Tujuan Baru:
             </label>
-            <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+            <div className="space-y-1.5 max-h-48 overflow-y-auto overscroll-contain pr-1 custom-scrollbar">
               {availableCategories.map((cat) => {
                 const isSelected = targetCategoryId === cat.id;
                 return (
@@ -148,9 +155,7 @@ export const MoveMerchantModal: React.FC<MoveMerchantModalProps> = ({
             <span>Pindahkan</span>
           </button>
         </div>
-      </div>
-    </div>,
-    document.body
+    </Modal>
   );
 };
 

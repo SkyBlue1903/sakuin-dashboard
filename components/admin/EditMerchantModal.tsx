@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import {
   X,
   Edit3,
@@ -22,6 +21,7 @@ import {
 } from "@/context/CategoryContext";
 import MerchantLogo from "./MerchantLogo";
 import { cn } from "@/utils";
+import { Modal } from "@/components/ui/modal";
 
 interface EditMerchantModalProps {
   isOpen: boolean;
@@ -135,10 +135,16 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
     setSubMerchants(merged);
   };
 
-  return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="relative w-full max-w-lg max-h-[90vh] flex flex-col rounded-3xl bg-white dark:bg-gray-900 shadow-2xl border border-gray-100 dark:border-gray-800 animate-in zoom-in-95 duration-200 overflow-hidden">
-        {/* Header */}
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      portal={true}
+      maxWidth="lg"
+      backdropClassName="z-[9999]"
+      className="max-h-[90vh] flex flex-col overflow-hidden"
+    >
+      {/* Header */}
         <div className="flex items-center justify-between p-5 pb-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-400">
@@ -163,7 +169,7 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto overscroll-contain custom-scrollbar p-5 space-y-4">
           {/* Field 1: Nama Merchant Induk */}
           <div>
             <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">
@@ -405,9 +411,7 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
             </button>
           </div>
         </form>
-      </div>
-    </div>,
-    document.body
+    </Modal>
   );
 };
 

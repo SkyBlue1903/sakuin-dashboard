@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { X, Wallet, ArrowDownToLine, Check, Sparkles } from "lucide-react";
 import { cn } from "@/utils";
+import { Modal } from "@/components/ui/modal";
 
 interface TopUpModalProps {
   isOpen: boolean;
@@ -32,8 +33,6 @@ export const TopUpModal: React.FC<TopUpModalProps> = ({
   const [customAmount, setCustomAmount] = useState<string>("");
   const [isCustom, setIsCustom] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  if (!isOpen) return null;
 
   const currentAmount = isCustom ? Number(customAmount) || 0 : selectedAmount;
 
@@ -68,9 +67,8 @@ export const TopUpModal: React.FC<TopUpModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="relative w-full max-w-md rounded-3xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-100 dark:border-gray-800 animate-in zoom-in-95 duration-200">
-        {/* Header */}
+    <Modal isOpen={isOpen} onClose={onClose} maxWidth="md" className="p-6">
+      {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-400">
@@ -190,8 +188,7 @@ export const TopUpModal: React.FC<TopUpModalProps> = ({
             )}
           </button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

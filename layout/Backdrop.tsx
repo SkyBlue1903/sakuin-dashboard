@@ -3,9 +3,13 @@
 import React from "react";
 import { useSidebar } from "@/context/SidebarContext";
 import { cn } from "@/utils";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 const Backdrop: React.FC = () => {
   const { isOpen, closeSidebar } = useSidebar();
+
+  // Lock background scroll when mobile sidebar drawer is open
+  useLockBodyScroll(isOpen);
 
   return (
     <div
