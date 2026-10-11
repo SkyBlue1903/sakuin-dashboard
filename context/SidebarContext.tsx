@@ -15,6 +15,7 @@ const ROUTE_TITLE_MAP: Record<string, string> = {
   "/blank": "Blank Page",
   "/error-404": "404 Error",
   "/login": "Login",
+  "/admin/merchant": "Kategori Merchant",
   "/": "SakuCard",
 };
 

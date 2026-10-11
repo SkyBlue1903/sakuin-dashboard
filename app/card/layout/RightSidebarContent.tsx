@@ -2,42 +2,32 @@
 
 import React, { useState } from "react";
 import {
-  GraduationCap,
-  Music,
-  Code2,
-  Globe,
   Search,
   Filter,
   X,
-  ShieldAlert,
   CreditCard,
-  Sparkles,
-  Film,
-  Palette,
-  Coffee,
-  Gamepad2,
-  Cloud,
+  ShieldAlert,
 } from "lucide-react";
 import { cn } from "@/utils";
+import CategoryIcon from "@/components/admin/CategoryIcon";
+import MerchantLogo from "@/components/admin/MerchantLogo";
+import {
+  useCategory,
+  DEFAULT_CATEGORIES,
+  DEFAULT_MERCHANT_LOGOS,
+  CategoryItem,
+  MerchantItem,
+} from "@/context/CategoryContext";
 
 export interface Transaction {
   id: string;
   merchant: string;
+  categoryId?: string;
   category: string;
   date: string;
   amount: string;
   currency: string;
   status: "Declined" | "Success" | "Pending";
-  iconType:
-    | "education"
-    | "music"
-    | "tech"
-    | "cloud"
-    | "ai"
-    | "streaming"
-    | "design"
-    | "gaming"
-    | "food";
   reason?: string;
   cardLast4: string;
 }
@@ -46,170 +36,202 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-001",
     merchant: "coursiv.org",
+    categoryId: "pendidikan",
     category: "Pendidikan & Kursus",
     date: "4 September, 19:44",
     amount: "-689.000",
     currency: "Rp",
     status: "Declined",
-    iconType: "education",
     reason: "Batas limit transaksi internasional terlampaui",
     cardLast4: "1995",
   },
   {
     id: "tx-002",
     merchant: "coursiv.org",
+    categoryId: "pendidikan",
     category: "Pendidikan & Kursus",
     date: "4 September, 19:44",
     amount: "-689.000",
     currency: "Rp",
     status: "Declined",
-    iconType: "education",
     reason: "Upaya pembayaran ganda terdeteksi oleh sistem keamanan",
     cardLast4: "1995",
   },
   {
     id: "tx-003",
     merchant: "ChatGPT Plus Subscription",
+    categoryId: "ai",
     category: "AI & Produktivitas",
     date: "3 September, 14:10",
     amount: "-315.000",
     currency: "Rp",
     status: "Success",
-    iconType: "ai",
     cardLast4: "1995",
   },
   {
     id: "tx-004",
     merchant: "Spotify Premium",
+    categoryId: "hiburan",
     category: "Hiburan & Musik",
     date: "1 September, 10:15",
     amount: "-54.990",
     currency: "Rp",
     status: "Success",
-    iconType: "music",
     cardLast4: "1995",
   },
   {
     id: "tx-005",
     merchant: "GitHub Copilot",
-    category: "Alat Pengembang",
+    categoryId: "tech",
+    category: "Alat Pengembang & IT",
     date: "28 Agustus, 08:30",
     amount: "-155.000",
     currency: "Rp",
     status: "Success",
-    iconType: "tech",
     cardLast4: "1995",
   },
   {
     id: "tx-006",
-    merchant: "Netflix 4K Premium",
-    category: "Streaming Film",
+    merchant: "Netflix",
+    categoryId: "hiburan",
+    category: "Hiburan & Musik",
     date: "26 Agustus, 21:05",
     amount: "-186.000",
     currency: "Rp",
     status: "Success",
-    iconType: "streaming",
     cardLast4: "1995",
   },
   {
     id: "tx-007",
-    merchant: "Google Cloud Platform",
-    category: "Infrastruktur Server",
-    date: "24 Agustus, 14:22",
-    amount: "-455.000",
+    merchant: "Tokopedia",
+    categoryId: "belanja",
+    category: "Belanja & Retail",
+    date: "24 Agustus, 16:30",
+    amount: "-425.000",
     currency: "Rp",
     status: "Success",
-    iconType: "cloud",
     cardLast4: "1995",
   },
   {
     id: "tx-008",
-    merchant: "AWS Cloud Services",
-    category: "Layanan Cloud",
+    merchant: "AWS Cloud",
+    categoryId: "tech",
+    category: "Alat Pengembang & IT",
     date: "20 Agustus, 03:12",
     amount: "-840.000",
     currency: "Rp",
     status: "Success",
-    iconType: "cloud",
     cardLast4: "1995",
   },
   {
     id: "tx-009",
     merchant: "Figma Professional",
-    category: "Desain UI/UX",
+    categoryId: "ai",
+    category: "AI & Produktivitas",
     date: "18 Agustus, 11:45",
     amount: "-235.000",
     currency: "Rp",
     status: "Success",
-    iconType: "design",
     cardLast4: "1995",
   },
   {
     id: "tx-010",
-    merchant: "Steam Games Store",
-    category: "Game & Hiburan",
+    merchant: "Steam Games",
+    categoryId: "hiburan",
+    category: "Hiburan & Musik",
     date: "15 Agustus, 19:30",
     amount: "-500.000",
     currency: "Rp",
     status: "Declined",
-    iconType: "gaming",
     reason: "Limit transaksi game harian telah melebihi batas yang ditentukan",
     cardLast4: "1995",
   },
   {
     id: "tx-011",
-    merchant: "Midjourney AI Art",
-    category: "AI Generatif",
+    merchant: "Midjourney",
+    categoryId: "ai",
+    category: "AI & Produktivitas",
     date: "12 Agustus, 16:20",
     amount: "-465.000",
     currency: "Rp",
     status: "Success",
-    iconType: "ai",
     cardLast4: "1995",
   },
   {
     id: "tx-012",
-    merchant: "Starbucks Coffee Reserv.",
+    merchant: "Starbucks Coffee",
+    categoryId: "makanan",
     category: "Makanan & Minuman",
     date: "10 Agustus, 09:15",
     amount: "-135.000",
     currency: "Rp",
     status: "Success",
-    iconType: "food",
     cardLast4: "1995",
   },
   {
     id: "tx-013",
-    merchant: "Adobe Creative Cloud",
-    category: "Software Desain",
-    date: "5 Agustus, 13:00",
-    amount: "-850.000",
+    merchant: "Pertamina",
+    categoryId: "transportasi",
+    category: "Transportasi & Bensin",
+    date: "8 Agustus, 17:40",
+    amount: "-350.000",
     currency: "Rp",
-    status: "Declined",
-    iconType: "design",
-    reason: "Pembayaran luar negeri memerlukan verifikasi OTP manual",
+    status: "Success",
     cardLast4: "1995",
   },
   {
     id: "tx-014",
-    merchant: "Apple Services / iCloud",
-    category: "Penyimpanan Cloud",
-    date: "1 Agustus, 07:00",
-    amount: "-45.000",
+    merchant: "PLN Pascabayar",
+    categoryId: "tagihan",
+    category: "Tagihan & Utilitas",
+    date: "5 Agustus, 10:00",
+    amount: "-485.000",
     currency: "Rp",
     status: "Success",
-    iconType: "cloud",
     cardLast4: "1995",
   },
   {
     id: "tx-015",
+    merchant: "Halodoc",
+    categoryId: "kesehatan",
+    category: "Kesehatan & Farmasi",
+    date: "3 Agustus, 14:15",
+    amount: "-180.000",
+    currency: "Rp",
+    status: "Success",
+    cardLast4: "1995",
+  },
+  {
+    id: "tx-016",
+    merchant: "McDonald's",
+    categoryId: "makanan",
+    category: "Makanan & Minuman",
+    date: "1 Agustus, 12:30",
+    amount: "-115.000",
+    currency: "Rp",
+    status: "Success",
+    cardLast4: "1995",
+  },
+  {
+    id: "tx-017",
     merchant: "Vercel Pro Team",
-    category: "Deployment Web",
+    categoryId: "tech",
+    category: "Alat Pengembang & IT",
     date: "28 Juli, 18:20",
     amount: "-310.000",
     currency: "Rp",
     status: "Success",
-    iconType: "tech",
+    cardLast4: "1995",
+  },
+  {
+    id: "tx-018",
+    merchant: "Alfamart",
+    categoryId: "belanja",
+    category: "Belanja & Retail",
+    date: "25 Juli, 20:10",
+    amount: "-78.500",
+    currency: "Rp",
+    status: "Success",
     cardLast4: "1995",
   },
 ];
@@ -230,14 +252,86 @@ interface RightSidebarContentProps {
 export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
   className,
 }) => {
+  const { categories, matchMerchant } = useCategory();
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
   const [filter, setFilter] = useState<"all" | "declined" | "success">("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Helper to resolve category item & merchant details (including logo) for a transaction
+  const getTransactionInfo = (tx: Transaction) => {
+    // 1. Try matching with CategoryContext matcher
+    const match = matchMerchant(tx.merchant);
+
+    // Resolve Category
+    let category: CategoryItem | undefined = match.category || undefined;
+    if (!category && tx.categoryId) {
+      category = categories.find((c) => c.id === tx.categoryId);
+    }
+    if (!category) {
+      category = categories.find(
+        (c) => c.name.toLowerCase() === tx.category.toLowerCase()
+      );
+    }
+    if (!category) {
+      category = DEFAULT_CATEGORIES.find(
+        (c) => c.id === tx.categoryId || c.name.toLowerCase() === tx.category.toLowerCase()
+      );
+    }
+    if (!category) {
+      category = DEFAULT_CATEGORIES[0];
+    }
+
+    // Resolve Logo URL from matched merchant item
+    let logoUrl: string | undefined = match.merchant?.logoUrl;
+
+    // If no logoUrl yet, check if any merchant inside the category matches
+    if (!logoUrl && category?.merchants) {
+      const q = tx.merchant.toLowerCase().trim();
+      const matchedM = category.merchants.find((m) => {
+        const mName = m.name.toLowerCase();
+        if (mName === q || q.includes(mName) || mName.includes(q)) return true;
+        if (
+          m.subMerchants?.some((sub) => {
+            const subName = sub.toLowerCase();
+            return subName === q || q.includes(subName) || subName.includes(q);
+          })
+        ) {
+          return true;
+        }
+        return false;
+      });
+      if (matchedM?.logoUrl) {
+        logoUrl = matchedM.logoUrl;
+      }
+    }
+
+    // Direct / partial lookup in DEFAULT_MERCHANT_LOGOS
+    if (!logoUrl) {
+      const q = tx.merchant.toLowerCase().trim();
+      if (DEFAULT_MERCHANT_LOGOS[q]) {
+        logoUrl = DEFAULT_MERCHANT_LOGOS[q];
+      } else {
+        const key = Object.keys(DEFAULT_MERCHANT_LOGOS).find(
+          (k) => q.includes(k) || k.includes(q)
+        );
+        if (key) {
+          logoUrl = DEFAULT_MERCHANT_LOGOS[key];
+        }
+      }
+    }
+
+    return {
+      category,
+      merchant: match.merchant,
+      logoUrl,
+    };
+  };
 
   const totalDeclined = INITIAL_TRANSACTIONS.filter((t) => t.status === "Declined").length;
   const totalSuccess = INITIAL_TRANSACTIONS.filter((t) => t.status === "Success").length;
 
   const filteredTransactions = INITIAL_TRANSACTIONS.filter((tx) => {
+    const info = getTransactionInfo(tx);
     const matchesFilter =
       filter === "all"
         ? true
@@ -245,37 +339,18 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
         ? tx.status === "Declined"
         : tx.status === "Success";
 
+    const cleanSearch = searchQuery.toLowerCase().trim();
     const matchesSearch =
-      tx.merchant.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tx.category.toLowerCase().includes(searchQuery.toLowerCase());
+      !cleanSearch ||
+      tx.merchant.toLowerCase().includes(cleanSearch) ||
+      tx.category.toLowerCase().includes(cleanSearch) ||
+      info.category.name.toLowerCase().includes(cleanSearch) ||
+      (info.category.apiCategoryName && info.category.apiCategoryName.toLowerCase().includes(cleanSearch));
 
     return matchesFilter && matchesSearch;
   });
 
-  const getTransactionIcon = (type: Transaction["iconType"]) => {
-    switch (type) {
-      case "education":
-        return <GraduationCap className="h-5 w-5 text-gray-800 dark:text-gray-200" strokeWidth={1.75} />;
-      case "music":
-        return <Music className="h-5 w-5 text-gray-800 dark:text-gray-200" strokeWidth={1.75} />;
-      case "tech":
-        return <Code2 className="h-5 w-5 text-gray-800 dark:text-gray-200" strokeWidth={1.75} />;
-      case "cloud":
-        return <Cloud className="h-5 w-5 text-gray-800 dark:text-gray-200" strokeWidth={1.75} />;
-      case "ai":
-        return <Sparkles className="h-5 w-5 text-purple-600 dark:text-purple-400" strokeWidth={1.75} />;
-      case "streaming":
-        return <Film className="h-5 w-5 text-rose-600 dark:text-rose-400" strokeWidth={1.75} />;
-      case "design":
-        return <Palette className="h-5 w-5 text-indigo-600 dark:text-indigo-400" strokeWidth={1.75} />;
-      case "gaming":
-        return <Gamepad2 className="h-5 w-5 text-amber-600 dark:text-amber-400" strokeWidth={1.75} />;
-      case "food":
-        return <Coffee className="h-5 w-5 text-emerald-600 dark:text-emerald-400" strokeWidth={1.75} />;
-      default:
-        return <CreditCard className="h-5 w-5 text-gray-800 dark:text-gray-200" strokeWidth={1.75} />;
-    }
-  };
+  const selectedInfo = selectedTx ? getTransactionInfo(selectedTx) : null;
 
   return (
     <div className={cn("space-y-3.5", className)}>
@@ -368,50 +443,77 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
                 Tidak ada transaksi yang cocok dengan pencarian atau filter Anda.
               </div>
             ) : (
-              filteredTransactions.map((tx) => (
-                <div
-                  key={tx.id}
-                  onClick={() => setSelectedTx(tx)}
-                  className="group flex items-center justify-between p-3 sm:p-3.5 rounded-2xl hover:bg-gray-50/80 dark:hover:bg-gray-800/50 cursor-pointer transition-all"
-                >
-                  {/* Left: Icon + Merchant & Category / Date */}
-                  <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 transition-transform group-hover:scale-105">
-                      {getTransactionIcon(tx.iconType)}
+              filteredTransactions.map((tx) => {
+                const info = getTransactionInfo(tx);
+                return (
+                  <div
+                    key={tx.id}
+                    onClick={() => setSelectedTx(tx)}
+                    className="group flex items-center justify-between p-3 sm:p-3.5 rounded-2xl hover:bg-gray-50/80 dark:hover:bg-gray-800/50 cursor-pointer transition-all"
+                  >
+                    {/* Left: Merchant Logo (fallback to Category Icon) + Merchant & Category / Date */}
+                    <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+                      {info.logoUrl ? (
+                        <MerchantLogo
+                          name={tx.merchant}
+                          logoUrl={info.logoUrl}
+                          size="lg"
+                          className="h-11 w-11 rounded-2xl group-hover:scale-105"
+                          fallback={
+                            <CategoryIcon
+                              iconType={info.category.iconType}
+                              iconName={info.category.iconName}
+                              iconSrc={info.category.iconSrc}
+                              color={info.category.color}
+                              size="md"
+                              className="h-11 w-11 rounded-2xl group-hover:scale-105"
+                            />
+                          }
+                        />
+                      ) : (
+                        <CategoryIcon
+                          iconType={info.category.iconType}
+                          iconName={info.category.iconName}
+                          iconSrc={info.category.iconSrc}
+                          color={info.category.color}
+                          size="md"
+                          className="h-11 w-11 rounded-2xl group-hover:scale-105"
+                        />
+                      )}
+
+                      <div className="min-w-0">
+                        <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white truncate">
+                          {tx.merchant}
+                        </h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                          {info.category.name} • {tx.date}
+                        </p>
+                      </div>
                     </div>
 
-                    <div className="min-w-0">
-                      <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white truncate">
-                        {tx.merchant}
-                      </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
-                        {tx.category} • {tx.date}
-                      </p>
+                    {/* Right: Amount + Status Badge */}
+                    <div className="text-right shrink-0 pl-3">
+                      <div className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">
+                        {formatAmount(tx.amount, tx.currency)}
+                      </div>
+
+                      {tx.status === "Declined" ? (
+                        <span className="inline-block mt-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-[11px] font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                          Ditolak
+                        </span>
+                      ) : tx.status === "Success" ? (
+                        <span className="inline-block mt-1 rounded-full bg-success-50 px-2.5 py-0.5 text-[11px] font-medium text-success-600 dark:bg-success-500/10 dark:text-success-400">
+                          Berhasil
+                        </span>
+                      ) : (
+                        <span className="inline-block mt-1 rounded-full bg-warning-50 px-2.5 py-0.5 text-[11px] font-medium text-warning-600 dark:bg-warning-500/10 dark:text-warning-400">
+                          Menunggu
+                        </span>
+                      )}
                     </div>
                   </div>
-
-                  {/* Right: Amount + Status Badge */}
-                  <div className="text-right shrink-0 pl-3">
-                    <div className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">
-                      {formatAmount(tx.amount, tx.currency)}
-                    </div>
-
-                    {tx.status === "Declined" ? (
-                      <span className="inline-block mt-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-[11px] font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-                        Ditolak
-                      </span>
-                    ) : tx.status === "Success" ? (
-                      <span className="inline-block mt-1 rounded-full bg-success-50 px-2.5 py-0.5 text-[11px] font-medium text-success-600 dark:bg-success-500/10 dark:text-success-400">
-                        Berhasil
-                      </span>
-                    ) : (
-                      <span className="inline-block mt-1 rounded-full bg-warning-50 px-2.5 py-0.5 text-[11px] font-medium text-warning-600 dark:bg-warning-500/10 dark:text-warning-400">
-                        Menunggu
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
@@ -424,24 +526,57 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
             <button
               type="button"
               onClick={() => setSelectedTx(null)}
-              className="absolute right-4 top-4 rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+              className="absolute right-4 top-4 rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
 
-            <div className="flex items-center gap-3.5 mb-6">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-                {getTransactionIcon(selectedTx.iconType)}
+            {selectedInfo && (
+              <div className="flex items-center gap-3.5 mb-6">
+                {selectedInfo.logoUrl ? (
+                  <MerchantLogo
+                    name={selectedTx.merchant}
+                    logoUrl={selectedInfo.logoUrl}
+                    size="xl"
+                    className="h-14 w-14 rounded-2xl"
+                    fallback={
+                      <CategoryIcon
+                        iconType={selectedInfo.category.iconType}
+                        iconName={selectedInfo.category.iconName}
+                        iconSrc={selectedInfo.category.iconSrc}
+                        color={selectedInfo.category.color}
+                        size="lg"
+                        className="h-14 w-14 rounded-2xl"
+                      />
+                    }
+                  />
+                ) : (
+                  <CategoryIcon
+                    iconType={selectedInfo.category.iconType}
+                    iconName={selectedInfo.category.iconName}
+                    iconSrc={selectedInfo.category.iconSrc}
+                    color={selectedInfo.category.color}
+                    size="lg"
+                    className="h-14 w-14 rounded-2xl"
+                  />
+                )}
+                <div className="min-w-0">
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white truncate">
+                    {selectedTx.merchant}
+                  </h4>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {selectedInfo.category.name}
+                    </p>
+                    {selectedInfo.category.apiCategoryName && (
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-medium">
+                        {selectedInfo.category.apiCategoryName}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div>
-                <h4 className="text-lg font-bold text-gray-900 dark:text-white">
-                  {selectedTx.merchant}
-                </h4>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {selectedTx.category}
-                </p>
-              </div>
-            </div>
+            )}
 
             <div className="rounded-2xl bg-gray-50 dark:bg-gray-800/50 p-4 mb-5 text-center">
               <span className="text-xs uppercase font-medium text-gray-400 tracking-wider">

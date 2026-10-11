@@ -18,7 +18,7 @@ import {
   TableIcon,
   UserCircleIcon,
 } from "@/icons";
-import { CreditCard, Sparkles, X } from "lucide-react";
+import { CreditCard, InfoIcon, Sparkles, X } from "lucide-react";
 import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
@@ -45,7 +45,7 @@ const sakuinNavItems: NavItem[] = [
   },
   {
     name: "Informasi & Promo",
-    icon: <Sparkles className="w-5 h-5" />,
+    icon: <InfoIcon className="w-5 h-5" />,
     path: "/promo",
     new: true,
   },
@@ -70,14 +70,19 @@ const templateNavItems: NavItem[] = [
   // },
   {
     icon: <UserCircleIcon />,
-    name: "Daftar Pelanggan",
+    name: "Pelanggan",
     path: "/profile",
   },
-  // {
-  //   name: "Forms",
-  //   icon: <ListIcon />,
-  //   subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-  // },
+  {
+    name: "Informasi & Promo",
+    icon: <InfoIcon />,
+    path: "/admin/merchant",
+  },
+  {
+    name: "Kategori Merchant",
+    icon: <ListIcon />,
+    path: "/admin/merchant",
+  },
   // {
   //   name: "Tables",
   //   icon: <TableIcon />,
@@ -258,7 +263,7 @@ const AppSidebar: React.FC = () => {
                     "menu-dropdown-badge"
                   )}
                 >
-                  NEW
+                  BARU
                 </span>
               )}
               <ChevronDownIcon
@@ -306,7 +311,7 @@ const AppSidebar: React.FC = () => {
                         : "menu-dropdown-badge-inactive"
                     )}
                   >
-                    NEW
+                    BARU
                   </span>
                 )}
               </Link>
