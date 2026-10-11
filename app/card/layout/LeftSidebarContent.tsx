@@ -31,52 +31,30 @@ import AddCardModal from "@/components/card/AddCardModal";
 import VerifyPinModal from "@/components/card/VerifyPinModal";
 import NoticeBanner from "@/components/card/NoticeBanner";
 import { cn } from "@/lib/utils";
-
-const INITIAL_CARDS = [
-  {
-    id: 1,
-    name: "SakuCard 1",
-    number: "4532 8821 9012 1995",
-    last4: "1995",
-    holder: "ERLANGGA A. ARIFIN",
-    exp: "08/29",
-    cvv: "832",
-    balance: 2450000,
-    pin: "111111",
-    image: "/images/card/gradient/card.gradient.1.png",
-  },
-  {
-    id: 2,
-    name: "SakuCard 2",
-    number: "4111 2233 4455 8820",
-    last4: "8820",
-    holder: "ERLANGGA A. ARIFIN",
-    exp: "12/28",
-    cvv: "419",
-    balance: 850000,
-    pin: "111111",
-    image: "/images/card/gradient/card.gradient.2.png",
-  },
-  {
-    id: 3,
-    name: "SakuCard 3",
-    number: "4716 9901 3342 7704",
-    last4: "7704",
-    holder: "ERLANGGA A. ARIFIN",
-    exp: "05/30",
-    cvv: "651",
-    balance: 15750000,
-    pin: "111111",
-    image: "/images/card/gradient/card.gradient.3.png",
-  },
-];
+import {
+  useCards,
+  useCreateCard,
+  useUpdateCardName,
+  useUpdateCardIllustration,
+  useTopUpCard,
+  useToggleFreezeCard,
+  useChangeCardPin,
+  useDeleteCard,
+} from "@/hooks/useCards";
 
 export const LeftSidebarContent: React.FC = () => {
-  const [cards, setCards] = useState(INITIAL_CARDS);
+  const { data: cards = [] } = useCards();
+  const createCardMutation = useCreateCard();
+  const updateCardNameMutation = useUpdateCardName();
+  const updateIllustrationMutation = useUpdateCardIllustration();
+  const topUpMutation = useTopUpCard();
+  const toggleFreezeMutation = useToggleFreezeCard();
+  const changePinMutation = useChangeCardPin();
+  const deleteCardMutation = useDeleteCard();
+
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [copiedNumber, setCopiedNumber] = useState(false);
   const [copiedCvv, setCopiedCvv] = useState(false);
-  const [isFrozen, setIsFrozen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
@@ -99,7 +77,20 @@ export const LeftSidebarContent: React.FC = () => {
     };
   }, []);
 
-  const currentCard = cards[activeCardIndex] || cards[0];
+  const currentCard = cards[activeCardIndex] || cards[0] || {
+    id: 1,
+    name: "SakuCard 1",
+    number: "4532 8821 9012 1995",
+    last4: "1995",
+    holder: "ERLANGGA A. ARIFIN",
+    exp: "08/29",
+    cvv: "832",
+    balance: 0,
+    isFrozen: false,
+    image: "/images/card/gradient/card.gradient.1.png",
+    pin: "111111",
+  };
+  const isFrozen = Boolean(currentCard.isFrozen);
 
   const handlePrevCard = () => {
     setShowDetails(false);
@@ -118,98 +109,79 @@ export const LeftSidebarContent: React.FC = () => {
     name: string;
     initialDeposit: number;
   }) => {
-    const nextNum = cards.length + 1;
-    const randLast4 = String(Math.floor(1000 + Math.random() * 9000));
-    const newCard = {
-      id: nextNum,
-      name: name.trim() || `SakuCard ${nextNum}`,
-      number: `4532 8821 9012 ${randLast4}`,
-      last4: randLast4,
-      holder: "ERLANGGA A. ARIFIN",
-      exp: "09/31",
-      cvv: String(Math.floor(100 + Math.random() * 900)),
-      balance: initialDeposit,
-      pin: "111111",
-      image: `/images/card/gradient/card.gradient.${((nextNum - 1) % 6) + 1}.png`,
-    };
-    setCards((prev) => [...prev, newCard]);
-    setActiveCardIndex(cards.length);
-    if (initialDeposit > 0) {
-      const formatted = new Intl.NumberFormat("id-ID", {
-        style: "currency",
-        currency: "IDR",
-        maximumFractionDigits: 0,
-      }).format(initialDeposit);
-      showToast(
-        `Kartu "${newCard.name}" berhasil dibuat dengan saldo awal ${formatted}!`
-      );
-    } else {
-      showToast(`Kartu "${newCard.name}" berhasil ditambahkan!`);
-    }
+    createCardMutation.mutate(
+      { name, initialDeposit },
+      {
+        onSuccess: (newCard) => {
+          setActiveCardIndex(cards.length);
+          if (initialDeposit > 0) {
+            const formatted = new Intl.NumberFormat("id-ID", {
+              style: "currency",
+              currency: "IDR",
+              maximumFractionDigits: 0,
+            }).format(initialDeposit);
+            showToast(
+              `Kartu "${newCard.name}" berhasil dibuat dengan saldo awal ${formatted}!`
+            );
+          } else {
+            showToast(`Kartu "${newCard.name}" berhasil ditambahkan!`);
+          }
+        },
+      }
+    );
   };
 
   const handleSaveCardName = (newName: string) => {
-    setCards((prev) =>
-      prev.map((c, idx) =>
-        idx === activeCardIndex ? { ...c, name: newName } : c
-      )
+    if (!currentCard) return;
+    updateCardNameMutation.mutate(
+      { id: currentCard.id, name: newName },
+      {
+        onSuccess: () => {
+          showToast(`Nama kartu berhasil diubah menjadi "${newName}"`);
+        },
+      }
     );
-    showToast(`Nama kartu berhasil diubah menjadi "${newName}"`);
   };
 
   const handleSaveCardIllustration = (newImage: string) => {
-    setCards((prev) =>
-      prev.map((c, idx) =>
-        idx === activeCardIndex ? { ...c, image: newImage } : c
-      )
+    if (!currentCard) return;
+    updateIllustrationMutation.mutate(
+      { id: currentCard.id, image: newImage },
+      {
+        onSuccess: () => {
+          showToast(`Ilustrasi ${currentCard.name} berhasil diperbarui.`);
+        },
+      }
     );
-    showToast(`Ilustrasi ${currentCard.name} berhasil diperbarui.`);
   };
 
   const handleDeleteCard = () => {
-    if (cards.length <= 1) {
-      const resetCard = {
-        id: 1,
-        name: "SakuCard 1",
-        number: "4532 8821 9012 1995",
-        last4: "1995",
-        holder: "ERLANGGA A. ARIFIN",
-        exp: "08/29",
-        cvv: "832",
-        balance: 2450000,
-        pin: "111111",
-        image: "/images/card/gradient/card.gradient.1.png",
-      };
-      setCards([resetCard]);
-      setActiveCardIndex(0);
-      showToast("Kartu berhasil direset ke pengaturan awal.");
-      return;
-    }
+    if (!currentCard) return;
     const cardNameToDelete = currentCard.name;
-    const newCards = cards.filter((_, idx) => idx !== activeCardIndex);
-    setCards(newCards);
-    setActiveCardIndex((prev) => (prev >= newCards.length ? newCards.length - 1 : prev));
-    showToast(`${cardNameToDelete} berhasil dihapus.`);
+    deleteCardMutation.mutate(currentCard.id, {
+      onSuccess: () => {
+        setActiveCardIndex((prev) => (prev > 0 ? prev - 1 : 0));
+        showToast(`${cardNameToDelete} berhasil dihapus.`);
+      },
+    });
   };
 
   const handleTopUpSuccess = (amountFormatted: string, numericAmount: number) => {
-    setCards((prev) =>
-      prev.map((c, idx) =>
-        idx === activeCardIndex
-          ? { ...c, balance: (c.balance || 0) + numericAmount }
-          : c
-      )
+    if (!currentCard) return;
+    topUpMutation.mutate(
+      { id: currentCard.id, amount: numericAmount },
+      {
+        onSuccess: () => {
+          showToast(`Top Up ${amountFormatted} ke ${currentCard.name} berhasil!`);
+        },
+      }
     );
-    showToast(`Top Up ${amountFormatted} ke ${currentCard.name} berhasil!`);
   };
 
   const handleChangePinSuccess = (newPin?: string) => {
+    if (!currentCard) return;
     if (newPin) {
-      setCards((prev) =>
-        prev.map((c, idx) =>
-          idx === activeCardIndex ? { ...c, pin: newPin } : c
-        )
-      );
+      changePinMutation.mutate({ id: currentCard.id, pin: newPin });
     }
     showToast(`PIN ${currentCard.name} berhasil diperbarui!`);
   };
@@ -244,13 +216,16 @@ export const LeftSidebarContent: React.FC = () => {
   };
 
   const handleToggleFreeze = () => {
-    const nextState = !isFrozen;
-    setIsFrozen(nextState);
-    showToast(
-      nextState
-        ? `${currentCard.name} telah berhasil dibekukan untuk keamanan.`
-        : `${currentCard.name} telah diaktifkan kembali.`
-    );
+    if (!currentCard) return;
+    toggleFreezeMutation.mutate(currentCard.id, {
+      onSuccess: (updated) => {
+        showToast(
+          updated.isFrozen
+            ? `${updated.name} telah berhasil dibekukan untuk keamanan.`
+            : `${updated.name} telah diaktifkan kembali.`
+        );
+      },
+    });
   };
 
   const handleToggleDetails = () => {

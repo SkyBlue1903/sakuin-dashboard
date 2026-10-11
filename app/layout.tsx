@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { SidebarProvider } from "@/context/SidebarContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import QueryProvider from "@/components/providers/QueryProvider";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -49,9 +50,11 @@ export default function RootLayout({
         />
       </head>
       <body className={`${outfit.className} min-h-full flex flex-col antialiased dark:bg-gray-950 dark:text-gray-100`}>
-        <ThemeProvider>
-          <SidebarProvider>{children}</SidebarProvider>
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider>
+            <SidebarProvider>{children}</SidebarProvider>
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

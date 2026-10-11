@@ -19,6 +19,7 @@ import {
   MerchantItem,
 } from "@/context/CategoryContext";
 import { Modal } from "@/components/ui/modal";
+import { useTransactions } from "@/hooks/useTransactions";
 
 export interface Transaction {
   id: string;
@@ -254,6 +255,7 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
   className,
 }) => {
   const { categories, matchMerchant } = useCategory();
+  const { data: transactions = INITIAL_TRANSACTIONS } = useTransactions();
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
   const [filter, setFilter] = useState<"all" | "declined" | "success">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -328,10 +330,10 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
     };
   };
 
-  const totalDeclined = INITIAL_TRANSACTIONS.filter((t) => t.status === "Declined").length;
-  const totalSuccess = INITIAL_TRANSACTIONS.filter((t) => t.status === "Success").length;
+  const totalDeclined = transactions.filter((t) => t.status === "Declined").length;
+  const totalSuccess = transactions.filter((t) => t.status === "Success").length;
 
-  const filteredTransactions = INITIAL_TRANSACTIONS.filter((tx) => {
+  const filteredTransactions = transactions.filter((tx) => {
     const info = getTransactionInfo(tx);
     const matchesFilter =
       filter === "all"
