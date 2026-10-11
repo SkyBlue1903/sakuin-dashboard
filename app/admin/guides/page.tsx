@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import CardLayout from "@/app/card/layout/CardLayout";
 import { PromoProvider } from "@/context/PromoContext";
-import Panduan from "./Panduan";
+import AdminGuidesLayout from "./AdminGuidesLayout";
 
 export const metadata: Metadata = {
-  title: "Panduan | Sakuin",
-  description: "Petunjuk praktis dan panduan langkah demi langkah fitur kartu virtual langsung di dashboard Sakuin",
+  title: "Panduan | Sakuin Dashboard",
+  description: "Kelola panduan langkah, petunjuk interaktif, dan dokumentasi dashboard di Sakuin",
 };
 
-export default function PanduanPage() {
+export default function AdminGuidesPage() {
   return (
     <CardLayout>
       <PromoProvider>
-        <Panduan />
+        <AdminGuidesLayout />
       </PromoProvider>
     </CardLayout>
   );

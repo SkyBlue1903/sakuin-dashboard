@@ -11,10 +11,9 @@ import {
 import { cn } from "@/utils";
 import CategoryIcon from "@/components/admin/CategoryIcon";
 import MerchantLogo from "@/components/admin/MerchantLogo";
+import TransactionMerchantAvatar from "@/components/card/TransactionMerchantAvatar";
 import {
   useCategory,
-  DEFAULT_CATEGORIES,
-  DEFAULT_MERCHANT_LOGOS,
   CategoryItem,
   MerchantItem,
 } from "@/context/CategoryContext";
@@ -38,7 +37,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-001",
     merchant: "coursiv.org",
-    categoryId: "pendidikan",
+    categoryId: "7",
     category: "Pendidikan & Kursus",
     date: "4 September, 19:44",
     amount: "-689.000",
@@ -50,7 +49,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-002",
     merchant: "coursiv.org",
-    categoryId: "pendidikan",
+    categoryId: "7",
     category: "Pendidikan & Kursus",
     date: "4 September, 19:44",
     amount: "-689.000",
@@ -62,7 +61,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-003",
     merchant: "ChatGPT Plus Subscription",
-    categoryId: "ai",
+    categoryId: "5",
     category: "AI & Produktivitas",
     date: "3 September, 14:10",
     amount: "-315.000",
@@ -73,7 +72,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-004",
     merchant: "Spotify Premium",
-    categoryId: "hiburan",
+    categoryId: "6",
     category: "Hiburan & Musik",
     date: "1 September, 10:15",
     amount: "-54.990",
@@ -84,7 +83,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-005",
     merchant: "GitHub Copilot",
-    categoryId: "tech",
+    categoryId: "4",
     category: "Alat Pengembang & IT",
     date: "28 Agustus, 08:30",
     amount: "-155.000",
@@ -95,7 +94,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-006",
     merchant: "Netflix",
-    categoryId: "hiburan",
+    categoryId: "6",
     category: "Hiburan & Musik",
     date: "26 Agustus, 21:05",
     amount: "-186.000",
@@ -106,7 +105,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-007",
     merchant: "Tokopedia",
-    categoryId: "belanja",
+    categoryId: "1",
     category: "Belanja & Retail",
     date: "24 Agustus, 16:30",
     amount: "-425.000",
@@ -117,7 +116,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-008",
     merchant: "AWS Cloud",
-    categoryId: "tech",
+    categoryId: "4",
     category: "Alat Pengembang & IT",
     date: "20 Agustus, 03:12",
     amount: "-840.000",
@@ -128,7 +127,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-009",
     merchant: "Figma Professional",
-    categoryId: "ai",
+    categoryId: "5",
     category: "AI & Produktivitas",
     date: "18 Agustus, 11:45",
     amount: "-235.000",
@@ -139,7 +138,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-010",
     merchant: "Steam Games",
-    categoryId: "hiburan",
+    categoryId: "6",
     category: "Hiburan & Musik",
     date: "15 Agustus, 19:30",
     amount: "-500.000",
@@ -151,7 +150,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-011",
     merchant: "Midjourney",
-    categoryId: "ai",
+    categoryId: "5",
     category: "AI & Produktivitas",
     date: "12 Agustus, 16:20",
     amount: "-465.000",
@@ -162,7 +161,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-012",
     merchant: "Starbucks Coffee",
-    categoryId: "makanan",
+    categoryId: "2",
     category: "Makanan & Minuman",
     date: "10 Agustus, 09:15",
     amount: "-135.000",
@@ -173,7 +172,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-013",
     merchant: "Pertamina",
-    categoryId: "transportasi",
+    categoryId: "3",
     category: "Transportasi & Bensin",
     date: "8 Agustus, 17:40",
     amount: "-350.000",
@@ -184,7 +183,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-014",
     merchant: "PLN Pascabayar",
-    categoryId: "tagihan",
+    categoryId: "8",
     category: "Tagihan & Utilitas",
     date: "5 Agustus, 10:00",
     amount: "-485.000",
@@ -195,7 +194,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-015",
     merchant: "Halodoc",
-    categoryId: "kesehatan",
+    categoryId: "9",
     category: "Kesehatan & Farmasi",
     date: "3 Agustus, 14:15",
     amount: "-180.000",
@@ -206,7 +205,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-016",
     merchant: "McDonald's",
-    categoryId: "makanan",
+    categoryId: "2",
     category: "Makanan & Minuman",
     date: "1 Agustus, 12:30",
     amount: "-115.000",
@@ -217,7 +216,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-017",
     merchant: "Vercel Pro Team",
-    categoryId: "tech",
+    categoryId: "4",
     category: "Alat Pengembang & IT",
     date: "28 Juli, 18:20",
     amount: "-310.000",
@@ -228,10 +227,32 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-018",
     merchant: "Alfamart",
-    categoryId: "belanja",
+    categoryId: "1",
     category: "Belanja & Retail",
     date: "25 Juli, 20:10",
     amount: "-78.500",
+    currency: "Rp",
+    status: "Success",
+    cardLast4: "1995",
+  },
+  {
+    id: "tx-019",
+    merchant: "Warung Kopi Senja",
+    categoryId: "2",
+    category: "Makanan & Minuman",
+    date: "24 Juli, 15:45",
+    amount: "-32.000",
+    currency: "Rp",
+    status: "Success",
+    cardLast4: "1995",
+  },
+  {
+    id: "tx-020",
+    merchant: "Toko Kelontong Berkah",
+    categoryId: "unknown",
+    category: "Lain-lain",
+    date: "22 Juli, 11:20",
+    amount: "-45.000",
     currency: "Rp",
     status: "Success",
     cardLast4: "1995",
@@ -265,30 +286,23 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
     // 1. Try matching with CategoryContext matcher
     const match = matchMerchant(tx.merchant);
 
-    // Resolve Category
+    // Resolve Category (strictly match by matcher, categoryId, or category name)
     let category: CategoryItem | undefined = match.category || undefined;
     if (!category && tx.categoryId) {
       category = categories.find((c) => c.id === tx.categoryId);
     }
-    if (!category) {
+    if (!category && tx.category) {
       category = categories.find(
         (c) => c.name.toLowerCase() === tx.category.toLowerCase()
       );
     }
-    if (!category) {
-      category = DEFAULT_CATEGORIES.find(
-        (c) => c.id === tx.categoryId || c.name.toLowerCase() === tx.category.toLowerCase()
-      );
-    }
-    if (!category) {
-      category = DEFAULT_CATEGORIES[0];
-    }
 
     // Resolve Logo URL from matched merchant item
     let logoUrl: string | undefined = match.merchant?.logoUrl;
+    let logoDarkUrl: string | undefined = match.merchant?.logoDarkUrl;
 
     // If no logoUrl yet, check if any merchant inside the category matches
-    if (!logoUrl && category?.merchants) {
+    if ((!logoUrl || !logoDarkUrl) && category?.merchants) {
       const q = tx.merchant.toLowerCase().trim();
       const matchedM = category.merchants.find((m) => {
         const mName = m.name.toLowerCase();
@@ -303,23 +317,11 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
         }
         return false;
       });
-      if (matchedM?.logoUrl) {
+      if (matchedM?.logoUrl && !logoUrl) {
         logoUrl = matchedM.logoUrl;
       }
-    }
-
-    // Direct / partial lookup in DEFAULT_MERCHANT_LOGOS
-    if (!logoUrl) {
-      const q = tx.merchant.toLowerCase().trim();
-      if (DEFAULT_MERCHANT_LOGOS[q]) {
-        logoUrl = DEFAULT_MERCHANT_LOGOS[q];
-      } else {
-        const key = Object.keys(DEFAULT_MERCHANT_LOGOS).find(
-          (k) => q.includes(k) || k.includes(q)
-        );
-        if (key) {
-          logoUrl = DEFAULT_MERCHANT_LOGOS[key];
-        }
+      if (matchedM?.logoDarkUrl && !logoDarkUrl) {
+        logoDarkUrl = matchedM.logoDarkUrl;
       }
     }
 
@@ -327,6 +329,7 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
       category,
       merchant: match.merchant,
       logoUrl,
+      logoDarkUrl,
     };
   };
 
@@ -346,9 +349,8 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
     const matchesSearch =
       !cleanSearch ||
       tx.merchant.toLowerCase().includes(cleanSearch) ||
-      tx.category.toLowerCase().includes(cleanSearch) ||
-      info.category.name.toLowerCase().includes(cleanSearch) ||
-      (info.category.apiCategoryName && info.category.apiCategoryName.toLowerCase().includes(cleanSearch));
+      (info.category && info.category.name.toLowerCase().includes(cleanSearch)) ||
+      (info.category?.apiCategoryName && info.category.apiCategoryName.toLowerCase().includes(cleanSearch));
 
     return matchesFilter && matchesSearch;
   });
@@ -454,42 +456,23 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
                     onClick={() => setSelectedTx(tx)}
                     className="group flex items-center justify-between p-3 sm:p-3.5 rounded-2xl hover:bg-gray-50/80 dark:hover:bg-gray-800/50 cursor-pointer transition-all"
                   >
-                    {/* Left: Merchant Logo (fallback to Category Icon) + Merchant & Category / Date */}
+                    {/* Left: Merchant Logo / Category Icon / Initial + Merchant & Category / Date */}
                     <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
-                      {info.logoUrl ? (
-                        <MerchantLogo
-                          name={tx.merchant}
-                          logoUrl={info.logoUrl}
-                          size="lg"
-                          className="h-11 w-11 rounded-2xl group-hover:scale-105"
-                          fallback={
-                            <CategoryIcon
-                              iconType={info.category.iconType}
-                              iconName={info.category.iconName}
-                              iconSrc={info.category.iconSrc}
-                              color={info.category.color}
-                              size="md"
-                              className="h-11 w-11 rounded-2xl group-hover:scale-105"
-                            />
-                          }
-                        />
-                      ) : (
-                        <CategoryIcon
-                          iconType={info.category.iconType}
-                          iconName={info.category.iconName}
-                          iconSrc={info.category.iconSrc}
-                          color={info.category.color}
-                          size="md"
-                          className="h-11 w-11 rounded-2xl group-hover:scale-105"
-                        />
-                      )}
+                      <TransactionMerchantAvatar
+                        merchantName={tx.merchant}
+                        logoUrl={info.logoUrl}
+                        logoDarkUrl={info.logoDarkUrl}
+                        category={info.category}
+                        size="lg"
+                        className="h-11 w-11 rounded-2xl group-hover:scale-105"
+                      />
 
                       <div className="min-w-0">
                         <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white truncate">
                           {tx.merchant}
                         </h3>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
-                          {info.category.name} • {tx.date}
+                          {info.category ? info.category.name : (tx.category || "Tanpa Kategori")} • {tx.date}
                         </p>
                       </div>
                     </div>
@@ -541,42 +524,23 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
 
             {selectedInfo && (
               <div className="flex items-center gap-3.5 mb-6">
-                {selectedInfo.logoUrl ? (
-                  <MerchantLogo
-                    name={selectedTx.merchant}
-                    logoUrl={selectedInfo.logoUrl}
-                    size="xl"
-                    className="h-14 w-14 rounded-2xl"
-                    fallback={
-                      <CategoryIcon
-                        iconType={selectedInfo.category.iconType}
-                        iconName={selectedInfo.category.iconName}
-                        iconSrc={selectedInfo.category.iconSrc}
-                        color={selectedInfo.category.color}
-                        size="lg"
-                        className="h-14 w-14 rounded-2xl"
-                      />
-                    }
-                  />
-                ) : (
-                  <CategoryIcon
-                    iconType={selectedInfo.category.iconType}
-                    iconName={selectedInfo.category.iconName}
-                    iconSrc={selectedInfo.category.iconSrc}
-                    color={selectedInfo.category.color}
-                    size="lg"
-                    className="h-14 w-14 rounded-2xl"
-                  />
-                )}
+                <TransactionMerchantAvatar
+                  merchantName={selectedTx.merchant}
+                  logoUrl={selectedInfo.logoUrl}
+                  logoDarkUrl={selectedInfo.logoDarkUrl}
+                  category={selectedInfo.category}
+                  size="xl"
+                  className="h-14 w-14 rounded-2xl"
+                />
                 <div className="min-w-0">
                   <h4 className="text-lg font-bold text-gray-900 dark:text-white truncate">
                     {selectedTx.merchant}
                   </h4>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {selectedInfo.category.name}
+                      {selectedInfo.category ? selectedInfo.category.name : (selectedTx.category || "Tanpa Kategori")}
                     </p>
-                    {selectedInfo.category.apiCategoryName && (
+                    {selectedInfo.category?.apiCategoryName && (
                       <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-medium">
                         {selectedInfo.category.apiCategoryName}
                       </span>

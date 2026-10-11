@@ -31,6 +31,7 @@ import AddCardModal from "@/components/card/AddCardModal";
 import VerifyPinModal from "@/components/card/VerifyPinModal";
 import NoticeBanner from "@/components/card/NoticeBanner";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/context/ToastContext";
 import {
   useCards,
   useCreateCard,
@@ -51,6 +52,7 @@ export const LeftSidebarContent: React.FC = () => {
   const toggleFreezeMutation = useToggleFreezeCard();
   const changePinMutation = useChangeCardPin();
   const deleteCardMutation = useDeleteCard();
+  const { showToast } = useToast();
 
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [copiedNumber, setCopiedNumber] = useState(false);
@@ -65,17 +67,6 @@ export const LeftSidebarContent: React.FC = () => {
   const [isEditIllustrationOpen, setIsEditIllustrationOpen] = useState(false);
   const [isAddCardOpen, setIsAddCardOpen] = useState(false);
   const [showNoticeBanner, setShowNoticeBanner] = useState(true);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [isToastVisible, setIsToastVisible] = useState(false);
-  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const toastRemoveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
-      if (toastRemoveTimeoutRef.current) clearTimeout(toastRemoveTimeoutRef.current);
-    };
-  }, []);
 
   const currentCard = cards[activeCardIndex] || cards[0] || {
     id: 1,
@@ -198,23 +189,6 @@ export const LeftSidebarContent: React.FC = () => {
     setTimeout(() => setCopiedCvv(false), 2000);
   };
 
-  const showToast = (msg: string) => {
-    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
-    if (toastRemoveTimeoutRef.current) clearTimeout(toastRemoveTimeoutRef.current);
-
-    setToastMessage(msg);
-    requestAnimationFrame(() => {
-      setIsToastVisible(true);
-    });
-
-    toastTimeoutRef.current = setTimeout(() => {
-      setIsToastVisible(false);
-      toastRemoveTimeoutRef.current = setTimeout(() => {
-        setToastMessage(null);
-      }, 350);
-    }, 2800);
-  };
-
   const handleToggleFreeze = () => {
     if (!currentCard) return;
     toggleFreezeMutation.mutate(currentCard.id, {
@@ -243,22 +217,6 @@ export const LeftSidebarContent: React.FC = () => {
 
   return (
     <div className="w-full md:h-full md:overflow-hidden pt-0 pb-8 md:pb-0">
-      {/* Toast Notification with Fluid In & Out Animation */}
-      {toastMessage && (
-        <div
-          className={cn(
-            "fixed top-20 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-out transform pointer-events-auto",
-            isToastVisible
-              ? "translate-y-0 opacity-100 scale-100"
-              : "-translate-y-4 opacity-0 scale-95 pointer-events-none"
-          )}
-        >
-          <div className="flex items-center gap-2 rounded-2xl bg-gray-900/95 dark:bg-white/95 backdrop-blur-md text-white dark:text-gray-900 px-4 py-2.5 text-xs sm:text-sm font-medium shadow-2xl border border-white/10 dark:border-black/10">
-            <Sparkles className="h-4 w-4 text-brand-400 dark:text-brand-600 shrink-0" />
-            <span>{toastMessage}</span>
-          </div>
-        </div>
-      )}
 
       {/* Main Responsive Layout:
           - Mobile (< md): stacked single column with natural document scroll

@@ -46,7 +46,7 @@ const sakuinNavItems: NavItem[] = [
   {
     name: "Panduan",
     icon: <BookOpen className="w-5 h-5" />,
-    path: "/panduan",
+    path: "/guides",
   },
   {
     name: "Informasi",
@@ -91,7 +91,7 @@ const templateNavItems: NavItem[] = [
   {
     name: "Panduan",
     icon: <BookOpen className="w-5 h-5" />,
-    path: "/admin/panduan",
+    path: "/admin/guides",
   },
   {
     name: "Promo",

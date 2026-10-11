@@ -6,9 +6,11 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 const ROUTE_TITLE_MAP: Record<string, string> = {
   "/card": "SakuCard",
   "/info": "Informasi",
+  "/guides": "Panduan",
   "/panduan": "Panduan",
   "/promo": "Promo",
   "/admin/info": "Informasi",
+  "/admin/guides": "Panduan",
   "/admin/panduan": "Panduan",
   "/admin/promo": "Promo",
   "/profile": "Detail Profil",

@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Search, Edit3, Trash2, Check, Sparkles, Layers, ChevronRight, RotateCcw } from "lucide-react";
+import { Plus, Search, Edit3, Trash2, Check, Sparkles, Layers, ChevronRight } from "lucide-react";
 import { useCategory, CategoryItem } from "@/context/CategoryContext";
 import CategoryIcon from "@/components/admin/CategoryIcon";
 import CategoryIconPickerModal from "@/components/admin/CategoryIconPickerModal";
 import { cn } from "@/utils";
+import { useToast } from "@/context/ToastContext";
 
 export const LeftSidebarContent: React.FC = () => {
   const {
@@ -17,9 +18,10 @@ export const LeftSidebarContent: React.FC = () => {
     addCategory,
     updateCategory,
     deleteCategory,
-    resetToDefault,
     totalMerchantsCount,
   } = useCategory();
+
+  const { showToast } = useToast();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,10 +47,12 @@ export const LeftSidebarContent: React.FC = () => {
     e.stopPropagation();
     if (confirm(`Yakin ingin menghapus kategori "${cat.name}"? Merchant di dalamnya akan terhapus.`)) {
       deleteCategory(cat.id);
+      showToast(`Kategori "${cat.name}" berhasil dihapus.`);
     }
   };
 
   const handleSaveCategory = (data: {
+    id?: string;
     name: string;
     apiCategoryName?: string;
     description?: string;
@@ -59,8 +63,10 @@ export const LeftSidebarContent: React.FC = () => {
   }) => {
     if (editingCategory) {
       updateCategory(editingCategory.id, data);
+      showToast(`Kategori "${data.name}" berhasil diperbarui!`);
     } else {
       addCategory(data);
+      showToast(`Kategori "${data.name}" berhasil ditambahkan!`);
     }
   };
 
@@ -102,15 +108,6 @@ export const LeftSidebarContent: React.FC = () => {
               <Plus className="w-3.5 h-3.5 text-brand-500" />
               <span>Tambah</span>
             </button>
-            <button
-              type="button"
-              onClick={resetToDefault}
-              title="Pulihkan data preset kategori & merchant bawaan"
-              className="flex h-9 items-center gap-1.5 px-3 rounded-full border border-gray-200/80 bg-white hover:bg-gray-50 text-xs font-semibold text-gray-600 shadow-2xs dark:border-gray-700 dark:bg-gray-800/90 dark:text-gray-300 dark:hover:bg-gray-700 active:scale-95 transition-all cursor-pointer"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline"> (DEV TEST ONLY)</span>
-            </button>
           </div>
         </div>
 
@@ -141,7 +138,7 @@ export const LeftSidebarContent: React.FC = () => {
             <p className="text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300">
               Tidak ada kategori, silakan tambah kategori terlebih dahulu
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-1">
+            <div className="flex items-center justify-center pt-1">
               <button
                 type="button"
                 onClick={handleOpenAddModal}
@@ -149,14 +146,6 @@ export const LeftSidebarContent: React.FC = () => {
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Tambah Kategori</span>
-              </button>
-              <button
-                type="button"
-                onClick={resetToDefault}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 text-gray-700 dark:text-gray-300 text-xs font-semibold shadow-2xs transition-all cursor-pointer"
-              >
-                <RotateCcw className="w-3.5 h-3.5 text-gray-500" />
-                <span>Pulihkan Preset Dummy</span>
               </button>
             </div>
           </div>
@@ -201,7 +190,7 @@ export const LeftSidebarContent: React.FC = () => {
                         {cat.name}
                       </span>
                       {cat.apiCategoryName && (
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-medium">
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-medium">
                           {cat.apiCategoryName}
                         </span>
                       )}

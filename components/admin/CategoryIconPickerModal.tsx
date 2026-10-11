@@ -10,6 +10,8 @@ import {
   Tag,
   Search,
   FolderOpen,
+  Key,
+  Copy,
 } from "lucide-react";
 import {
   CategoryIcon,
@@ -25,6 +27,7 @@ interface CategoryIconPickerModalProps {
   onClose: () => void;
   categoryToEdit?: CategoryItem | null;
   onSave: (data: {
+    id?: string;
     name: string;
     apiCategoryName?: string;
     description?: string;
@@ -56,6 +59,8 @@ export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (
 }) => {
   const [apiCategoryName, setApiCategoryName] = useState("");
   const [name, setName] = useState("");
+  const [tableId, setTableId] = useState("");
+  const [copiedId, setCopiedId] = useState(false);
   const [description, setDescription] = useState("");
   const [color, setColor] = useState("blue");
   const [iconType, setIconType] = useState<"lucide" | "image">("lucide");
@@ -65,6 +70,8 @@ export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
+  const isEditing = Boolean(categoryToEdit);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -72,6 +79,7 @@ export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (
   useEffect(() => {
     if (isOpen) {
       if (categoryToEdit) {
+        setTableId(categoryToEdit.id);
         setApiCategoryName(categoryToEdit.apiCategoryName || "");
         setName(categoryToEdit.name);
         setDescription(categoryToEdit.description || "");
@@ -80,6 +88,7 @@ export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (
         setIconName(categoryToEdit.iconName || "Tag");
         setIconSrc(categoryToEdit.iconSrc || "/images/category/belanja.svg");
       } else {
+        setTableId("");
         setApiCategoryName("");
         setName("");
         setDescription("");
@@ -90,6 +99,7 @@ export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (
       }
       setIconSearch("");
       setError(null);
+      setCopiedId(false);
     }
   }, [isOpen, categoryToEdit]);
 
@@ -107,6 +117,7 @@ export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (
     }
 
     onSave({
+      id: isEditing ? tableId.trim() : undefined,
       name: name.trim(),
       apiCategoryName: apiCategoryName.trim() || undefined,
       description: description.trim(),
@@ -169,7 +180,7 @@ export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (
                     {name || "Pratinjau Kategori"}
                   </span>
                   {apiCategoryName.trim() && (
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold">
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-semibold">
                       API: {apiCategoryName.trim()}
                     </span>
                   )}
@@ -184,26 +195,57 @@ export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (
             </span>
           </div>
 
-          {/* Form Fields: API Category Name (Sebelum Nama Kategori di Sakuin.id) */}
+          {/* Form Fields: ID Tabel */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block">
-                Nama Kategori Respon API
+              <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                <Key className="w-3.5 h-3.5 text-brand-500" />
+                <span>ID Tabel</span>
               </label>
-              <span className="text-[10px] text-gray-400 font-normal">
-                Opsional
-              </span>
+              <div className="flex items-center gap-2">
+                {isEditing && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (tableId) {
+                        navigator.clipboard.writeText(tableId);
+                        setCopiedId(true);
+                        setTimeout(() => setCopiedId(false), 2000);
+                      }
+                    }}
+                    className="text-[10px] text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1 cursor-pointer font-sans"
+                  >
+                    {copiedId ? (
+                      <>
+                        <Check className="w-3 h-3 text-emerald-500" />
+                        <span className="text-emerald-500 font-semibold">Tersalin!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3" />
+                        <span>Salin ID</span>
+                      </>
+                    )}
+                  </button>
+                )}
+                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 font-semibold font-mono">
+                  {isEditing ? "Primary Key" : "Auto-Increment"}
+                </span>
+              </div>
             </div>
-            <input
-              type="text"
-              value={apiCategoryName}
-              onChange={(e) => setApiCategoryName(e.target.value)}
-              placeholder="Contoh: FOOD_AND_BEVERAGE, RETAIL_GROCERY"
-              maxLength={60}
-              className="w-full rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-850 px-3.5 py-2.5 text-xs sm:text-sm font-mono text-gray-900 dark:text-white placeholder:text-gray-400 placeholder:font-sans focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                value={isEditing ? tableId : "Auto (Incremental)"}
+                readOnly
+                disabled
+                className="w-full rounded-xl border border-gray-200/80 bg-gray-100/80 dark:border-gray-800 dark:bg-gray-800/60 px-3.5 py-2.5 text-xs sm:text-sm font-mono text-gray-500 dark:text-gray-400 cursor-not-allowed select-all"
+              />
+            </div>
             <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
-              Kode kategori mentah dari respon API bank / payment gateway untuk pemetaan otomatis.
+              {isEditing
+                ? "ID numerik incremental pada tabel categories di database (Primary Key)."
+                : "ID akan dibuat otomatis secara berurutan (incremental) di database saat kategori ditambahkan."}
             </p>
           </div>
 
@@ -224,6 +266,29 @@ export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (
               className="w-full rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-850 px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
             />
             {error && <span className="text-xs text-red-500 mt-1 block">{error}</span>}
+          </div>
+
+          {/* Form Fields: API Category Name (Sebelum Deskripsi) */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block">
+                Nama Kategori Respon API
+              </label>
+              <span className="text-[10px] text-gray-400 font-normal">
+                Opsional
+              </span>
+            </div>
+            <input
+              type="text"
+              value={apiCategoryName}
+              onChange={(e) => setApiCategoryName(e.target.value)}
+              placeholder="Contoh: FOOD_AND_BEVERAGE, RETAIL_GROCERY"
+              maxLength={60}
+              className="w-full rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-850 px-3.5 py-2.5 text-xs sm:text-sm font-mono text-gray-900 dark:text-white placeholder:text-gray-400 placeholder:font-sans focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+            />
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
+              Kode kategori mentah dari respon API bank / payment gateway untuk pemetaan otomatis.
+            </p>
           </div>
 
           {/* Form Fields: Description */}

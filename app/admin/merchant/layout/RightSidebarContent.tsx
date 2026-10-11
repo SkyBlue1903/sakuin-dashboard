@@ -18,6 +18,7 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowLeft,
+  Moon,
 } from "lucide-react";
 import { useCategory, CategoryItem, MerchantItem } from "@/context/CategoryContext";
 import CategoryIcon from "@/components/admin/CategoryIcon";
@@ -25,6 +26,7 @@ import MerchantLogo from "@/components/admin/MerchantLogo";
 import MoveMerchantModal from "@/components/admin/MoveMerchantModal";
 import EditMerchantModal from "@/components/admin/EditMerchantModal";
 import { cn } from "@/utils";
+import { useToast } from "@/context/ToastContext";
 
 export const RightSidebarContent: React.FC = () => {
   const {
@@ -38,9 +40,12 @@ export const RightSidebarContent: React.FC = () => {
     matchMerchant,
   } = useCategory();
 
+  const { showToast } = useToast();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [newMerchantName, setNewMerchantName] = useState("");
   const [newMerchantLogoUrl, setNewMerchantLogoUrl] = useState("");
+  const [newMerchantLogoDarkUrl, setNewMerchantLogoDarkUrl] = useState("");
   const [newMerchantAliases, setNewMerchantAliases] = useState("");
   const [isOptionsExpanded, setIsOptionsExpanded] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{
@@ -80,18 +85,21 @@ export const RightSidebarContent: React.FC = () => {
 
     const parsedAliases = newMerchantAliases
       .split(",")
-      .map((s) => s.trim())
+      .map((s) => s.trim().toUpperCase())
       .filter((s) => s.length > 0);
 
     const result = addMerchant(activeCategory.id, {
       name: newMerchantName.trim(),
       logoUrl: newMerchantLogoUrl.trim() || undefined,
+      logoDarkUrl: newMerchantLogoDarkUrl.trim() || undefined,
       subMerchants: parsedAliases.length > 0 ? parsedAliases : undefined,
     });
 
     if (result.success) {
+      showToast(`Merchant "${newMerchantName.trim()}" berhasil ditambahkan!`);
       setNewMerchantName("");
       setNewMerchantLogoUrl("");
+      setNewMerchantLogoDarkUrl("");
       setNewMerchantAliases("");
       setIsOptionsExpanded(false);
       setStatusMessage({ text: result.message, isError: false });
@@ -107,11 +115,13 @@ export const RightSidebarContent: React.FC = () => {
   const handleSaveEditMerchant = (updates: {
     name: string;
     logoUrl?: string;
+    logoDarkUrl?: string;
     subMerchants?: string[];
   }) => {
     if (!editingMerchant) return;
     const result = updateMerchant(activeCategory.id, editingMerchant.id, updates);
     if (result.success) {
+      showToast(`Merchant "${updates.name}" berhasil diperbarui!`);
       setStatusMessage({ text: result.message, isError: false });
     } else {
       setStatusMessage({ text: result.message, isError: true });
@@ -124,6 +134,7 @@ export const RightSidebarContent: React.FC = () => {
   const handleDeleteMerchant = (merchant: MerchantItem) => {
     if (confirm(`Yakin ingin menghapus merchant "${merchant.name}" dari kategori ini?`)) {
       removeMerchant(activeCategory.id, merchant.id);
+      showToast(`Merchant "${merchant.name}" berhasil dihapus.`);
       setStatusMessage({
         text: `Merchant "${merchant.name}" berhasil dihapus.`,
         isError: false,
@@ -138,6 +149,7 @@ export const RightSidebarContent: React.FC = () => {
 
   // Preset test queries for user quick-click
   const quickTestCases = [
+    "Hhb H16 The Park Smg",
     "MCD Drive Thru",
     "Mekdi Kemang",
     "HHB",
@@ -286,6 +298,7 @@ export const RightSidebarContent: React.FC = () => {
             {/* Optional Logo URL & Sub-merchant Inputs */}
             {isOptionsExpanded && (
               <div className="p-3.5 rounded-2xl bg-gray-50 dark:bg-gray-850 border border-gray-200/60 dark:border-gray-800 space-y-3 animate-in fade-in duration-200">
+
                 {/* Field Logo URL */}
                 <div>
                   <label className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1">
@@ -314,6 +327,43 @@ export const RightSidebarContent: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Field Logo URL (Dark Mode) */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <Moon className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
+                      <span>URL Logo Gambar (Dark Mode, Opsional)</span>
+                    </label>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400 font-semibold">
+                      Otomatis di Dark Mode
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex-1">
+                      <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                      <input
+                        type="url"
+                        value={newMerchantLogoDarkUrl}
+                        onChange={(e) => setNewMerchantLogoDarkUrl(e.target.value)}
+                        placeholder="https://domain.com/logo-white.svg atau .png (Khusus mode gelap)"
+                        className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-brand-500 font-mono"
+                      />
+                    </div>
+                    {newMerchantLogoDarkUrl && (
+                      <div className="shrink-0 flex items-center gap-2 p-1 rounded-xl bg-gray-900 border border-gray-700" title="Preview Dark Mode">
+                        <MerchantLogo
+                          name={newMerchantName || "M"}
+                          logoUrl={newMerchantLogoDarkUrl}
+                          size="sm"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-gray-400 mt-1 block">
+                    Otomatis tampil saat tema gelap aktif. Jika dikosongkan, akan tetap memakai logo reguler.
+                  </span>
+                </div>
+
                 {/* Field Sub-merchant / Aliases */}
                 <div>
                   <label className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1">
@@ -324,9 +374,9 @@ export const RightSidebarContent: React.FC = () => {
                     <input
                       type="text"
                       value={newMerchantAliases}
-                      onChange={(e) => setNewMerchantAliases(e.target.value)}
-                      placeholder="Contoh: MCD, Mekdi, McDonalds, PT Rekso"
-                      className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+                      onChange={(e) => setNewMerchantAliases(e.target.value.toUpperCase())}
+                      placeholder="Contoh: MCD, MEKDI, MCDONALDS, PT REKSO"
+                      className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white uppercase font-mono tracking-wider focus:outline-none focus:ring-1 focus:ring-brand-500"
                     />
                   </div>
                   <span className="text-[10px] text-gray-400 mt-1 block">
@@ -396,11 +446,12 @@ export const RightSidebarContent: React.FC = () => {
                       <MerchantLogo
                         name={merchant.name}
                         logoUrl={merchant.logoUrl}
+                        logoDarkUrl={merchant.logoDarkUrl}
                         size="lg"
                         className="mt-0.5 sm:mt-0"
                       />
                       <div className="min-w-0 space-y-1">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white truncate block">
                             {merchant.name}
                           </span>
@@ -410,7 +461,16 @@ export const RightSidebarContent: React.FC = () => {
                               title={merchant.logoUrl}
                             >
                               <LinkIcon className="w-2.5 h-2.5" />
-                              Logo URL
+                              Logo
+                            </span>
+                          )}
+                          {merchant.logoDarkUrl && (
+                            <span
+                              className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400"
+                              title={`Logo Dark: ${merchant.logoDarkUrl}`}
+                            >
+                              <Moon className="w-2.5 h-2.5" />
+                              Dark Logo
                             </span>
                           )}
                         </div>
@@ -422,7 +482,7 @@ export const RightSidebarContent: React.FC = () => {
                               {merchant.subMerchants!.slice(0, 4).map((sub, i) => (
                                 <span
                                   key={i}
-                                  className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
+                                  className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium font-mono uppercase tracking-wider bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
                                 >
                                   {sub}
                                 </span>
@@ -539,6 +599,7 @@ export const RightSidebarContent: React.FC = () => {
                       <MerchantLogo
                         name={testResult.merchant.name}
                         logoUrl={testResult.merchant.logoUrl}
+                        logoDarkUrl={testResult.merchant.logoDarkUrl}
                         size="md"
                       />
                       <div className="min-w-0">

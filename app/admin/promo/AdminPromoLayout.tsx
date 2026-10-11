@@ -28,10 +28,12 @@ import {
 import EditPromoModal from "@/components/admin/EditPromoModal";
 import PromoDetailModal from "@/components/admin/PromoDetailModal";
 import DeletePromoModal from "@/components/admin/DeletePromoModal";
+import { useToast } from "@/context/ToastContext";
 
 export const AdminPromoLayout: React.FC = () => {
   const { promos, addPromo, updatePromo, deletePromo, duplicatePromo, resetToDefault } =
     usePromo();
+  const { showToast } = useToast();
 
   // State
   const [searchQuery, setSearchQuery] = useState("");
@@ -99,8 +101,10 @@ export const AdminPromoLayout: React.FC = () => {
   const handleSavePromo = (promoData: Omit<PromoItem, "id" | "createdAt" | "updatedAt">) => {
     if (editingPromo) {
       updatePromo(editingPromo.id, promoData);
+      showToast(`Promosi "${promoData.title}" berhasil diperbarui!`);
     } else {
       addPromo(promoData);
+      showToast(`Promosi "${promoData.title}" berhasil ditambahkan!`);
     }
   };
 
@@ -491,7 +495,10 @@ export const AdminPromoLayout: React.FC = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => duplicatePromo(item.id)}
+                      onClick={() => {
+                        duplicatePromo(item.id);
+                        showToast(`Promosi "${item.title}" berhasil diduplikasi!`);
+                      }}
                       className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                       title="Duplikat Promo"
                     >
@@ -544,6 +551,7 @@ export const AdminPromoLayout: React.FC = () => {
         onConfirm={() => {
           if (deletingPromo) {
             deletePromo(deletingPromo.id);
+            showToast(`Promosi "${deletingPromo.title}" berhasil dihapus.`);
             setDeletingPromo(null);
           }
         }}

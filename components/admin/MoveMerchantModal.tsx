@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { X, ArrowRightLeft, Check } from "lucide-react";
 import { useCategory, CategoryItem, MerchantItem } from "@/context/CategoryContext";
+import { useToast } from "@/context/ToastContext";
 import CategoryIcon from "./CategoryIcon";
 import MerchantLogo from "./MerchantLogo";
 import { cn } from "@/utils";
@@ -23,8 +24,8 @@ export const MoveMerchantModal: React.FC<MoveMerchantModalProps> = ({
   currentCategory,
   onSuccess,
 }) => {
-
   const { categories, moveMerchant } = useCategory();
+  const { showToast } = useToast();
   const availableCategories = categories.filter((c) => c.id !== currentCategory.id);
   const [targetCategoryId, setTargetCategoryId] = useState<string>(
     availableCategories[0]?.id || ""
@@ -42,7 +43,11 @@ export const MoveMerchantModal: React.FC<MoveMerchantModalProps> = ({
 
   const handleMove = () => {
     if (!targetCategoryId) return;
+    const targetCat = categories.find((c) => c.id === targetCategoryId);
     moveMerchant(merchantObj.id, currentCategory.id, targetCategoryId);
+    showToast(
+      `Merchant "${merchantObj.name}" berhasil dipindahkan ke kategori ${targetCat?.name || "baru"}!`
+    );
     onSuccess?.();
     onClose();
   };
@@ -59,7 +64,12 @@ export const MoveMerchantModal: React.FC<MoveMerchantModalProps> = ({
       {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-3">
-            <MerchantLogo name={merchantObj.name} logoUrl={merchantObj.logoUrl} size="lg" />
+            <MerchantLogo
+              name={merchantObj.name}
+              logoUrl={merchantObj.logoUrl}
+              logoDarkUrl={merchantObj.logoDarkUrl}
+              size="lg"
+            />
             <div>
               <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
                 Pindahkan Merchant

@@ -16,7 +16,7 @@ import {
 } from "@/context/PromoContext";
 import { Modal } from "@/components/ui/modal";
 
-export const Panduan: React.FC = () => {
+export const Guides: React.FC = () => {
   const { promos } = usePromo();
 
   // Filters & search
@@ -311,4 +311,4 @@ export const Panduan: React.FC = () => {
   );
 };
 
-export default Panduan;
+export default Guides;

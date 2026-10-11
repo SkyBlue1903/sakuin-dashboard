@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { Store } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import { cn } from "@/utils";
+import { useOptionalTheme } from "@/context/ThemeContext";
 
 interface MerchantLogoProps {
   name: string;
   logoUrl?: string;
+  logoDarkUrl?: string;
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
   fallback?: React.ReactNode;
@@ -15,18 +16,24 @@ interface MerchantLogoProps {
 export const MerchantLogo: React.FC<MerchantLogoProps> = ({
   name,
   logoUrl,
+  logoDarkUrl,
   size = "md",
   className,
   fallback,
 }) => {
-  const [hasError, setHasError] = useState(false);
+  const themeContext = useOptionalTheme();
+  const [darkError, setDarkError] = useState(false);
+  const [lightError, setLightError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Reset error state when logoUrl changes
-  React.useEffect(() => {
-    setHasError(false);
+  const isDark = themeContext ? themeContext.theme === "dark" : false;
+
+  // Reset error states when URLs or theme change
+  useEffect(() => {
+    setDarkError(false);
+    setLightError(false);
     setIsLoaded(false);
-  }, [logoUrl]);
+  }, [logoUrl, logoDarkUrl, isDark]);
 
   const sizeClasses = {
     sm: "h-7 w-7 text-xs rounded-lg",
@@ -37,8 +44,22 @@ export const MerchantLogo: React.FC<MerchantLogoProps> = ({
 
   const firstLetter = (name.trim()[0] || "M").toUpperCase();
 
-  // If there's a valid logoUrl and no error loading it
-  if (logoUrl && logoUrl.trim() && !hasError) {
+  const hasDarkOption = Boolean(isDark && logoDarkUrl && logoDarkUrl.trim());
+  const currentUrl = hasDarkOption && !darkError ? logoDarkUrl!.trim() : (logoUrl?.trim() || "");
+  const hasError = hasDarkOption && !darkError ? false : lightError;
+
+  const handleImgError = () => {
+    if (hasDarkOption && !darkError) {
+      // Dark logo failed to load, fallback to standard logoUrl
+      setDarkError(true);
+      setIsLoaded(false);
+    } else {
+      setLightError(true);
+    }
+  };
+
+  // If there's a valid currentUrl and no error loading it
+  if (currentUrl && !hasError) {
     return (
       <div
         className={cn(
@@ -54,10 +75,11 @@ export const MerchantLogo: React.FC<MerchantLogoProps> = ({
         )}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={logoUrl}
+          key={currentUrl}
+          src={currentUrl}
           alt={name}
           onLoad={() => setIsLoaded(true)}
-          onError={() => setHasError(true)}
+          onError={handleImgError}
           className={cn(
             "h-full w-full object-contain transition-opacity duration-200",
             isLoaded ? "opacity-100" : "opacity-0"

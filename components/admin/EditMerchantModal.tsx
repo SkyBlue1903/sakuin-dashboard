@@ -8,16 +8,16 @@ import {
   Store,
   Check,
   AlertCircle,
-  Sparkles,
   Trash2,
   Tag,
   Plus,
+  Moon,
+  Key,
+  Copy,
 } from "lucide-react";
 import {
   MerchantItem,
   CategoryItem,
-  DEFAULT_MERCHANT_LOGOS,
-  DEFAULT_SUB_MERCHANTS,
 } from "@/context/CategoryContext";
 import MerchantLogo from "./MerchantLogo";
 import { cn } from "@/utils";
@@ -28,7 +28,12 @@ interface EditMerchantModalProps {
   onClose: () => void;
   merchant: MerchantItem;
   category: CategoryItem;
-  onSave: (updates: { name: string; logoUrl?: string; subMerchants?: string[] }) => void;
+  onSave: (updates: {
+    name: string;
+    logoUrl?: string;
+    logoDarkUrl?: string;
+    subMerchants?: string[];
+  }) => void;
 }
 
 export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
@@ -40,11 +45,16 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
 }) => {
   const [name, setName] = useState(merchant.name);
   const [logoUrl, setLogoUrl] = useState(merchant.logoUrl || "");
+  const [logoDarkUrl, setLogoDarkUrl] = useState(merchant.logoDarkUrl || "");
   const [subMerchants, setSubMerchants] = useState<string[]>(merchant.subMerchants || []);
   const [newSubInput, setNewSubInput] = useState("");
   const [imageTestStatus, setImageTestStatus] = useState<"idle" | "loading" | "valid" | "error">(
     "idle"
   );
+  const [darkImageTestStatus, setDarkImageTestStatus] = useState<"idle" | "loading" | "valid" | "error">(
+    "idle"
+  );
+  const [copiedId, setCopiedId] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -54,8 +64,10 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
   useEffect(() => {
     setName(merchant.name);
     setLogoUrl(merchant.logoUrl || "");
-    setSubMerchants(merchant.subMerchants || []);
+    setLogoDarkUrl(merchant.logoDarkUrl || "");
+    setSubMerchants((merchant.subMerchants || []).map((s) => s.trim().toUpperCase()));
     setImageTestStatus(merchant.logoUrl ? "valid" : "idle");
+    setDarkImageTestStatus(merchant.logoDarkUrl ? "valid" : "idle");
   }, [merchant, isOpen]);
 
   // Test image URL validity when user changes it
@@ -77,6 +89,25 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
     };
   }, [logoUrl]);
 
+  // Test dark image URL validity when user changes it
+  useEffect(() => {
+    const trimmed = logoDarkUrl.trim();
+    if (!trimmed) {
+      setDarkImageTestStatus("idle");
+      return;
+    }
+
+    setDarkImageTestStatus("loading");
+    const img = new Image();
+    img.src = trimmed;
+    img.onload = () => {
+      setDarkImageTestStatus("valid");
+    };
+    img.onerror = () => {
+      setDarkImageTestStatus("error");
+    };
+  }, [logoDarkUrl]);
+
   if (!isOpen || !mounted) return null;
 
   const handleAddSubMerchant = (e?: React.FormEvent) => {
@@ -84,15 +115,15 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
     const raw = newSubInput.trim();
     if (!raw) return;
 
-    // Support comma-separated additions (e.g. "MCD, Mekdi, McDonalds")
+    // Support comma-separated additions (e.g. "MCD, HHB, MEKDI")
     const additions = raw
       .split(",")
-      .map((item) => item.trim())
+      .map((item) => item.trim().toUpperCase())
       .filter((item) => item.length > 0);
 
     const updated = [...subMerchants];
     additions.forEach((item) => {
-      if (!updated.some((s) => s.toLowerCase() === item.toLowerCase())) {
+      if (!updated.some((s) => s.toUpperCase() === item)) {
         updated.push(item);
       }
     });
@@ -103,7 +134,7 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
 
   const handleRemoveSubMerchant = (subToRemove: string) => {
     setSubMerchants(
-      subMerchants.filter((s) => s.toLowerCase() !== subToRemove.toLowerCase())
+      subMerchants.filter((s) => s.toUpperCase() !== subToRemove.toUpperCase())
     );
   };
 
@@ -114,25 +145,10 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
     onSave({
       name: name.trim(),
       logoUrl: logoUrl.trim() || undefined,
-      subMerchants,
+      logoDarkUrl: logoDarkUrl.trim() || undefined,
+      subMerchants: subMerchants.map((s) => s.trim().toUpperCase()),
     });
     onClose();
-  };
-
-  // Suggestion if we have known default logo or sub-merchants for this merchant name
-  const cleanName = name.toLowerCase().trim();
-  const suggestedLogo = DEFAULT_MERCHANT_LOGOS[cleanName];
-  const suggestedSubMerchants = DEFAULT_SUB_MERCHANTS[cleanName];
-
-  const handleApplyPresetSubs = () => {
-    if (!suggestedSubMerchants) return;
-    const merged = [...subMerchants];
-    suggestedSubMerchants.forEach((sub) => {
-      if (!merged.some((s) => s.toLowerCase() === sub.toLowerCase())) {
-        merged.push(sub);
-      }
-    });
-    setSubMerchants(merged);
   };
 
   return (
@@ -170,6 +186,51 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
 
         {/* Scrollable Form Body */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto overscroll-contain custom-scrollbar p-5 space-y-4">
+          {/* Field: ID Tabel */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                <Key className="w-3.5 h-3.5 text-brand-500" />
+                <span>ID Tabel</span>
+              </label>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(merchant.id);
+                    setCopiedId(true);
+                    setTimeout(() => setCopiedId(false), 2000);
+                  }}
+                  className="text-[10px] text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1 cursor-pointer font-sans normal-case"
+                >
+                  {copiedId ? (
+                    <>
+                      <Check className="w-3 h-3 text-emerald-500" />
+                      <span className="text-emerald-500 font-semibold">Tersalin!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3 h-3" />
+                      <span>Salin ID</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+            <div className="relative">
+              <input
+                type="text"
+                value={merchant.id}
+                readOnly
+                disabled
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200/80 dark:border-gray-800 bg-gray-100/80 dark:bg-gray-800/60 text-gray-500 dark:text-gray-400 font-mono select-all cursor-not-allowed"
+              />
+            </div>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
+              ID numerik incremental pada tabel merchants di database (Primary Key).
+            </p>
+          </div>
+
           {/* Field 1: Nama Merchant Induk */}
           <div>
             <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">
@@ -204,7 +265,7 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
             </div>
 
             <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
-              Daftar variasi nama merchant dari respon API transaksi (misal: <strong>MCD</strong>, <strong>Mekdi</strong>, <strong>HHB</strong>, <strong>Hk Hk Bnt</strong>) agar otomatis terpetakan ke merchant ini.
+              Daftar variasi nama merchant dari respon API transaksi (misal: <strong>MCD</strong>, <strong>MEKDI</strong>, <strong>HHB</strong>, <strong>HK HK BNT</strong>) agar otomatis terpetakan ke merchant ini.
             </p>
 
             {/* Input tag alias */}
@@ -212,15 +273,15 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
               <input
                 type="text"
                 value={newSubInput}
-                onChange={(e) => setNewSubInput(e.target.value)}
+                onChange={(e) => setNewSubInput(e.target.value.toUpperCase())}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
                     handleAddSubMerchant();
                   }
                 }}
-                placeholder="Ketik alias lalu Enter (misal: MCD, Mekdi, HHB)..."
-                className="flex-1 px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-brand-500"
+                placeholder="Ketik alias lalu Enter (misal: MCD, HHB, MEKDI)..."
+                className="flex-1 px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white uppercase font-mono tracking-wider focus:outline-none focus:ring-1 focus:ring-brand-500"
               />
               <button
                 type="button"
@@ -258,22 +319,6 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
                 Belum ada sub-merchant. Tambahkan alias di atas agar nama singkatan otomatis dikenali.
               </p>
             )}
-
-            {/* Quick button to apply preset sub-merchants if available */}
-            {suggestedSubMerchants && suggestedSubMerchants.length > 0 && (
-              <div className="pt-1 flex items-center justify-between">
-                <span className="text-[11px] text-purple-600 dark:text-purple-400 font-medium">
-                  Rekomendasi alias bawaan: {suggestedSubMerchants.slice(0, 3).join(", ")}...
-                </span>
-                <button
-                  type="button"
-                  onClick={handleApplyPresetSubs}
-                  className="text-[11px] font-bold text-purple-600 hover:underline cursor-pointer"
-                >
-                  Terapkan Rekomendasi
-                </button>
-              </div>
-            )}
           </div>
 
           {/* Field 3: URL Logo Merchant */}
@@ -304,23 +349,40 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
                 className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-850 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-mono text-xs"
               />
             </div>
+          </div>
 
-            {/* Suggestion for official logo */}
-            {suggestedLogo && suggestedLogo !== logoUrl && (
-              <div className="mt-2 flex items-center justify-between p-2 rounded-xl bg-purple-50/80 dark:bg-purple-950/30 border border-purple-200/80 dark:border-purple-800/50">
-                <div className="flex items-center gap-2 text-xs text-purple-900 dark:text-purple-200">
-                  <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
-                  <span>Ditemukan logo resmi untuk <strong>{name}</strong></span>
-                </div>
+          {/* Field 4: URL Logo Gambar (Dark Mode, Opsional) */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                <Moon className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
+                <span>URL Logo Gambar (Dark Mode, Opsional)</span>
+              </label>
+              {logoDarkUrl && (
                 <button
                   type="button"
-                  onClick={() => setLogoUrl(suggestedLogo)}
-                  className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-purple-600 text-white hover:bg-purple-700 active:scale-95 transition-all cursor-pointer"
+                  onClick={() => setLogoDarkUrl("")}
+                  className="text-[11px] text-red-500 hover:underline flex items-center gap-1 cursor-pointer"
                 >
-                  Terapkan
+                  <Trash2 className="w-3 h-3" />
+                  Hapus Logo Dark
                 </button>
-              </div>
-            )}
+              )}
+            </div>
+
+            <div className="relative">
+              <LinkIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="url"
+                value={logoDarkUrl}
+                onChange={(e) => setLogoDarkUrl(e.target.value)}
+                placeholder="https://domain.com/path-to-logo-dark.png atau .svg (Khusus Dark Mode)"
+                className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-850 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-mono text-xs"
+              />
+            </div>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+              Otomatis digunakan saat tampilan dark mode aktif. Jika kosong, akan memakai logo utama.
+            </p>
           </div>
 
           {/* Live Preview Card */}
@@ -332,11 +394,18 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
             <div className="p-3 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-2xs space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 min-w-0">
-                  <MerchantLogo name={name || "Merchant"} logoUrl={logoUrl} size="lg" />
+                  <MerchantLogo
+                    name={name || "Merchant"}
+                    logoUrl={logoUrl}
+                    logoDarkUrl={logoDarkUrl}
+                    size="lg"
+                  />
                   <div className="min-w-0">
-                    <span className="text-sm font-bold text-gray-900 dark:text-white block truncate">
-                      {name || "Nama Merchant"}
-                    </span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-bold text-gray-900 dark:text-white block truncate">
+                        {name || "Nama Merchant"}
+                      </span>
+                    </div>
                     <span className="text-xs text-gray-400 truncate block">
                       Kategori: {category.name}
                     </span>

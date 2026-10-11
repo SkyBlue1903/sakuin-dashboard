@@ -21,10 +21,12 @@ import {
 import EditGuideModal from "@/components/admin/EditGuideModal";
 import PromoDetailModal from "@/components/admin/PromoDetailModal";
 import DeletePromoModal from "@/components/admin/DeletePromoModal";
+import { useToast } from "@/context/ToastContext";
 
-export const AdminPanduanLayout: React.FC = () => {
+export const AdminGuidesLayout: React.FC = () => {
   const { promos, addPromo, updatePromo, deletePromo, duplicatePromo, resetToDefault } =
     usePromo();
+  const { showToast } = useToast();
 
   // State
   const [searchQuery, setSearchQuery] = useState("");
@@ -73,8 +75,10 @@ export const AdminPanduanLayout: React.FC = () => {
   const handleSaveGuide = (guideData: Omit<PromoItem, "id" | "createdAt" | "updatedAt">) => {
     if (editingGuide) {
       updatePromo(editingGuide.id, guideData);
+      showToast(`Panduan "${guideData.title}" berhasil diperbarui!`);
     } else {
       addPromo(guideData);
+      showToast(`Panduan "${guideData.title}" berhasil ditambahkan!`);
     }
   };
 
@@ -293,7 +297,10 @@ export const AdminPanduanLayout: React.FC = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => duplicatePromo(item.id)}
+                      onClick={() => {
+                        duplicatePromo(item.id);
+                        showToast(`Panduan "${item.title}" berhasil diduplikasi!`);
+                      }}
                       className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                       title="Duplikat Panduan"
                     >
@@ -346,6 +353,7 @@ export const AdminPanduanLayout: React.FC = () => {
         onConfirm={() => {
           if (deletingGuide) {
             deletePromo(deletingGuide.id);
+            showToast(`Panduan "${deletingGuide.title}" berhasil dihapus.`);
             setDeletingGuide(null);
           }
         }}
@@ -354,4 +362,4 @@ export const AdminPanduanLayout: React.FC = () => {
   );
 };
 
-export default AdminPanduanLayout;
+export default AdminGuidesLayout;
