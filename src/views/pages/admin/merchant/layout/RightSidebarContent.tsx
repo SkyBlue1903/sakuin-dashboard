@@ -75,14 +75,9 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
   // Test Simulator state
   const [testQuery, setTestQuery] = useState("");
 
-  // Ketika kategori kosong: kosong melompong di desktop, dan tidak terlihat di mobile
-  if (!activeCategory || categories.length === 0) {
-    return <div className="hidden md:block flex-1 min-w-0" />;
-  }
-
   // Filtering: searches parent merchant name OR any sub-merchant / alias (case-insensitive)
   const cleanSearch = searchQuery.toLowerCase().trim();
-  const filteredMerchants = (activeCategory.merchants || []).filter((m) => {
+  const filteredMerchants = (activeCategory?.merchants || []).filter((m) => {
     if (!cleanSearch) return true;
     if (m.name.toLowerCase().includes(cleanSearch)) return true;
     if (
@@ -109,6 +104,11 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
   } = useResponsiveInfiniteScroll(scrollConfig);
 
   const visibleMerchants = filteredMerchants.slice(0, visibleCount);
+
+  // Ketika kategori kosong: kosong melompong di desktop, dan tidak terlihat di mobile
+  if (!activeCategory || categories.length === 0) {
+    return <div className="hidden md:block flex-1 min-w-0" />;
+  }
 
   const handleAddMerchantSubmit = (e: React.FormEvent) => {
     e.preventDefault();
