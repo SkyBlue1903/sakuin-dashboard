@@ -107,6 +107,59 @@ export type Database = {
           }
         ];
       };
+      transactions: {
+        Row: {
+          id: string;
+          merchant: string;
+          category_id: number | null;
+          category_slug: string | null;
+          category: string;
+          date: string;
+          amount: string;
+          currency: string;
+          status: "Declined" | "Success" | "Pending";
+          reason: string | null;
+          card_last4: string;
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          merchant: string;
+          category_id?: number | null;
+          category_slug?: string | null;
+          category: string;
+          date: string;
+          amount: string;
+          currency?: string;
+          status?: "Declined" | "Success" | "Pending";
+          reason?: string | null;
+          card_last4?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          merchant?: string;
+          category_id?: number | null;
+          category_slug?: string | null;
+          category?: string;
+          date?: string;
+          amount?: string;
+          currency?: string;
+          status?: "Declined" | "Success" | "Pending";
+          reason?: string | null;
+          card_last4?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "transactions_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
