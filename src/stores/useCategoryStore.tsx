@@ -24,8 +24,6 @@ export const createMerchant = (
   subMerchants: subMerchants || [],
 });
 
-const STORAGE_KEY = "sakuin_merchant_categories_v3";
-
 // Helper to normalize merchants (supporting both API Supabase and local cache/defaults)
 export function normalizeCategoryList(rawCats: unknown[]): CategoryItem[] {
   if (!Array.isArray(rawCats)) return [];
@@ -144,33 +142,17 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
   initCategories: () => {
     if (typeof window === "undefined") return;
 
-    // Purge legacy storage keys that had dummy categories
+    // Bersihkan semua sisa cache kategori & merchant dari localStorage browser
     try {
+      localStorage.removeItem("sakuin_merchant_categories_v3");
       localStorage.removeItem("sakuin_merchant_categories_v2");
       localStorage.removeItem("sakuin_merchant_categories_v1");
+      localStorage.removeItem("sakuin_merchant_categories");
     } catch (_) {}
-
-    // Load from cache first for instant render if available
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved !== null) {
-        const parsed = JSON.parse(saved);
-        const normalized = normalizeCategoryList(parsed);
-        if (normalized.length > 0) {
-          const currentActive = get().activeCategoryId;
-          const activeId = normalized.some((c) => c.id === currentActive)
-            ? currentActive
-            : normalized[0].id;
-          set({ categories: normalized, activeCategoryId: activeId });
-        }
-      }
-    } catch (err) {
-      console.warn("Failed to load categories from localStorage cache", err);
-    }
 
     set({ isLoading: true });
 
-    // Fetch from Supabase REST API
+    // 100% murni fetch dari Supabase REST API
     categoryApi
       .getCategories()
       .then((data) => {
@@ -181,9 +163,6 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
             ? currentActive
             : (normalized[0]?.id || "");
           set({ categories: normalized, activeCategoryId: activeId, isLoading: false });
-          try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
-          } catch (_) {}
         } else {
           set({ isLoading: false });
         }
@@ -215,12 +194,6 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
     const updated = [...categories, newCategory];
     set({ categories: updated, activeCategoryId: finalId });
 
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      } catch (_) {}
-    }
-
     categoryApi.createCategory(newCategory).catch((err) => {
       console.warn("[CategoryStore] Gagal createCategory ke API:", err);
     });
@@ -231,12 +204,6 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
   updateCategory: (id, updates) => {
     const updated = get().categories.map((c) => (c.id === id ? { ...c, ...updates } : c));
     set({ categories: updated });
-
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      } catch (_) {}
-    }
 
     categoryApi.updateCategory(id, updates).catch((err) => {
       console.warn("[CategoryStore] Gagal updateCategory ke API:", err);
@@ -255,12 +222,6 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
       activeCategoryId: nextActive,
       mobileView: remaining.length === 0 ? "categories" : get().mobileView,
     });
-
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(remaining));
-      } catch (_) {}
-    }
 
     categoryApi.deleteCategory(id).catch((err) => {
       console.warn("[CategoryStore] Gagal deleteCategory ke API:", err);
@@ -313,11 +274,6 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
       c.id === categoryId ? { ...c, merchants: [newMerchant, ...c.merchants] } : c
     );
 
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      } catch (_) {}
-    }
     set({ categories: updated });
 
     categoryApi.createMerchant(categoryId, newMerchant).catch((err) => {
@@ -373,11 +329,6 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
       };
     });
 
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      } catch (_) {}
-    }
     set({ categories: updated });
 
     categoryApi
@@ -427,11 +378,6 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
     });
 
     if (updated) {
-      if (typeof window !== "undefined") {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(newCategories));
-        } catch (_) {}
-      }
       set({ categories: newCategories });
 
       categoryApi.updateMerchant(merchantId, { subMerchants: nextSubs }).catch((err) => {
@@ -463,11 +409,6 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
       };
     });
 
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      } catch (_) {}
-    }
     set({ categories: updated });
 
     categoryApi.updateMerchant(merchantId, { subMerchants: nextSubs }).catch((err) => {
@@ -500,11 +441,6 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
         : c
     );
 
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      } catch (_) {}
-    }
     set({ categories: updated });
 
     categoryApi.deleteMerchant(targetMerchantId).catch((err) => {
@@ -544,11 +480,6 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
       return c;
     });
 
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      } catch (_) {}
-    }
     set({ categories: updated });
 
     categoryApi.updateMerchant(targetItem.id, { categoryId: toCategoryId }).catch((err) => {
@@ -608,18 +539,12 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
           const normalized = normalizeCategoryList(data);
           const firstId = normalized[0].id;
           set({ categories: normalized, activeCategoryId: firstId, isLoading: false });
-          try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
-          } catch (_) {}
         } else {
           set({
             categories: [],
             activeCategoryId: "",
             isLoading: false,
           });
-          try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
-          } catch (_) {}
         }
       })
       .catch((err) => {
