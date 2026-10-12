@@ -107,8 +107,8 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
       filter === "all"
         ? true
         : filter === "declined"
-        ? tx.status === "Declined"
-        : tx.status === "Success";
+          ? tx.status === "Declined"
+          : tx.status === "Success";
 
     const cleanSearch = searchQuery.toLowerCase().trim();
     const matchesSearch =
