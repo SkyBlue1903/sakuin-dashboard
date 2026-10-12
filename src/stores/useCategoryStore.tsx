@@ -3,6 +3,7 @@
 import React, { createContext } from "react";
 import { create } from "zustand";
 import { categoryApi } from "@/services/categoryApi";
+import { emitToast } from "@/stores/ToastContext";
 import type { CategoryItem, MerchantItem, MatchResult } from "@/models/category";
 
 export type { CategoryItem, MerchantItem, MatchResult };
@@ -17,7 +18,7 @@ export const createMerchant = (
   logoDarkUrl?: string,
   subMerchants?: string[]
 ): MerchantItem => ({
-  id: `m_${name.toLowerCase().replace(/[^a-z0-9]/g, "_")}_${Date.now()}`,
+  id: "1",
   name,
   logoUrl: logoUrl || undefined,
   logoDarkUrl: logoDarkUrl || undefined,
@@ -43,7 +44,7 @@ export function normalizeCategoryList(rawCats: unknown[]): CategoryItem[] {
       const mObj = (m || {}) as Partial<MerchantItem>;
       const existingSubs = Array.isArray(mObj.subMerchants) ? mObj.subMerchants : [];
       return {
-        id: String(mObj.id || `m_${catIdx}_${mIdx}_${Date.now()}`),
+        id: String(mObj.id || `${catIdx * 100 + mIdx + 1}`),
         name: mObj.name || "Merchant",
         logoUrl: mObj.logoUrl || undefined,
         logoDarkUrl: mObj.logoDarkUrl || undefined,
@@ -195,27 +196,39 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
     set({ categories: updated, activeCategoryId: finalId });
 
     categoryApi.createCategory(newCategory).catch((err) => {
-      console.warn("[CategoryStore] Gagal createCategory ke API:", err);
+      const errDetail = err instanceof Error ? err.message : "Gagal menyimpan kategori ke database";
+      console.error("[CategoryStore] Gagal createCategory ke API:", errDetail);
+      // Rollback
+      set((state) => ({
+        categories: state.categories.filter((c) => c.id !== finalId),
+      }));
+      emitToast(`Gagal menyimpan kategori "${item.name}": ${errDetail}`, "error");
     });
 
     return finalId;
   },
 
   updateCategory: (id, updates) => {
-    const updated = get().categories.map((c) => (c.id === id ? { ...c, ...updates } : c));
+    const previousCategories = get().categories;
+    const updated = previousCategories.map((c) => (c.id === id ? { ...c, ...updates } : c));
     set({ categories: updated });
 
     categoryApi.updateCategory(id, updates).catch((err) => {
-      console.warn("[CategoryStore] Gagal updateCategory ke API:", err);
+      const errDetail = err instanceof Error ? err.message : "Gagal memperbarui kategori di database";
+      console.error("[CategoryStore] Gagal updateCategory ke API:", errDetail);
+      // Rollback
+      set({ categories: previousCategories });
+      emitToast(`Gagal memperbarui kategori: ${errDetail}`, "error");
     });
   },
 
   deleteCategory: (id) => {
-    const { categories, activeCategoryId } = get();
-    const remaining = categories.filter((c) => c.id !== id);
-    const nextActive = activeCategoryId === id
+    const previousCategories = get().categories;
+    const previousActive = get().activeCategoryId;
+    const remaining = previousCategories.filter((c) => c.id !== id);
+    const nextActive = previousActive === id
       ? (remaining.length > 0 ? remaining[0].id : "")
-      : activeCategoryId;
+      : previousActive;
 
     set({
       categories: remaining,
@@ -224,7 +237,11 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
     });
 
     categoryApi.deleteCategory(id).catch((err) => {
-      console.warn("[CategoryStore] Gagal deleteCategory ke API:", err);
+      const errDetail = err instanceof Error ? err.message : "Gagal menghapus kategori dari database";
+      console.error("[CategoryStore] Gagal deleteCategory ke API:", errDetail);
+      // Rollback
+      set({ categories: previousCategories, activeCategoryId: previousActive });
+      emitToast(`Gagal menghapus kategori: ${errDetail}`, "error");
     });
   },
 
@@ -261,9 +278,24 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
       }
     }
 
-    const customId = !isString && merchantInput.id ? merchantInput.id : undefined;
+    // Hitung ID numerik incremental berikutnya secara optimis dari seluruh kategori
+    let nextNumericId = 1;
+    for (const cat of categories) {
+      for (const m of cat.merchants) {
+        const num = Number(m.id);
+        if (!isNaN(num) && num >= nextNumericId) {
+          nextNumericId = num + 1;
+        }
+      }
+    }
+
+    const customId = !isString && merchantInput.id && !isNaN(Number(merchantInput.id))
+      ? String(merchantInput.id)
+      : undefined;
+    const finalId = customId || String(nextNumericId);
+
     const newMerchant: MerchantItem = {
-      id: customId || `m_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      id: finalId,
       name,
       logoUrl: logoUrl || undefined,
       logoDarkUrl: logoDarkUrl || undefined,
@@ -276,9 +308,41 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
 
     set({ categories: updated });
 
-    categoryApi.createMerchant(categoryId, newMerchant).catch((err) => {
-      console.warn("[CategoryStore] Gagal createMerchant ke API:", err);
-    });
+    categoryApi
+      .createMerchant(categoryId, newMerchant)
+      .then((savedMerchant) => {
+        if (savedMerchant && savedMerchant.id) {
+          // Sinkronisasikan ID jika berbeda dari ID optimis
+          set((state) => ({
+            categories: state.categories.map((c) =>
+              c.id === categoryId
+                ? {
+                    ...c,
+                    merchants: c.merchants.map((m) =>
+                      m.id === finalId ? { ...m, ...savedMerchant, id: String(savedMerchant.id) } : m
+                    ),
+                  }
+                : c
+            ),
+          }));
+        }
+      })
+      .catch((err) => {
+        const errDetail = err instanceof Error ? err.message : "Gagal menyimpan merchant ke Supabase";
+        console.error("[CategoryStore] Gagal createMerchant ke Supabase:", errDetail);
+        // Rollback state jika gagal menyimpan ke server
+        set((state) => ({
+          categories: state.categories.map((c) =>
+            c.id === categoryId
+              ? {
+                  ...c,
+                  merchants: c.merchants.filter((m) => m.id !== finalId),
+                }
+              : c
+          ),
+        }));
+        emitToast(`Gagal menyimpan merchant "${name}": ${errDetail}`, "error");
+      });
 
     const activeCat = updated.find((c) => c.id === categoryId);
     return {
@@ -311,6 +375,7 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
       ? updates.subMerchants.map((s) => s.trim().toUpperCase()).filter(Boolean)
       : undefined;
 
+    const previousCategories = categories;
     const updated = categories.map((cat) => {
       if (cat.id !== categoryId) return cat;
       return {
@@ -339,7 +404,10 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
         subMerchants: nextSubs,
       })
       .catch((err) => {
-        console.warn("[CategoryStore] Gagal updateMerchant ke API:", err);
+        const errDetail = err instanceof Error ? err.message : "Gagal memperbarui merchant di database";
+        console.error("[CategoryStore] Gagal updateMerchant ke API:", errDetail);
+        set({ categories: previousCategories });
+        emitToast(`Gagal memperbarui merchant "${trimmedName}": ${errDetail}`, "error");
       });
 
     return {
@@ -357,7 +425,8 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
     let updated = false;
     let nextSubs: string[] = [];
 
-    const newCategories = get().categories.map((cat) => {
+    const previousCategories = get().categories;
+    const newCategories = previousCategories.map((cat) => {
       if (cat.id !== categoryId) return cat;
       return {
         ...cat,
@@ -381,7 +450,10 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
       set({ categories: newCategories });
 
       categoryApi.updateMerchant(merchantId, { subMerchants: nextSubs }).catch((err) => {
-        console.warn("[CategoryStore] Gagal addSubMerchant ke API:", err);
+        const errDetail = err instanceof Error ? err.message : "Gagal menyimpan alias ke database";
+        console.error("[CategoryStore] Gagal addSubMerchant ke API:", errDetail);
+        set({ categories: previousCategories });
+        emitToast(`Gagal menambahkan alias "${trimmed}": ${errDetail}`, "error");
       });
 
       return { success: true, message: `Sub-merchant "${trimmed}" berhasil ditambahkan.` };
@@ -392,7 +464,8 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
 
   removeSubMerchant: (categoryId, merchantId, subMerchantName) => {
     let nextSubs: string[] = [];
-    const updated = get().categories.map((cat) => {
+    const previousCategories = get().categories;
+    const updated = previousCategories.map((cat) => {
       if (cat.id !== categoryId) return cat;
       return {
         ...cat,
@@ -412,13 +485,17 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
     set({ categories: updated });
 
     categoryApi.updateMerchant(merchantId, { subMerchants: nextSubs }).catch((err) => {
-      console.warn("[CategoryStore] Gagal removeSubMerchant ke API:", err);
+      const errDetail = err instanceof Error ? err.message : "Gagal menghapus alias dari database";
+      console.error("[CategoryStore] Gagal removeSubMerchant ke API:", errDetail);
+      set({ categories: previousCategories });
+      emitToast(`Gagal menghapus alias "${subMerchantName}": ${errDetail}`, "error");
     });
   },
 
   removeMerchant: (categoryId, merchantIdOrName) => {
     let targetMerchantId = merchantIdOrName;
-    const cat = get().categories.find((c) => c.id === categoryId);
+    const previousCategories = get().categories;
+    const cat = previousCategories.find((c) => c.id === categoryId);
     if (cat) {
       const found = cat.merchants.find(
         (m) =>
@@ -428,7 +505,7 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
       if (found) targetMerchantId = found.id;
     }
 
-    const updated = get().categories.map((c) =>
+    const updated = previousCategories.map((c) =>
       c.id === categoryId
         ? {
             ...c,
@@ -444,7 +521,10 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
     set({ categories: updated });
 
     categoryApi.deleteMerchant(targetMerchantId).catch((err) => {
-      console.warn("[CategoryStore] Gagal deleteMerchant ke API:", err);
+      const errDetail = err instanceof Error ? err.message : "Gagal menghapus merchant dari database";
+      console.error("[CategoryStore] Gagal deleteMerchant ke API:", errDetail);
+      set({ categories: previousCategories });
+      emitToast(`Gagal menghapus merchant dari database: ${errDetail}`, "error");
     });
   },
 
@@ -452,8 +532,8 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
     if (fromCategoryId === toCategoryId) return;
 
     let targetItem: MerchantItem | undefined;
-    const { categories } = get();
-    const sourceCat = categories.find((c) => c.id === fromCategoryId);
+    const previousCategories = get().categories;
+    const sourceCat = previousCategories.find((c) => c.id === fromCategoryId);
     if (sourceCat) {
       targetItem = sourceCat.merchants.find(
         (m) =>
@@ -464,7 +544,7 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
 
     if (!targetItem) return;
 
-    const updated = categories.map((c) => {
+    const updated = previousCategories.map((c) => {
       if (c.id === fromCategoryId) {
         return {
           ...c,
@@ -483,7 +563,10 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
     set({ categories: updated });
 
     categoryApi.updateMerchant(targetItem.id, { categoryId: toCategoryId }).catch((err) => {
-      console.warn("[CategoryStore] Gagal moveMerchant ke API:", err);
+      const errDetail = err instanceof Error ? err.message : "Gagal memindahkan merchant di database";
+      console.error("[CategoryStore] Gagal moveMerchant ke API:", errDetail);
+      set({ categories: previousCategories });
+      emitToast(`Gagal memindahkan merchant: ${errDetail}`, "error");
     });
   },
 

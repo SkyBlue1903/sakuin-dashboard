@@ -145,50 +145,6 @@ export const SAMPLE_PROMOS: PromoItem[] = [
     updatedAt: "2026-10-10T12:00:00.000Z",
   },
   {
-    id: "guide-001",
-    type: "guide",
-    title: "Panduan Fitur: Cara Menghubungkan S-Card Virtual ke E-Commerce",
-    bannerUrl: "https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=1200&q=80",
-    shortDescription:
-      "Pelajari langkah mudah memasukkan nomor 16-digit S-Card Virtual, tanggal kedaluwarsa, dan kode CVV untuk pembayaran instan di Tokopedia, Shopee, dan Google Play.",
-    contentHtml: `
-<h3>Belanja Online Lebih Aman dengan S-Card Virtual</h3>
-<p>Kartu virtual Sakuin dapat digunakan di seluruh merchant online yang menerima metode pembayaran berlogo Mastercard atau Visa.</p>
-<h4>Langkah-Langkah Penggunaan:</h4>
-<ol>
-  <li>Buka menu <strong>SakuCard</strong> di dashboard Sakuin Anda.</li>
-  <li>Ketuk ikon mata untuk melihat 16 digit nomor kartu, masa berlaku, dan 3 digit CVV rahasia.</li>
-  <li>Pilih metode pembayaran <em>Kartu Debit / Kredit</em> pada checkout e-commerce pilihan Anda.</li>
-  <li>Masukkan data kartu dan selesaikan otentikasi konfirmasi transaksi.</li>
-</ol>
-<p>Transaksi Anda otomatis tercatat di riwayat pengeluaran dengan kategori merchant yang rapi.</p>
-    `.trim(),
-    createdAt: "2026-10-05T10:00:00.000Z",
-    updatedAt: "2026-10-05T10:00:00.000Z",
-  },
-  {
-    id: "guide-002",
-    type: "guide",
-    title: "Panduan Langkah: Cara Top Up Saldo & Atur Limit Belanja SakuCard",
-    bannerUrl: "/images/sample-images/ads.sample.png",
-    shortDescription:
-      "Ketahui cara mudah mengisi saldo awal SakuCard serta membatasi pengeluaran harian kartu virtual agar keuangan Anda tetap terkendali.",
-    contentHtml: `
-<h3>Kelola Batas Pengeluaran Kartu Sakuin Secara Mandiri</h3>
-<p>Anda dapat mengontrol keuangan dengan mengatur batas maksimal transaksi harian pada setiap kartu virtual Anda.</p>
-<h4>Cara Mengatur Limit:</h4>
-<ol>
-  <li>Pilih kartu yang ingin Anda atur pada halaman <strong>SakuCard</strong>.</li>
-  <li>Ketuk tombol <strong>Atur Limit</strong> pada kartu atau menu aksi.</li>
-  <li>Masukkan nominal limit harian yang Anda inginkan (misal: Rp500.000).</li>
-  <li>Simpan pengaturan. Transaksi yang melebihi batas ini akan otomatis ditolak demi keamanan dana Anda.</li>
-</ol>
-<blockquote>Anda dapat mengubah atau menaikkan limit kartu kapan pun secara instan tanpa biaya tambahan.</blockquote>
-    `.trim(),
-    createdAt: "2026-10-06T10:00:00.000Z",
-    updatedAt: "2026-10-06T10:00:00.000Z",
-  },
-  {
     id: "promo-002",
     type: "promo",
     title: "Bonus Langganan AI Tools: ChatGPT & Midjourney Diskon 30%",
@@ -256,14 +212,12 @@ function loadInitialPromos(): PromoItem[] {
           type: item.type || "promo",
         })) as PromoItem[];
 
-        const hasInfo = mapped.some((m: PromoItem) => m.type === "info");
-        const hasGuide = mapped.some((m: PromoItem) => m.type === "guide");
-        let nextList = [...mapped];
+        // Bersihkan guide dari usePromoStore karena Panduan sekarang 100% dikelola di useGuideStore & Supabase
+        const nonGuides = mapped.filter((item: PromoItem) => item.type !== "guide");
+        const hasInfo = nonGuides.some((m: PromoItem) => m.type === "info");
+        let nextList = [...nonGuides];
         if (!hasInfo) {
           nextList = [...nextList, ...SAMPLE_PROMOS.filter((s) => s.type === "info")];
-        }
-        if (!hasGuide) {
-          nextList = [...nextList, ...SAMPLE_PROMOS.filter((s) => s.type === "guide")];
         }
         return nextList;
       }

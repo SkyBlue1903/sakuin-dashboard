@@ -11,6 +11,8 @@ export interface PromoItem {
   publishedAt?: string; // Tanggal Terbit (wajib untuk info & promo, TIDAK ADA untuk panduan)
   takedownAt?: string; // Tanggal Takedown (waktu & tanggal format: YYYY-MM-DDTHH:mm, untuk promosi)
   hideBeforePublished?: boolean; // Sembunyikan dari pengguna sebelum tanggal terbit
+  isHidden?: boolean; // Sembunyikan dari pengguna (khususnya untuk panduan / evergreen content)
+  isHighlight?: boolean; // Jadikan panduan unggulan (highlight) berukuran besar / carousel
   createdAt: string;
   updatedAt: string;
 }

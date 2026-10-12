@@ -75,15 +75,45 @@ export async function POST(request: NextRequest) {
 
     const dbPayload = mapCategoryToDb(body);
 
-    const { data: catData, error: catError } = await supabase
+    if (!dbPayload.id) {
+      const { data: maxRow } = await supabase
+        .from("categories")
+        .select("id")
+        .order("id", { ascending: false })
+        .limit(1);
+      const nextId = (maxRow?.[0]?.id ?? 0) + 1;
+      dbPayload.id = nextId;
+    }
+
+    let { data: catData, error: catError } = await supabase
       .from("categories")
       .insert(dbPayload)
       .select()
       .single();
 
-    if (catError) {
-      console.error("[API POST /categories] Error insert category:", catError.message);
-      return NextResponse.json({ success: false, error: catError.message }, { status: 400 });
+    if (catError && catError.code === "23505") {
+      const { data: maxRow } = await supabase
+        .from("categories")
+        .select("id")
+        .order("id", { ascending: false })
+        .limit(1);
+      dbPayload.id = (maxRow?.[0]?.id ?? 0) + 1;
+
+      const retryRes = await supabase
+        .from("categories")
+        .insert(dbPayload)
+        .select()
+        .single();
+      catData = retryRes.data;
+      catError = retryRes.error;
+    }
+
+    if (catError || !catData) {
+      console.error("[API POST /categories] Error insert category:", catError?.message);
+      return NextResponse.json(
+        { success: false, error: catError?.message || "Gagal menyimpan kategori" },
+        { status: 400 }
+      );
     }
 
     const insertedCatId = catData.id;

@@ -4,7 +4,7 @@ import AdminPanduanLayout from "@/views/pages/admin/panduan/AdminPanduanLayout";
 
 export const metadata: Metadata = {
   title: "Panduan | Sakuin Dashboard",
-  description: "Kelola panduan langkah, petunjuk interaktif, dan dokumentasi dashboard di Sakuin",
+  description: "Kelola panduan langkah, petunjuk penggunaan, dan dokumentasi dashboard di Sakuin",
 };
 
 export default function AdminPanduanPage() {

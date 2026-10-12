@@ -135,6 +135,7 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
       setIsOptionsExpanded(false);
       setStatusMessage({ text: result.message, isError: false });
     } else {
+      showToast(result.message, "error");
       setStatusMessage({ text: result.message, isError: true });
     }
 
@@ -155,6 +156,7 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
       showToast(`Merchant "${updates.name}" berhasil diperbarui!`);
       setStatusMessage({ text: result.message, isError: false });
     } else {
+      showToast(result.message, "error");
       setStatusMessage({ text: result.message, isError: true });
     }
     setTimeout(() => {

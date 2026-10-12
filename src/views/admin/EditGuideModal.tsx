@@ -7,6 +7,8 @@ import {
   Sparkles,
   AlertCircle,
   BookOpen,
+  EyeOff,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/utils";
 import HtmlEditor from "./HtmlEditor";
@@ -17,7 +19,7 @@ interface EditGuideModalProps {
   isOpen: boolean;
   onClose: () => void;
   guide?: PromoItem | null;
-  onSave: (guideData: Omit<PromoItem, "id" | "createdAt" | "updatedAt">) => void;
+  onSave: (guideData: Omit<PromoItem, "id" | "createdAt" | "updatedAt">) => void | Promise<void>;
 }
 
 const SAMPLE_BANNER_PATH = "/images/sample-images/ads.sample.png";
@@ -32,8 +34,12 @@ export const EditGuideModal: React.FC<EditGuideModalProps> = ({
   const [bannerUrl, setBannerUrl] = useState("");
   const [shortDescription, setShortDescription] = useState("");
   const [contentHtml, setContentHtml] = useState("");
+  const [isHidden, setIsHidden] = useState(false);
+  const [isHighlight, setIsHighlight] = useState(false);
   const [bannerPreviewError, setBannerPreviewError] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -42,16 +48,22 @@ export const EditGuideModal: React.FC<EditGuideModalProps> = ({
         setBannerUrl(guide.bannerUrl);
         setShortDescription(guide.shortDescription);
         setContentHtml(guide.contentHtml);
+        setIsHidden(Boolean(guide.isHidden));
+        setIsHighlight(Boolean(guide.isHighlight));
       } else {
         setTitle("");
         setBannerUrl(SAMPLE_BANNER_PATH);
         setShortDescription("");
         setContentHtml(
-          "<h3>Langkah-Langkah Panduan Sakuin</h3>\n<p>Tuliskan petunjuk interaktif, langkah demi langkah, dan penjelasan penggunaan fitur aplikasi di sini.</p>\n<ol>\n  <li>Langkah pertama...</li>\n  <li>Langkah kedua...</li>\n</ol>"
+          "<h3>Langkah-Langkah Panduan Sakuin</h3>\n<p>Tuliskan petunjuk, langkah demi langkah, dan penjelasan penggunaan fitur aplikasi di sini.</p>\n<ol>\n  <li>Langkah pertama...</li>\n  <li>Langkah kedua...</li>\n</ol>"
         );
+        setIsHidden(false);
+        setIsHighlight(false);
       }
       setBannerPreviewError(false);
       setErrors({});
+      setSubmitError(null);
+      setIsSubmitting(false);
     }
   }, [isOpen, guide]);
 
@@ -82,20 +94,30 @@ export const EditGuideModal: React.FC<EditGuideModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setIsSubmitting(true);
+    setSubmitError(null);
 
-    onSave({
-      type: "guide",
-      title: title.trim(),
-      bannerUrl: bannerUrl.trim(),
-      shortDescription: shortDescription.trim(),
-      contentHtml: contentHtml.trim(),
-      // Panduan tidak memiliki tanggal terbit (evergreen)
-    });
-
-    onClose();
+    try {
+      await onSave({
+        type: "guide",
+        title: title.trim(),
+        bannerUrl: bannerUrl.trim(),
+        shortDescription: shortDescription.trim(),
+        contentHtml: contentHtml.trim(),
+        isHidden,
+        isHighlight,
+        // Panduan tidak memiliki tanggal terbit (evergreen)
+      });
+      onClose();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Terjadi kesalahan saat menyimpan panduan ke database.";
+      setSubmitError(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -116,7 +138,7 @@ export const EditGuideModal: React.FC<EditGuideModalProps> = ({
                 {guide ? "Edit Panduan" : "Tambah Panduan"}
               </h3>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                Dokumentasi & panduan langkah interaktif langsung di dashboard pengguna
+                Dokumentasi & petunjuk langkah langsung di dashboard pengguna
               </p>
             </div>
           </div>
@@ -272,21 +294,103 @@ export const EditGuideModal: React.FC<EditGuideModalProps> = ({
             )}
           </div>
 
+          {/* 5. Kolom Centang: Highlight (Panduan Unggulan) */}
+          <div className="rounded-2xl border border-gray-200/80 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-850/50 p-4 transition-all hover:border-emerald-500/40">
+            <label className="flex items-start gap-3.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={isHighlight}
+                onChange={(e) => setIsHighlight(e.target.checked)}
+                className="mt-0.5 h-4.5 w-4.5 rounded-md border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-700 dark:bg-gray-800 cursor-pointer accent-emerald-600"
+              />
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-200">
+                    Jadikan Panduan Unggulan (Highlight)
+                  </span>
+                  {isHighlight && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400">
+                      <Sparkles className="w-3 h-3 text-amber-500" />
+                      Highlight Aktif
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+                  Tampilkan di bagian atas halaman pengguna dalam kartu besar. Jika ada lebih dari satu panduan highlight, otomatis tersusun menjadi carousel geser.
+                </p>
+              </div>
+            </label>
+          </div>
+
+          {/* 6. Kolom Centang: Sembunyikan dari Pengguna */}
+          <div className="rounded-2xl border border-gray-200/80 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-850/50 p-4 transition-all hover:border-emerald-500/40">
+            <label className="flex items-start gap-3.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={isHidden}
+                onChange={(e) => setIsHidden(e.target.checked)}
+                className="mt-0.5 h-4.5 w-4.5 rounded-md border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-700 dark:bg-gray-800 cursor-pointer accent-emerald-600"
+              />
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-200">
+                    Sembunyikan dari pengguna
+                  </span>
+                  {isHidden ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400">
+                      <EyeOff className="w-3 h-3" />
+                      Disembunyikan
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
+                      Tampil di Dashboard
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+                  Centang opsi ini apabila panduan ingin disembunyikan sementara dari pengguna tanpa harus menghapusnya.
+                </p>
+              </div>
+            </label>
+          </div>
+
+          {/* Error Message Banner on Screen */}
+          {submitError && (
+            <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-xs text-red-600 dark:text-red-400">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold">Gagal Menyimpan ke Database</p>
+                <p className="mt-0.5 leading-relaxed">{submitError}</p>
+              </div>
+            </div>
+          )}
+
           {/* Form Actions Footer */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+              disabled={isSubmitting}
+              className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer disabled:opacity-50"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
+              disabled={isSubmitting}
+              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
             >
-              <BookOpen className="w-4 h-4" />
-              <span>{guide ? "Simpan Perubahan" : "Simpan Panduan"}</span>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Menyimpan...</span>
+                </>
+              ) : (
+                <>
+                  <BookOpen className="w-4 h-4" />
+                  <span>{guide ? "Simpan Perubahan" : "Simpan Panduan"}</span>
+                </>
+              )}
             </button>
           </div>
         </form>

@@ -1,5 +1,22 @@
 import type { CategoryItem, MerchantItem } from "@/models/category";
 
+async function handleResponse<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    let errorMsg = `HTTP Error ${res.status}`;
+    try {
+      const errJson = await res.json();
+      if (errJson && errJson.error) {
+        errorMsg = errJson.error;
+      }
+    } catch {
+      if (res.statusText) errorMsg += ` (${res.statusText})`;
+    }
+    throw new Error(errorMsg);
+  }
+  const json = await res.json();
+  return json.data;
+}
+
 /**
  * Service Client untuk REST API Kategori & Merchant
  * Endpoints: /api/v1/categories & /api/v1/merchants
@@ -14,9 +31,8 @@ export const categoryApi = {
    */
   async getCategories(): Promise<CategoryItem[]> {
     const res = await fetch("/api/v1/categories");
-    if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
-    const json = await res.json();
-    return json.data || [];
+    const data = await handleResponse<CategoryItem[]>(res);
+    return data || [];
   },
 
   /**
@@ -28,9 +44,7 @@ export const categoryApi = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(category),
     });
-    if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
-    const json = await res.json();
-    return json.data;
+    return handleResponse<CategoryItem>(res);
   },
 
   /**
@@ -42,9 +56,7 @@ export const categoryApi = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updates),
     });
-    if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
-    const json = await res.json();
-    return json.data;
+    return handleResponse<CategoryItem>(res);
   },
 
   /**
@@ -54,7 +66,7 @@ export const categoryApi = {
     const res = await fetch(`/api/v1/categories/${id}`, {
       method: "DELETE",
     });
-    if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+    await handleResponse<unknown>(res);
   },
 
   // ==========================================
@@ -70,9 +82,7 @@ export const categoryApi = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ categoryId, merchant }),
     });
-    if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
-    const json = await res.json();
-    return json.data;
+    return handleResponse<MerchantItem>(res);
   },
 
   /**
@@ -87,9 +97,7 @@ export const categoryApi = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updates),
     });
-    if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
-    const json = await res.json();
-    return json.data;
+    return handleResponse<MerchantItem>(res);
   },
 
   /**
@@ -99,6 +107,6 @@ export const categoryApi = {
     const res = await fetch(`/api/v1/merchants/${merchantId}`, {
       method: "DELETE",
     });
-    if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+    await handleResponse<unknown>(res);
   },
 };

@@ -107,6 +107,42 @@ export type Database = {
           }
         ];
       };
+      guides: {
+        Row: {
+          id: number;
+          title: string;
+          banner_url: string;
+          short_description: string;
+          content_html: string;
+          is_hidden: boolean;
+          is_highlight?: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          title: string;
+          banner_url: string;
+          short_description: string;
+          content_html: string;
+          is_hidden?: boolean;
+          is_highlight?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: number;
+          title?: string;
+          banner_url?: string;
+          short_description?: string;
+          content_html?: string;
+          is_hidden?: boolean;
+          is_highlight?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;

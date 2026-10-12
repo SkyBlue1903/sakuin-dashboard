@@ -38,15 +38,47 @@ export async function POST(request: NextRequest) {
 
     const payload = mapMerchantToDb(merchant, categoryId);
 
-    const { data, error } = await supabase
+    // Pastikan ID numerik selalu berurutan (auto-increment) dan tidak bentrok dengan PostgreSQL sequence
+    if (!payload.id) {
+      const { data: maxRow } = await supabase
+        .from("merchants")
+        .select("id")
+        .order("id", { ascending: false })
+        .limit(1);
+      const nextId = (maxRow?.[0]?.id ?? 0) + 1;
+      payload.id = nextId;
+    }
+
+    let { data, error } = await supabase
       .from("merchants")
       .insert(payload)
       .select()
       .single();
 
-    if (error) {
-      console.error("[API POST /merchants] Supabase error:", error.message);
-      return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+    // Fallback: Jika terjadi error duplicate key (23505), ambil ulang max(id) + 1 dan coba lagi
+    if (error && error.code === "23505") {
+      const { data: maxRow } = await supabase
+        .from("merchants")
+        .select("id")
+        .order("id", { ascending: false })
+        .limit(1);
+      payload.id = (maxRow?.[0]?.id ?? 0) + 1;
+
+      const retryRes = await supabase
+        .from("merchants")
+        .insert(payload)
+        .select()
+        .single();
+      data = retryRes.data;
+      error = retryRes.error;
+    }
+
+    if (error || !data) {
+      console.error("[API POST /merchants] Supabase error:", error?.message);
+      return NextResponse.json(
+        { success: false, error: error?.message || "Gagal menyimpan merchant" },
+        { status: 400 }
+      );
     }
 
     const insertedId = data.id;
