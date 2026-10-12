@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 
-interface UseInfiniteScrollOptions {
+export interface UseInfiniteScrollOptions {
   totalItems: number;
   initialBatchSize?: number;
   loadMoreBatchSize?: number;
   threshold?: number; // IntersectionObserver rootMargin / threshold
+  root?: Element | Document | null;
 }
 
 /**
@@ -21,6 +22,7 @@ export function useResponsiveInfiniteScroll({
   initialBatchSize,
   loadMoreBatchSize,
   threshold = 0.1,
+  root = null,
 }: UseInfiniteScrollOptions) {
   const BASE_BATCH_SIZE = initialBatchSize || 10;
 
@@ -84,7 +86,7 @@ export function useResponsiveInfiniteScroll({
         }
       },
       {
-        root: null, // viewport
+        root: (root as Element | null) ?? null,
         rootMargin: "250px 0px", // Trigger sebelum user mencapai dasar paling bawah
         threshold,
       }
@@ -92,7 +94,7 @@ export function useResponsiveInfiniteScroll({
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [loadMore, hasMore, threshold]);
+  }, [loadMore, hasMore, threshold, root]);
 
   const resetScroll = useCallback(() => {
     setVisibleCount(getAdaptiveInitialSize());

@@ -19,6 +19,7 @@ import {
   ChevronUp,
   ArrowLeft,
   Moon,
+  Loader2,
 } from "lucide-react";
 import { useCategory } from "@/stores/useCategoryStore";
 import type { CategoryItem, MerchantItem } from "@/models/category";
@@ -26,10 +27,23 @@ import CategoryIcon from "@/views/admin/CategoryIcon";
 import MerchantLogo from "@/views/admin/MerchantLogo";
 import MoveMerchantModal from "@/views/admin/MoveMerchantModal";
 import EditMerchantModal from "@/views/admin/EditMerchantModal";
+import LazyItem from "@/views/common/LazyItem";
+import {
+  useResponsiveInfiniteScroll,
+  type UseInfiniteScrollOptions,
+} from "@/controllers/useResponsiveInfiniteScroll";
 import { cn } from "@/utils";
 import { useToast } from "@/stores/ToastContext";
 
-export const RightSidebarContent: React.FC = () => {
+interface RightSidebarContentProps {
+  className?: string;
+  infiniteScrollOptions?: Partial<UseInfiniteScrollOptions>;
+}
+
+export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
+  className,
+  infiniteScrollOptions,
+}) => {
   const {
     activeCategory,
     categories,
@@ -79,6 +93,22 @@ export const RightSidebarContent: React.FC = () => {
     }
     return false;
   });
+
+  // Responsive Infinite Scroll: Batasi render sesuai ukuran layar (viewport-based windowing)
+  const scrollConfig: UseInfiniteScrollOptions = {
+    totalItems: filteredMerchants.length,
+    initialBatchSize: infiniteScrollOptions?.initialBatchSize,
+    loadMoreBatchSize: infiniteScrollOptions?.loadMoreBatchSize,
+    threshold: infiniteScrollOptions?.threshold,
+  };
+
+  const {
+    visibleCount,
+    hasMore,
+    sentinelRef,
+  } = useResponsiveInfiniteScroll(scrollConfig);
+
+  const visibleMerchants = filteredMerchants.slice(0, visibleCount);
 
   const handleAddMerchantSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -412,7 +442,7 @@ export const RightSidebarContent: React.FC = () => {
         <div className="rounded-2xl sm:rounded-3xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 p-2 sm:p-4">
           <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100 dark:border-gray-800 mb-1">
             <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Daftar Merchant ({filteredMerchants.length})
+              Daftar Merchant ({filteredMerchants.length > visibleMerchants.length ? `${visibleMerchants.length} dari ${filteredMerchants.length}` : filteredMerchants.length})
             </span>
             <span className="text-xs text-gray-400">
               Kategori: {activeCategory.name}
@@ -435,111 +465,123 @@ export const RightSidebarContent: React.FC = () => {
                 </p>
               </div>
             ) : (
-              filteredMerchants.map((merchant) => {
-                const subCount = merchant.subMerchants?.length || 0;
-                return (
-                  <div
-                    key={merchant.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-3.5 gap-2.5 rounded-2xl hover:bg-gray-50/80 dark:hover:bg-gray-850/60 transition-all group"
-                  >
-                    {/* Left: Merchant Logo + Name & Sub-merchant Chips */}
-                    <div className="flex items-start gap-3 min-w-0 pr-2">
-                      <MerchantLogo
-                        name={merchant.name}
-                        logoUrl={merchant.logoUrl}
-                        logoDarkUrl={merchant.logoDarkUrl}
-                        size="lg"
-                        className="mt-0.5 sm:mt-0"
-                      />
-                      <div className="min-w-0 space-y-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white truncate block">
-                            {merchant.name}
-                          </span>
-                          {merchant.logoUrl && (
-                            <span
-                              className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-                              title={merchant.logoUrl}
-                            >
-                              <LinkIcon className="w-2.5 h-2.5" />
-                              Logo
-                            </span>
-                          )}
-                          {merchant.logoDarkUrl && (
-                            <span
-                              className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400"
-                              title={`Logo Dark: ${merchant.logoDarkUrl}`}
-                            >
-                              <Moon className="w-2.5 h-2.5" />
-                              Dark Logo
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Sub-merchant Chips */}
-                        <div className="flex flex-wrap items-center gap-1">
-                          {subCount > 0 ? (
-                            <>
-                              {merchant.subMerchants!.slice(0, 4).map((sub, i) => (
+              <>
+                {visibleMerchants.map((merchant) => {
+                  const subCount = merchant.subMerchants?.length || 0;
+                  return (
+                    <LazyItem key={merchant.id} placeholderHeight={68}>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-3.5 gap-2.5 rounded-2xl hover:bg-gray-50/80 dark:hover:bg-gray-850/60 transition-all group">
+                        {/* Left: Merchant Logo + Name & Sub-merchant Chips */}
+                        <div className="flex items-start gap-3 min-w-0 pr-2">
+                          <MerchantLogo
+                            name={merchant.name}
+                            logoUrl={merchant.logoUrl}
+                            logoDarkUrl={merchant.logoDarkUrl}
+                            size="lg"
+                            className="mt-0.5 sm:mt-0"
+                          />
+                          <div className="min-w-0 space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white truncate block">
+                                {merchant.name}
+                              </span>
+                              {merchant.logoUrl && (
                                 <span
-                                  key={i}
-                                  className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium font-mono uppercase tracking-wider bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
+                                  className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                                  title={merchant.logoUrl}
                                 >
-                                  {sub}
-                                </span>
-                              ))}
-                              {subCount > 4 && (
-                                <span className="text-[10px] font-semibold text-brand-600 dark:text-brand-400">
-                                  +{subCount - 4} alias
+                                  <LinkIcon className="w-2.5 h-2.5" />
+                                  Logo
                                 </span>
                               )}
-                            </>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => setEditingMerchant(merchant)}
-                              className="text-[11px] text-gray-400 hover:text-brand-500 hover:underline flex items-center gap-0.5 cursor-pointer"
-                            >
-                              <Plus className="w-3 h-3" />
-                              <span>Tambah sub-merchant / singkatan API</span>
-                            </button>
-                          )}
+                              {merchant.logoDarkUrl && (
+                                <span
+                                  className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400"
+                                  title={`Logo Dark: ${merchant.logoDarkUrl}`}
+                                >
+                                  <Moon className="w-2.5 h-2.5" />
+                                  Dark Logo
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Sub-merchant Chips */}
+                            <div className="flex flex-wrap items-center gap-1">
+                              {subCount > 0 ? (
+                                <>
+                                  {merchant.subMerchants!.slice(0, 4).map((sub, i) => (
+                                    <span
+                                      key={i}
+                                      className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium font-mono uppercase tracking-wider bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
+                                    >
+                                      {sub}
+                                    </span>
+                                  ))}
+                                  {subCount > 4 && (
+                                    <span className="text-[10px] font-semibold text-brand-600 dark:text-brand-400">
+                                      +{subCount - 4} alias
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingMerchant(merchant)}
+                                  className="text-[11px] text-gray-400 hover:text-brand-500 hover:underline flex items-center gap-0.5 cursor-pointer"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                  <span>Tambah sub-merchant / singkatan API</span>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Right: Actions */}
+                        <div className="flex items-center justify-end gap-1 sm:gap-1.5 shrink-0 self-end sm:self-center">
+                          <button
+                            type="button"
+                            onClick={() => setEditingMerchant(merchant)}
+                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                            title="Edit merchant dan sub-merchant"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                            <span>Edit</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setMovingMerchant(merchant)}
+                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                            title="Pindahkan ke kategori lain"
+                          >
+                            <ArrowRightLeft className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Pindah</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteMerchant(merchant)}
+                            className="p-1.5 rounded-xl text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                            title="Hapus merchant dari kategori ini"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
-                    </div>
+                    </LazyItem>
+                  );
+                })}
 
-                    {/* Right: Actions */}
-                    <div className="flex items-center justify-end gap-1 sm:gap-1.5 shrink-0 self-end sm:self-center">
-                      <button
-                        type="button"
-                        onClick={() => setEditingMerchant(merchant)}
-                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                        title="Edit merchant dan sub-merchant"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                        <span>Edit</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setMovingMerchant(merchant)}
-                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                        title="Pindahkan ke kategori lain"
-                      >
-                        <ArrowRightLeft className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">Pindah</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteMerchant(merchant)}
-                        className="p-1.5 rounded-xl text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
-                        title="Hapus merchant dari kategori ini"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+                {/* Sentinel Loader */}
+                {hasMore && (
+                  <div
+                    ref={sentinelRef}
+                    className="py-4 flex items-center justify-center gap-2 text-xs text-gray-400"
+                  >
+                    <Loader2 className="w-4 h-4 animate-spin text-brand-500" />
+                    <span>Memuat lebih banyak merchant...</span>
                   </div>
-                );
-              })
+                )}
+              </>
             )}
           </div>
         </div>

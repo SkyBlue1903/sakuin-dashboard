@@ -1,15 +1,27 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Search, Edit3, Trash2, Check, Sparkles, Layers, ChevronRight, RotateCcw } from "lucide-react";
+import { Plus, Search, Edit3, Trash2, Check, Sparkles, Layers, ChevronRight, RotateCcw, Loader2 } from "lucide-react";
 import { useCategory } from "@/stores/useCategoryStore";
 import type { CategoryItem } from "@/models/category";
 import CategoryIcon from "@/views/admin/CategoryIcon";
 import CategoryIconPickerModal from "@/views/admin/CategoryIconPickerModal";
+import {
+  useResponsiveInfiniteScroll,
+  type UseInfiniteScrollOptions,
+} from "@/controllers/useResponsiveInfiniteScroll";
 import { cn } from "@/utils";
 import { useToast } from "@/stores/ToastContext";
 
-export const LeftSidebarContent: React.FC = () => {
+interface LeftSidebarContentProps {
+  className?: string;
+  infiniteScrollOptions?: Partial<UseInfiniteScrollOptions>;
+}
+
+export const LeftSidebarContent: React.FC<LeftSidebarContentProps> = ({
+  className,
+  infiniteScrollOptions,
+}) => {
   const {
     categories,
     activeCategoryId,
@@ -32,6 +44,25 @@ export const LeftSidebarContent: React.FC = () => {
     cat.name.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
     (cat.apiCategoryName && cat.apiCategoryName.toLowerCase().includes(searchQuery.toLowerCase().trim()))
   );
+
+  // Responsive Infinite Scroll: Batasi render kategori sesuai ukuran layar
+  const scrollConfig: UseInfiniteScrollOptions = {
+    totalItems: filteredCategories.length,
+    initialBatchSize: infiniteScrollOptions?.initialBatchSize,
+    loadMoreBatchSize: infiniteScrollOptions?.loadMoreBatchSize,
+    threshold: infiniteScrollOptions?.threshold,
+  };
+
+  const {
+    visibleCount,
+    hasMore,
+    sentinelRef,
+  } = useResponsiveInfiniteScroll(scrollConfig);
+
+  // Pastikan kategori yang sedang aktif selalu masuk dalam render
+  const activeIndex = filteredCategories.findIndex((c) => c.id === activeCategoryId);
+  const effectiveVisibleCount = activeIndex >= 0 ? Math.max(visibleCount, activeIndex + 1) : visibleCount;
+  const visibleCategories = filteredCategories.slice(0, effectiveVisibleCount);
 
   const handleOpenAddModal = () => {
     setEditingCategory(null);
@@ -155,76 +186,89 @@ export const LeftSidebarContent: React.FC = () => {
             Kategori tidak ditemukan.
           </div>
         ) : (
-          filteredCategories.map((cat) => {
-            const isActive = activeCategoryId === cat.id;
-            return (
-              <div
-                key={cat.id}
-                onClick={() => {
-                  setActiveCategoryId(cat.id);
-                  setMobileView("merchants");
-                }}
-                className={cn(
-                  "group flex items-center justify-between p-3 rounded-2xl border transition-all cursor-pointer text-left",
-                  isActive
-                    ? "bg-white dark:bg-gray-900 border-brand-500/80 dark:border-brand-500 shadow-sm ring-1 ring-brand-500/20"
-                    : "bg-white/80 dark:bg-gray-900/60 border-gray-100 dark:border-gray-800/80 hover:bg-white dark:hover:bg-gray-900 hover:border-gray-200 dark:hover:border-gray-700"
-                )}
-              >
-                {/* Left: Icon + Category Info */}
-                <div className="flex items-center gap-3 min-w-0 pr-2">
-                  <CategoryIcon
-                    iconType={cat.iconType}
-                    iconName={cat.iconName}
-                    iconSrc={cat.iconSrc}
-                    color={cat.color}
-                    size="md"
-                  />
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className={cn(
-                        "text-xs sm:text-sm font-bold truncate block",
-                        isActive
-                          ? "text-brand-600 dark:text-brand-400"
-                          : "text-gray-900 dark:text-white"
-                      )}>
-                        {cat.name}
-                      </span>
-                      {cat.apiCategoryName && (
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-medium">
-                          {cat.apiCategoryName}
+          <>
+            {visibleCategories.map((cat) => {
+              const isActive = activeCategoryId === cat.id;
+              return (
+                <div
+                  key={cat.id}
+                  onClick={() => {
+                    setActiveCategoryId(cat.id);
+                    setMobileView("merchants");
+                  }}
+                  className={cn(
+                    "group flex items-center justify-between p-3 rounded-2xl border transition-all cursor-pointer text-left",
+                    isActive
+                      ? "bg-white dark:bg-gray-900 border-brand-500/80 dark:border-brand-500 shadow-sm ring-1 ring-brand-500/20"
+                      : "bg-white/80 dark:bg-gray-900/60 border-gray-100 dark:border-gray-800/80 hover:bg-white dark:hover:bg-gray-900 hover:border-gray-200 dark:hover:border-gray-700"
+                  )}
+                >
+                  {/* Left: Icon + Category Info */}
+                  <div className="flex items-center gap-3 min-w-0 pr-2">
+                    <CategoryIcon
+                      iconType={cat.iconType}
+                      iconName={cat.iconName}
+                      iconSrc={cat.iconSrc}
+                      color={cat.color}
+                      size="md"
+                    />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className={cn(
+                          "text-xs sm:text-sm font-bold truncate block",
+                          isActive
+                            ? "text-brand-600 dark:text-brand-400"
+                            : "text-gray-900 dark:text-white"
+                        )}>
+                          {cat.name}
                         </span>
-                      )}
+                        {cat.apiCategoryName && (
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-medium">
+                            {cat.apiCategoryName}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[11px] text-gray-400 dark:text-gray-500 block truncate mt-0.5">
+                        {cat.merchants.length} merchant terdaftar
+                      </span>
                     </div>
-                    <span className="text-[11px] text-gray-400 dark:text-gray-500 block truncate mt-0.5">
-                      {cat.merchants.length} merchant terdaftar
-                    </span>
+                  </div>
+
+                  {/* Right: Actions (Edit & Delete on hover/active) + Chevron on mobile */}
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={(e) => handleOpenEditModal(cat, e)}
+                      title="Edit kategori"
+                      className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => handleDeleteCategory(cat, e)}
+                      title="Hapus kategori"
+                      className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                    <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 md:hidden ml-0.5" />
                   </div>
                 </div>
+              );
+            })}
 
-                {/* Right: Actions (Edit & Delete on hover/active) + Chevron on mobile */}
-                <div className="flex items-center gap-1 shrink-0">
-                  <button
-                    type="button"
-                    onClick={(e) => handleOpenEditModal(cat, e)}
-                    title="Edit kategori"
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => handleDeleteCategory(cat, e)}
-                    title="Hapus kategori"
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                  <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 md:hidden ml-0.5" />
-                </div>
+            {/* Sentinel Loader */}
+            {hasMore && effectiveVisibleCount < filteredCategories.length && (
+              <div
+                ref={sentinelRef}
+                className="py-3 flex items-center justify-center gap-2 text-xs text-gray-400"
+              >
+                <Loader2 className="w-4 h-4 animate-spin text-brand-500" />
+                <span>Memuat lebih banyak kategori...</span>
               </div>
-            );
-          })
+            )}
+          </>
         )}
       </div>
 
