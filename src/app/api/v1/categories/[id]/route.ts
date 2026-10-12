@@ -8,6 +8,7 @@ import {
 } from "@/services/categoryMappers";
 import type { CategoryItem } from "@/models/category";
 import { TablesUpdate } from "@/lib/supabase/database.types";
+import { compressImageUrl } from "@/utils/imageOptimizer";
 
 export async function GET(
   _request: NextRequest,
@@ -80,7 +81,8 @@ export async function PUT(
     if (body.description !== undefined) updatePayload.description = body.description;
     if (body.iconType !== undefined) updatePayload.icon_type = body.iconType;
     if (body.iconName !== undefined) updatePayload.icon_name = body.iconName;
-    if (body.iconSrc !== undefined) updatePayload.icon_src = body.iconSrc;
+    if (body.iconSrc !== undefined)
+      updatePayload.icon_src = body.iconSrc ? compressImageUrl(body.iconSrc) : null;
     if (body.color !== undefined) updatePayload.color = body.color;
 
     // Update kolom tabel categories

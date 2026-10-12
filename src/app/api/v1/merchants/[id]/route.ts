@@ -6,6 +6,7 @@ import {
   DbMerchantWithSubs,
 } from "@/services/categoryMappers";
 import { TablesUpdate } from "@/lib/supabase/database.types";
+import { compressImageUrl } from "@/utils/imageOptimizer";
 
 export async function PUT(
   request: NextRequest,
@@ -31,8 +32,8 @@ export async function PUT(
     };
 
     if (body.name !== undefined) updatePayload.name = body.name;
-    if (body.logoUrl !== undefined) updatePayload.logo_url = body.logoUrl || null;
-    if (body.logoDarkUrl !== undefined) updatePayload.logo_dark_url = body.logoDarkUrl || null;
+    if (body.logoUrl !== undefined) updatePayload.logo_url = body.logoUrl ? compressImageUrl(body.logoUrl) : null;
+    if (body.logoDarkUrl !== undefined) updatePayload.logo_dark_url = body.logoDarkUrl ? compressImageUrl(body.logoDarkUrl) : null;
     if (body.categoryId !== undefined) {
       const cId = Number(body.categoryId);
       if (!isNaN(cId)) updatePayload.category_id = cId;

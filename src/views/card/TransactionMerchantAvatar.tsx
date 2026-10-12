@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { cn } from "@/utils";
+import { getOptimizedImageUrl } from "@/utils/imageOptimizer";
 import type { CategoryItem } from "@/models/category";
 import CategoryIcon from "@/views/admin/CategoryIcon";
 import { useOptionalTheme } from "@/stores/useThemeStore";
@@ -97,8 +98,10 @@ export const TransactionMerchantAvatar: React.FC<TransactionMerchantAvatarProps>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           key={activeMerchantUrl}
-          src={activeMerchantUrl}
+          src={getOptimizedImageUrl(activeMerchantUrl, 160)}
           alt={merchantName}
+          loading="lazy"
+          decoding="async"
           onLoad={() => setMerchantLoaded(true)}
           onError={() => {
             if (hasDarkOption && !merchantError) {
@@ -138,8 +141,10 @@ export const TransactionMerchantAvatar: React.FC<TransactionMerchantAvatarProps>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             key={category.iconSrc}
-            src={category.iconSrc}
+            src={getOptimizedImageUrl(category.iconSrc, 160)}
             alt={category.name || "Kategori"}
+            loading="lazy"
+            decoding="async"
             onLoad={() => setCategoryLoaded(true)}
             onError={() => setCategoryError(true)}
             className={cn(

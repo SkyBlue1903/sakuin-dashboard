@@ -33,6 +33,7 @@ import {
   type UseInfiniteScrollOptions,
 } from "@/controllers/useResponsiveInfiniteScroll";
 import { cn } from "@/utils";
+import { compressImageUrl } from "@/utils/imageOptimizer";
 import { useToast } from "@/stores/ToastContext";
 
 interface RightSidebarContentProps {
@@ -119,10 +120,13 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
       .map((s) => s.trim().toUpperCase())
       .filter((s) => s.length > 0);
 
+    const rawLogo = newMerchantLogoUrl.trim();
+    const rawLogoDark = newMerchantLogoDarkUrl.trim();
+
     const result = addMerchant(activeCategory.id, {
       name: newMerchantName.trim(),
-      logoUrl: newMerchantLogoUrl.trim() || undefined,
-      logoDarkUrl: newMerchantLogoDarkUrl.trim() || undefined,
+      logoUrl: rawLogo ? compressImageUrl(rawLogo) : undefined,
+      logoDarkUrl: rawLogoDark ? compressImageUrl(rawLogoDark) : undefined,
       subMerchants: parsedAliases.length > 0 ? parsedAliases : undefined,
     });
 
@@ -150,7 +154,12 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
     subMerchants?: string[];
   }) => {
     if (!editingMerchant) return;
-    const result = updateMerchant(activeCategory.id, editingMerchant.id, updates);
+    const sanitizedUpdates = {
+      ...updates,
+      logoUrl: updates.logoUrl ? compressImageUrl(updates.logoUrl) : undefined,
+      logoDarkUrl: updates.logoDarkUrl ? compressImageUrl(updates.logoDarkUrl) : undefined,
+    };
+    const result = updateMerchant(activeCategory.id, editingMerchant.id, sanitizedUpdates);
     if (result.success) {
       showToast(`Merchant "${updates.name}" berhasil diperbarui!`);
       setStatusMessage({ text: result.message, isError: false });

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { cn } from "@/utils";
 import { useOptionalTheme } from "@/stores/useThemeStore";
+import { getOptimizedImageUrl } from "@/utils/imageOptimizer";
 
 interface MerchantLogoProps {
   name: string;
@@ -76,8 +77,10 @@ export const MerchantLogo: React.FC<MerchantLogoProps> = ({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           key={currentUrl}
-          src={currentUrl}
+          src={getOptimizedImageUrl(currentUrl, 160)}
           alt={name}
+          loading="lazy"
+          decoding="async"
           onLoad={() => setIsLoaded(true)}
           onError={handleImgError}
           className={cn(
