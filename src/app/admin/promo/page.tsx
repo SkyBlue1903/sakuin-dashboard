@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import CardLayout from "@/app/card/layout/CardLayout";
-import { PromoProvider } from "@/context/PromoContext";
-import AdminPromoLayout from "./AdminPromoLayout";
+import CardLayout from "@/views/layout/CardLayout";
+import AdminPromoLayout from "@/views/pages/admin/promo/AdminPromoLayout";
 
 export const metadata: Metadata = {
   title: "Promo | Sakuin Dashboard",
@@ -11,9 +10,7 @@ export const metadata: Metadata = {
 export default function AdminPromoPage() {
   return (
     <CardLayout>
-      <PromoProvider>
-        <AdminPromoLayout />
-      </PromoProvider>
-    </CardLayout>
+<AdminPromoLayout />
+</CardLayout>
   );
 }

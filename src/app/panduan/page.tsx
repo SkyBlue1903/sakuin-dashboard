@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import CardLayout from "@/app/card/layout/CardLayout";
-import { PromoProvider } from "@/context/PromoContext";
-import Panduan from "./Panduan";
+import CardLayout from "@/views/layout/CardLayout";
+import Panduan from "@/views/pages/panduan/Panduan";
 
 export const metadata: Metadata = {
   title: "Panduan | Sakuin",
@@ -11,9 +10,7 @@ export const metadata: Metadata = {
 export default function PanduanPage() {
   return (
     <CardLayout>
-      <PromoProvider>
-        <Panduan />
-      </PromoProvider>
-    </CardLayout>
+<Panduan />
+</CardLayout>
   );
 }

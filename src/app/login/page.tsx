@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Eye, EyeOff, Loader2 } from "lucide-react";
-import ThemeTogglerTwo from "@/components/common/ThemeTogglerTwo";
+import ThemeTogglerTwo from "@/views/common/ThemeTogglerTwo";
 
 export default function LoginPage() {
   const router = useRouter();

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import CardLayout from "@/app/card/layout/CardLayout";
-import { PromoProvider } from "@/context/PromoContext";
-import AdminPanduanLayout from "./AdminPanduanLayout";
+import CardLayout from "@/views/layout/CardLayout";
+import AdminPanduanLayout from "@/views/pages/admin/panduan/AdminPanduanLayout";
 
 export const metadata: Metadata = {
   title: "Panduan | Sakuin Dashboard",
@@ -11,9 +10,7 @@ export const metadata: Metadata = {
 export default function AdminPanduanPage() {
   return (
     <CardLayout>
-      <PromoProvider>
-        <AdminPanduanLayout />
-      </PromoProvider>
-    </CardLayout>
+<AdminPanduanLayout />
+</CardLayout>
   );
 }

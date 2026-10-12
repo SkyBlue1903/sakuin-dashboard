@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import CardLayout from "@/app/card/layout/CardLayout";
-import CardDetailContent from "@/app/card/layout/LeftSidebarContent";
+import CardLayout from "@/views/layout/CardLayout";
+import CardDetailContent from "@/views/pages/card/layout/LeftSidebarContent";
 
 export const metadata: Metadata = {
   title: "SakuCard | Sakuin Dashboard",

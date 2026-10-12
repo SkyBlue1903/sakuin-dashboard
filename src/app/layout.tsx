@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
-import { SidebarProvider } from "@/context/SidebarContext";
-import { ThemeProvider } from "@/context/ThemeContext";
-import QueryProvider from "@/components/providers/QueryProvider";
+
+import QueryProvider from "@/providers/QueryProvider";
+import StoreInitializer from "@/providers/StoreInitializer";
+
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -28,34 +30,34 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="min-h-full" suppressHydrationWarning>
-      <head>
-        <script
+      <body className={`${outfit.className} min-h-full flex flex-col antialiased dark:bg-gray-950 dark:text-gray-100`}>
+        <Script
+          id="theme-initializer"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
-              (function() {
-                try {
-                  var mode = localStorage.getItem('theme-mode') || localStorage.getItem('theme') || 'system';
-                  var isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-                  if (isDark) {
-                    document.documentElement.classList.add('dark');
-                    document.documentElement.setAttribute('data-color-scheme', 'dark');
-                  } else {
-                    document.documentElement.classList.remove('dark');
-                    document.documentElement.setAttribute('data-color-scheme', 'light');
-                  }
-                } catch (e) {}
-              })();
+              try {
+                var mode = localStorage.getItem('theme-mode') || localStorage.getItem('theme') || 'system';
+                var isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (isDark) {
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.setAttribute('data-color-scheme', 'dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                  document.documentElement.setAttribute('data-color-scheme', 'light');
+                }
+              } catch (e) {}
             `,
           }}
         />
-      </head>
-      <body className={`${outfit.className} min-h-full flex flex-col antialiased dark:bg-gray-950 dark:text-gray-100`}>
+
         <QueryProvider>
-          <ThemeProvider>
-            <SidebarProvider>{children}</SidebarProvider>
-          </ThemeProvider>
+          <StoreInitializer>
+{children}
+</StoreInitializer>
         </QueryProvider>
       </body>
     </html>
   );
 }
+
