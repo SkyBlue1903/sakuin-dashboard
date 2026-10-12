@@ -408,13 +408,13 @@ const AppSidebar: React.FC = () => {
   return (
     <aside
       className={cn(
-        "fixed top-0 left-0 z-50 flex h-full flex-col border-r border-gray-200/80 bg-white text-gray-900 shadow-2xl transition-transform duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-900",
+        "fixed top-0 left-0 z-50 flex h-full flex-col border-r border-border-subtle bg-surface text-text-primary shadow-2xl transition-transform duration-300 ease-in-out",
         "w-[290px] sm:w-[310px]",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}
     >
       {/* Top Header: Logo + Close Button */}
-      <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-gray-800 shrink-0">
+      <div className="flex items-center justify-between px-6 py-5 border-b border-border-subtle shrink-0">
         <Link
           href="/card"
           onClick={() => {
@@ -442,7 +442,7 @@ const AppSidebar: React.FC = () => {
             style={{ width: "auto", height: "auto" }}
           /> */}
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg font-bold tracking-tight text-gray-900 dark:text-white truncate">
+            <h1 className="text-lg font-bold tracking-tight text-text-primary truncate">
               Sakuin.id
             </h1>
           </div>
@@ -451,7 +451,7 @@ const AppSidebar: React.FC = () => {
         <button
           type="button"
           onClick={closeSidebar}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-text-tertiary hover:text-text-primary hover:bg-surface-secondary transition-colors cursor-pointer"
           title="Tutup Menu"
           aria-label="Tutup Menu"
         >
@@ -465,7 +465,7 @@ const AppSidebar: React.FC = () => {
           <div className="flex flex-col gap-5">
             {/* Sakuin Menu */}
             <div>
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
                 MENU PENGGUNA
               </h2>
               {renderMenuItems(sakuinNavItems, "sakuin")}
@@ -473,7 +473,7 @@ const AppSidebar: React.FC = () => {
 
             {/* Template Navigation */}
             <div>
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
                 MENU ADMINISTRASI
               </h2>
               {renderMenuItems(templateNavItems, "template")}

@@ -153,20 +153,20 @@ export const ThemeSwitcher: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         title={`Tema saat ini: ${themeMode} (${theme})`}
         aria-label="Toggle Theme Menu"
-        className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+        className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface text-text-secondary transition-colors hover:bg-surface-secondary hover:text-text-primary cursor-pointer"
       >
         {currentIcon}
 
         {/* Small dot when in System mode to show it is automatic */}
         {themeMode === "system" && (
-          <span className="absolute bottom-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-brand-500" />
+          <span className="absolute bottom-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
         )}
       </button>
 
       {/* Floating Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg dark:border-gray-800 dark:bg-gray-900 z-50 animate-in fade-in zoom-in-95 duration-100">
-          <div className="px-2 py-1.5 text-xs font-semibold uppercase tracking-wider text-gray-400">
+        <div className="absolute right-0 mt-2 w-48 rounded-xl border border-border bg-surface p-1.5 shadow-ds-md z-50 animate-in fade-in zoom-in-95 duration-100">
+          <div className="px-2 py-1.5 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
             Tema Tampilan
           </div>
           <div className="space-y-0.5">
@@ -180,18 +180,18 @@ export const ThemeSwitcher: React.FC = () => {
                     setIsOpen(false);
                   }}
                   className={cn(
-                    "flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-sm font-medium transition-colors",
+                    "flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-sm font-medium transition-colors cursor-pointer",
                     isSelected
-                      ? "bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400"
-                      : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5",
+                      ? "bg-accent text-primary font-semibold"
+                      : "text-text-secondary hover:bg-surface-secondary hover:text-text-primary",
                   )}
                 >
                   <div className="flex items-center gap-2.5">
                     <span
                       className={cn(
                         isSelected
-                          ? "text-brand-600 dark:text-brand-400"
-                          : "text-gray-500 dark:text-gray-400",
+                          ? "text-primary"
+                          : "text-text-tertiary",
                       )}
                     >
                       {item.icon}
@@ -199,7 +199,7 @@ export const ThemeSwitcher: React.FC = () => {
                     <div className="text-left">
                       <div className="leading-tight">{item.label}</div>
                       {item.description ? (
-                        <div className="text-[11px] font-normal text-gray-400 dark:text-gray-500">
+                        <div className="text-[11px] font-normal text-text-tertiary">
                           {item.description}
                         </div>
                       ) : null}
@@ -208,7 +208,7 @@ export const ThemeSwitcher: React.FC = () => {
 
                   {isSelected && (
                     <svg
-                      className="h-4 w-4 text-brand-600 dark:text-brand-400"
+                      className="h-4 w-4 text-primary"
                       viewBox="0 0 20 20"
                       fill="none"
                       stroke="currentColor"
