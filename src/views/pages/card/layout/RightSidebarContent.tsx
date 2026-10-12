@@ -14,7 +14,7 @@ import CategoryIcon from "@/views/admin/CategoryIcon";
 import MerchantLogo from "@/views/admin/MerchantLogo";
 import TransactionMerchantAvatar from "@/views/card/TransactionMerchantAvatar";
 import LazyItem from "@/views/common/LazyItem";
-import { useCategory, DEFAULT_CATEGORIES, DEFAULT_MERCHANT_LOGOS } from "@/stores/useCategoryStore";
+import { useCategory } from "@/stores/useCategoryStore";
 import type { CategoryItem, MerchantItem } from "@/models/category";
 import { Modal } from "@/views/ui/modal";
 import { useTransactions } from "@/controllers/useTransactions";

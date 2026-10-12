@@ -15,7 +15,6 @@ import {
   Key,
   Copy,
 } from "lucide-react";
-import { DEFAULT_MERCHANT_LOGOS, DEFAULT_SUB_MERCHANTS } from "@/stores/useCategoryStore";
 import type { MerchantItem, CategoryItem } from "@/models/category";
 import MerchantLogo from "./MerchantLogo";
 import { cn } from "@/utils";

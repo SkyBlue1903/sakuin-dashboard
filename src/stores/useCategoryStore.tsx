@@ -7,151 +7,9 @@ import type { CategoryItem, MerchantItem, MatchResult } from "@/models/category"
 
 export type { CategoryItem, MerchantItem, MatchResult };
 
-export const DEFAULT_SUB_MERCHANTS: Record<string, string[]> = {
-  // Makanan & Minuman
-  "mcdonald's": ["MCD", "Mekdi", "Mcdonald", "McDonalds", "McDonald's", "PT Rekso Nasional Food"],
-  "hokben": ["HHB", "HokBen", "Hoka-Hoka Bento", "Hk Hk Bnt", "Hoka Hoka Bento", "PT Eka Bogainti"],
-  "kfc indonesia": ["KFC", "KENTUCKY FRIED CHICKEN", "FAST FOOD INDONESIA", "PT Fast Food Indonesia"],
-  "gofood": ["GOFOOD", "GO-FOOD", "GO FOOD", "GOPAY FOOD"],
-  "grabfood": ["GRABFOOD", "GRAB-FOOD", "GRAB FOOD", "OVO FOOD"],
-  "kopi kenangan": ["KENANGAN", "KOPI KENANGAN", "KENANGAN COFFEE", "PT Bumi Berkah Boga"],
-  "starbucks": ["SBX", "SBUX", "STARBUCKS", "STARBUCKS COFFEE", "PT Sari Coffee Indonesia"],
-  "fore coffee": ["FORE", "FORE COFFEE", "PT Fore Kopi Indonesia"],
-  "chatime": ["CHATIME", "CHATIME INDONESIA", "PT Foods Active"],
-  "mixue": ["MIXUE", "MIXUE ICE CREAM", "MIXUE INDONESIA"],
-  "janji jiwa": ["JIWA", "JANJI JIWA", "KOPI JANJI JIWA"],
-
-  // Belanja & Retail
-  "alfamart": ["ALFA", "ALFAMART", "ALFAMIDI", "ALFA MIDI", "SAT ALFAMART", "PT Sumber Alfaria Trijaya"],
-  "indomaret": ["IDM", "INDOMARET", "INDOMARCO", "INDOMARET POINT", "PT Indomarco Prismatama"],
-  "tokopedia": ["TOPED", "TOKOPEDIA", "TKPD", "PT Tokopedia"],
-  "shopee": ["SHOPEE", "SHOPEEPAY", "SPAY", "PT Shopee International"],
-  "superindo": ["SUPERINDO", "SUPER INDO", "LION SUPER INDO"],
-  "uniqlo": ["UNIQLO", "FAST RETAILING"],
-  "zara": ["ZARA", "INDITEX"],
-  "ace hardware": ["ACE", "ACE HARDWARE", "PT Aspirasi Hidup Indonesia"],
-  "hypermart": ["HYPERMART", "MPPA"],
-  "blibli": ["BLIBLI", "GLOBAL DIGITAL NIAGA"],
-
-  // Transportasi
-  "pertamina": ["SPBU", "PERTAMINA", "MYPERTAMINA", "SPBU PERTAMINA", "PT Pertamina Retail"],
-  "shell": ["SHELL", "SPBU SHELL", "SHELL SELECT", "PT Shell Indonesia"],
-  "gojek": ["GOJEK", "GO-JEK", "GOPAY", "PT GoTo Gojek Tokopedia"],
-  "grab": ["GRAB", "GRABCAR", "GRABBIKE", "GRAB INDONESIA"],
-  "bluebird": ["BLUEBIRD", "BLUE BIRD", "TAKSI BLUE BIRD"],
-  "garuda indonesia": ["GARUDA", "GIA", "GARUDA INDONESIA"],
-  "tiket.com": ["TIKET", "TIKET.COM", "GLOBAL TIKET NETWORK"],
-
-  // Tech & IT
-  "github copilot": ["GITHUB", "GITHUB INC", "COPILOT", "GITHUB COPILOT"],
-  "vercel pro team": ["VERCEL", "VERCEL INC"],
-  "cursor ai": ["CURSOR", "CURSOR AI", "ANYSWERE"],
-  "aws cloud": ["AWS", "AMAZON WEB SERVICES", "AWS CLOUD"],
-  "cloudflare": ["CLOUDFLARE", "NET DIVER"],
-  "digitalocean": ["DIGITALOCEAN", "DO CLOUD"],
-
-  // AI & Productivity
-  "chatgpt plus subscription": ["OPENAI", "CHATGPT", "OPENAI CHATGPT", "CHATGPT PLUS"],
-  "claude pro": ["CLAUDE", "ANTHROPIC", "CLAUDE AI", "CLAUDE PRO"],
-  "notion ai": ["NOTION", "NOTION LABS"],
-  "canva pro": ["CANVA", "CANVA PTY LTD"],
-  "figma professional": ["FIGMA", "FIGMA DESIGN"],
-  "midjourney": ["MIDJOURNEY", "MIDJOURNEY INC", "MIDJOURNEY SUBSCRIPTION", "MJ"],
-
-  // Hiburan
-  "spotify premium": ["SPOTIFY", "SPOTIFY AB", "SPOTIFY P12", "SPOTIFY PREMIUM"],
-  "netflix": ["NETFLIX", "NETFLIX.COM", "NETFLIX SERVICES", "NETFLIX INTERNET"],
-  "youtube premium": ["GOOGLE YOUTUBE", "YOUTUBE", "YT PREMIUM", "GOOGLE *YOUTUBE"],
-  "disney+ hotstar": ["DISNEY", "HOTSTAR", "DISNEY+"],
-  "steam games": ["STEAMGAMES", "STEAM", "VALVE", "STEAM PURCHASE"],
-  "playstation network": ["PSN", "PLAYSTATION", "SONY INTERACTIVE"],
-
-  // Tagihan
-  "pln pascabayar": ["PLN", "TOKEN PLN", "LISTRIK PLN", "PLN PERSERO"],
-  "telkomsel halo": ["TELKOMSEL", "KARTU HALO", "MYTELKOMSEL", "TELKOMSEL HALO"],
-  "bpjs kesehatan": ["BPJS", "BPJS KESEHATAN", "IURAN BPJS"],
-
-  // Kesehatan
-  "halodoc": ["HALODOC", "PT Media Dokter Investama", "HALO DOC"],
-  "apotek kimia farma": ["KIMIA FARMA", "KF APOTEK"],
-  "k24 klik": ["K24", "APOTEK K-24"],
-  "guardian": ["GUARDIAN", "HERO GROUP"],
-};
-
-export const DEFAULT_MERCHANT_LOGOS: Record<string, string> = {
-  // Belanja & Retail
-  "alfamart": "https://upload.wikimedia.org/wikipedia/commons/8/86/Alfamart_logo.svg",
-  "indomaret": "https://upload.wikimedia.org/wikipedia/commons/9/9d/Logo_Indomaret.png",
-  "tokopedia": "https://assets.tokopedia.net/assets-tokopedia-lite/v2/zeus/kratos/610e518b.png",
-  "shopee": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Shopee.svg",
-  "superindo": "https://upload.wikimedia.org/wikipedia/id/thumb/7/7b/Super_Indo_Logo.svg/1200px-Super_Indo_Logo.svg.png",
-  "uniqlo": "https://upload.wikimedia.org/wikipedia/commons/9/92/UNIQLO_logo.svg",
-  "zara": "https://upload.wikimedia.org/wikipedia/commons/f/fd/Zara_Logo.svg",
-  "ace hardware": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Ace_Hardware_logo.svg",
-  "hypermart": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Blibli_logo.svg/1200px-Blibli_logo.svg.png",
-  "blibli": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Blibli_logo.svg/1200px-Blibli_logo.svg.png",
-
-  // Makanan & Minuman
-  "gofood": "https://upload.wikimedia.org/wikipedia/commons/8/82/Gojek_logo_2019.svg",
-  "grabfood": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Grab_logo_2019.svg",
-  "kopi kenangan": "https://kopikenangan.com/wp-content/uploads/2021/04/Logo-Kopi-Kenangan.png",
-  "starbucks": "https://upload.wikimedia.org/wikipedia/en/d/d3/Starbucks_Corporation_Logo_2011.svg",
-  "starbucks coffee": "https://upload.wikimedia.org/wikipedia/en/d/d3/Starbucks_Corporation_Logo_2011.svg",
-  "fore coffee": "https://fore.coffee/wp-content/uploads/2021/07/fore-logo-green.png",
-  "chatime": "https://upload.wikimedia.org/wikipedia/en/b/b4/Chatime_logo.svg",
-  "mcdonald's": "https://upload.wikimedia.org/wikipedia/commons/3/36/McDonald%27s_Golden_Arches.svg",
-  "kfc indonesia": "https://upload.wikimedia.org/wikipedia/en/b/bf/KFC_logo.svg",
-  "mixue": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Mixue_Bingcheng_logo.svg/1200px-Mixue_Bingcheng_logo.svg.png",
-
-  // Transportasi
-  "pertamina": "https://upload.wikimedia.org/wikipedia/commons/2/26/Pertamina_Logo.svg",
-  "shell": "https://upload.wikimedia.org/wikipedia/en/e/e8/Shell_logo.svg",
-  "gojek": "https://upload.wikimedia.org/wikipedia/commons/8/82/Gojek_logo_2019.svg",
-  "grab": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Grab_logo_2019.svg",
-  "bluebird": "https://upload.wikimedia.org/wikipedia/commons/8/88/Blue_Bird_Group.svg",
-  "garuda indonesia": "https://upload.wikimedia.org/wikipedia/en/6/6d/Garuda_Indonesia_Logo.svg",
-  "tiket.com": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Logo_tiket.com.svg/1200px-Logo_tiket.com.svg.png",
-
-  // Tech & IT
-  "github copilot": "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png",
-  "vercel pro team": "https://assets.vercel.com/image/upload/front/favicon/vercel/180x180.png",
-  "cursor ai": "https://www.cursor.com/assets/images/logo.svg",
-  "aws cloud": "https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg",
-  "cloudflare": "https://upload.wikimedia.org/wikipedia/commons/9/94/Cloudflare_Logo.png",
-  "digitalocean": "https://upload.wikimedia.org/wikipedia/commons/f/ff/DigitalOcean_logo.svg",
-
-  // AI & Productivity
-  "chatgpt plus subscription": "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg",
-  "claude pro": "https://upload.wikimedia.org/wikipedia/commons/7/78/Anthropic_logo.svg",
-  "notion ai": "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png",
-  "canva pro": "https://upload.wikimedia.org/wikipedia/commons/0/08/Canva_icon_2021.svg",
-  "figma professional": "https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg",
-  "midjourney": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Midjourney_Emblem.png",
-
-  // Hiburan
-  "spotify premium": "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
-  "netflix": "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
-  "youtube premium": "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg",
-  "disney+ hotstar": "https://upload.wikimedia.org/wikipedia/commons/1/1e/Disney%2B_Hotstar_logo.svg",
-  "steam games": "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
-  "playstation network": "https://upload.wikimedia.org/wikipedia/commons/0/00/PlayStation_logo.svg",
-
-  // Pendidikan
-  "udemy": "https://upload.wikimedia.org/wikipedia/commons/e/e3/Udemy_logo.svg",
-  "coursera": "https://upload.wikimedia.org/wikipedia/commons/9/97/Coursera-Logo_600x600.svg",
-  "ruangguru": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Logo_Ruangguru.svg/1200px-Logo_Ruangguru.svg.png",
-  "gramedia": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Gramedia_logo.svg/1200px-Gramedia_logo.svg.png",
-
-  // Tagihan
-  "pln pascabayar": "https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_PLN.svg",
-  "telkomsel halo": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Telkomsel_2021_icon.svg",
-  "bpjs kesehatan": "https://upload.wikimedia.org/wikipedia/commons/b/b4/BPJS_Kesehatan_logo.svg",
-
-  // Kesehatan
-  "halodoc": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Halodoc_Logo.svg/1200px-Halodoc_Logo.svg.png",
-  "apotek kimia farma": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Kimia_Farma_logo_2022.svg/1200px-Kimia_Farma_logo_2022.svg.png",
-  "guardian": "https://upload.wikimedia.org/wikipedia/en/thumb/7/7b/Guardian_Pharmacy_Logo.svg/1200px-Guardian_Pharmacy_Logo.svg.png",
-};
+export const DEFAULT_SUB_MERCHANTS: Record<string, string[]> = {};
+export const DEFAULT_MERCHANT_LOGOS: Record<string, string> = {};
+export const DEFAULT_CATEGORIES: CategoryItem[] = [];
 
 export const createMerchant = (
   name: string,
@@ -159,199 +17,39 @@ export const createMerchant = (
   logoDarkUrl?: string,
   subMerchants?: string[]
 ): MerchantItem => ({
-  id: `m_${name.toLowerCase().replace(/[^a-z0-9]/g, "_")}`,
+  id: `m_${name.toLowerCase().replace(/[^a-z0-9]/g, "_")}_${Date.now()}`,
   name,
-  logoUrl: logoUrl || DEFAULT_MERCHANT_LOGOS[name.toLowerCase()] || undefined,
+  logoUrl: logoUrl || undefined,
   logoDarkUrl: logoDarkUrl || undefined,
-  subMerchants: subMerchants || DEFAULT_SUB_MERCHANTS[name.toLowerCase()] || [],
+  subMerchants: subMerchants || [],
 });
 
-export const DEFAULT_CATEGORIES: CategoryItem[] = [
-  {
-    id: "belanja",
-    name: "Belanja & Retail",
-    apiCategoryName: "RETAIL_GROCERY",
-    description: "Minimarket, supermarket, e-commerce, & department store",
-    iconType: "image",
-    iconSrc: "/images/category/belanja.svg",
-    color: "blue",
-    merchants: [
-      createMerchant("Alfamart"),
-      createMerchant("Indomaret"),
-      createMerchant("Tokopedia"),
-      createMerchant("Shopee"),
-      createMerchant("Superindo"),
-      createMerchant("Uniqlo"),
-      createMerchant("Zara"),
-      createMerchant("Ace Hardware"),
-      createMerchant("Hypermart"),
-      createMerchant("Blibli"),
-    ],
-  },
-  {
-    id: "makanan",
-    name: "Makanan & Minuman",
-    apiCategoryName: "FOOD_AND_BEVERAGE",
-    description: "Restoran, kafe, coffee shop, & pesan antar makanan",
-    iconType: "image",
-    iconSrc: "/images/category/makanan.svg",
-    color: "emerald",
-    merchants: [
-      createMerchant("McDonald's"),
-      createMerchant("HokBen"),
-      createMerchant("KFC Indonesia"),
-      createMerchant("GoFood"),
-      createMerchant("GrabFood"),
-      createMerchant("Kopi Kenangan"),
-      createMerchant("Starbucks"),
-      createMerchant("Fore Coffee"),
-      createMerchant("Chatime"),
-      createMerchant("Mixue"),
-      createMerchant("Janji Jiwa"),
-    ],
-  },
-  {
-    id: "transportasi",
-    name: "Transportasi",
-    apiCategoryName: "TRANSPORTATION",
-    description: "BBM, ojek online, taksi, maskapai, & tiket perjalanan",
-    iconType: "image",
-    iconSrc: "/images/category/transportasi.svg",
-    color: "amber",
-    merchants: [
-      createMerchant("Pertamina"),
-      createMerchant("Shell"),
-      createMerchant("Gojek"),
-      createMerchant("Grab"),
-      createMerchant("Bluebird"),
-      createMerchant("Garuda Indonesia"),
-      createMerchant("Tiket.com"),
-    ],
-  },
-  {
-    id: "hiburan",
-    name: "Hiburan & Rekreasi",
-    apiCategoryName: "ENTERTAINMENT",
-    description: "Streaming musik, film, gaming platform, & hiburan digital",
-    iconType: "image",
-    iconSrc: "/images/category/hiburan.svg",
-    color: "purple",
-    merchants: [
-      createMerchant("Spotify Premium"),
-      createMerchant("Netflix"),
-      createMerchant("YouTube Premium"),
-      createMerchant("Disney+ Hotstar"),
-      createMerchant("Steam Games"),
-      createMerchant("PlayStation Network"),
-    ],
-  },
-  {
-    id: "tech",
-    name: "Tech & IT",
-    apiCategoryName: "SOFTWARE_INFRASTRUCTURE",
-    description: "Cloud hosting, DNS, repository code, & developer tools",
-    iconType: "image",
-    iconSrc: "/images/category/tech.svg",
-    color: "cyan",
-    merchants: [
-      createMerchant("GitHub Copilot"),
-      createMerchant("Vercel Pro Team"),
-      createMerchant("Cursor AI"),
-      createMerchant("AWS Cloud"),
-      createMerchant("Cloudflare"),
-      createMerchant("DigitalOcean"),
-    ],
-  },
-  {
-    id: "ai",
-    name: "AI & Produktivitas",
-    apiCategoryName: "SUBSCRIPTIONS",
-    description: "Model AI, workspace notes, desain grafis, & tools produktif",
-    iconType: "image",
-    iconSrc: "/images/category/ai.svg",
-    color: "indigo",
-    merchants: [
-      createMerchant("ChatGPT Plus Subscription"),
-      createMerchant("Claude Pro"),
-      createMerchant("Notion AI"),
-      createMerchant("Canva Pro"),
-      createMerchant("Figma Professional"),
-      createMerchant("Midjourney"),
-    ],
-  },
-  {
-    id: "pendidikan",
-    name: "Pendidikan & Kursus",
-    apiCategoryName: "EDUCATION",
-    description: "Platform e-learning, kursus online, buku, & materi edukasi",
-    iconType: "image",
-    iconSrc: "/images/category/pendidikan.svg",
-    color: "orange",
-    merchants: [
-      createMerchant("Udemy"),
-      createMerchant("Coursera"),
-      createMerchant("Ruangguru"),
-      createMerchant("Gramedia"),
-    ],
-  },
-  {
-    id: "tagihan",
-    name: "Tagihan & Utilitas",
-    apiCategoryName: "BILLS_UTILITIES",
-    description: "Listrik PLN, paket data seluler, BPJS, & utilitas rumah",
-    iconType: "image",
-    iconSrc: "/images/category/tagihan.svg",
-    color: "rose",
-    merchants: [
-      createMerchant("PLN Pascabayar"),
-      createMerchant("Telkomsel Halo"),
-      createMerchant("BPJS Kesehatan"),
-    ],
-  },
-  {
-    id: "kesehatan",
-    name: "Kesehatan & Medis",
-    apiCategoryName: "HEALTHCARE",
-    description: "Apotek, konsultasi medis daring, & layanan farmasi",
-    iconType: "image",
-    iconSrc: "/images/category/kesehatan.svg",
-    color: "teal",
-    merchants: [
-      createMerchant("Halodoc"),
-      createMerchant("Apotek Kimia Farma"),
-      createMerchant("K24 Klik"),
-      createMerchant("Guardian"),
-    ],
-  },
-];
-
-const STORAGE_KEY = "sakuin_merchant_categories_v2";
+const STORAGE_KEY = "sakuin_merchant_categories_v3";
 
 // Helper to normalize merchants (supporting both API Supabase and local cache/defaults)
 export function normalizeCategoryList(rawCats: unknown[]): CategoryItem[] {
-  if (!Array.isArray(rawCats)) return DEFAULT_CATEGORIES;
+  if (!Array.isArray(rawCats)) return [];
 
   return (rawCats as any[]).map((cat, catIdx) => {
     const rawMerchants = Array.isArray(cat.merchants) ? cat.merchants : [];
     const normalizedMerchants: MerchantItem[] = rawMerchants.map((m: any, mIdx: number) => {
       if (typeof m === "string") {
-        const defaultSubs = DEFAULT_SUB_MERCHANTS[m.toLowerCase()] || [];
         return {
           id: String(mIdx + 1),
           name: m,
-          logoUrl: DEFAULT_MERCHANT_LOGOS[m.toLowerCase()] || undefined,
-          subMerchants: defaultSubs,
+          logoUrl: undefined,
+          logoDarkUrl: undefined,
+          subMerchants: [],
         };
       }
       const mObj = (m || {}) as Partial<MerchantItem>;
-      const defaultSubs = DEFAULT_SUB_MERCHANTS[(mObj.name || "").toLowerCase()] || [];
       const existingSubs = Array.isArray(mObj.subMerchants) ? mObj.subMerchants : [];
       return {
         id: String(mObj.id || `m_${catIdx}_${mIdx}_${Date.now()}`),
         name: mObj.name || "Merchant",
-        logoUrl: mObj.logoUrl || DEFAULT_MERCHANT_LOGOS[(mObj.name || "").toLowerCase()] || undefined,
+        logoUrl: mObj.logoUrl || undefined,
         logoDarkUrl: mObj.logoDarkUrl || undefined,
-        subMerchants: (existingSubs.length > 0 ? existingSubs : defaultSubs)
+        subMerchants: existingSubs
           .map((s: string) => String(s).trim().toUpperCase())
           .filter(Boolean),
       };
@@ -438,15 +136,21 @@ export interface CategoryStoreState {
 }
 
 export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
-  categories: DEFAULT_CATEGORIES,
+  categories: [],
   isLoading: false,
-  activeCategoryId: DEFAULT_CATEGORIES[0]?.id || "makanan",
+  activeCategoryId: "",
   mobileView: "categories",
 
   initCategories: () => {
     if (typeof window === "undefined") return;
 
-    // Load from cache first for instant render
+    // Purge legacy storage keys that had dummy categories
+    try {
+      localStorage.removeItem("sakuin_merchant_categories_v2");
+      localStorage.removeItem("sakuin_merchant_categories_v1");
+    } catch (_) {}
+
+    // Load from cache first for instant render if available
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved !== null) {
@@ -470,12 +174,12 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
     categoryApi
       .getCategories()
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           const normalized = normalizeCategoryList(data);
           const currentActive = get().activeCategoryId;
           const activeId = normalized.some((c) => c.id === currentActive)
             ? currentActive
-            : normalized[0].id;
+            : (normalized[0]?.id || "");
           set({ categories: normalized, activeCategoryId: activeId, isLoading: false });
           try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
@@ -600,9 +304,9 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
     const newMerchant: MerchantItem = {
       id: customId || `m_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       name,
-      logoUrl: logoUrl || DEFAULT_MERCHANT_LOGOS[name.toLowerCase()] || undefined,
+      logoUrl: logoUrl || undefined,
       logoDarkUrl: logoDarkUrl || undefined,
-      subMerchants: subMerchants || DEFAULT_SUB_MERCHANTS[name.toLowerCase()] || [],
+      subMerchants: subMerchants || [],
     };
 
     const updated = categories.map((c) =>
@@ -909,20 +613,20 @@ export const useCategoryStore = create<CategoryStoreState>((set, get) => ({
           } catch (_) {}
         } else {
           set({
-            categories: DEFAULT_CATEGORIES,
-            activeCategoryId: DEFAULT_CATEGORIES[0]?.id || "",
+            categories: [],
+            activeCategoryId: "",
             isLoading: false,
           });
           try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_CATEGORIES));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
           } catch (_) {}
         }
       })
       .catch((err) => {
         console.error("Gagal menyinkronkan kategori dari database:", err);
         set({
-          categories: DEFAULT_CATEGORIES,
-          activeCategoryId: DEFAULT_CATEGORIES[0]?.id || "",
+          categories: [],
+          activeCategoryId: "",
           isLoading: false,
         });
       });
