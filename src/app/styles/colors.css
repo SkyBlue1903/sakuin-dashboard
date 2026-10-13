@@ -1,20 +1,110 @@
+/* ==========================================================================
+   SAKUIN DESIGN SYSTEM — COLOR TOKENS
+   Digital Payment Design System · Brand: Trust Navy + Deep Teal
+
+   Cara kerja (pola resmi Tailwind v4):
+   1. @theme          → nilai LIGHT mode. Tailwind membuat utility dari sini
+                        (bg-primary, text-text-primary, border-border, dst.)
+                        dan setiap utility memakai var(--color-*).
+   2. .dark           → override variabel yang SAMA untuk DARK mode.
+                        Karena utility memakai var(), semua utility otomatis
+                        ikut berubah saat <html class="dark">.
+   3. @theme inline   → alias / mapping ke token lain (di-inline langsung
+                        ke utility sehingga selalu resolve sesuai theme).
+
+   Catatan penamaan utility:
+   - Brand        : bg-primary, text-primary, bg-secondary, bg-accent
+   - Background   : bg-background, bg-surface, bg-surface-secondary
+   - Text         : text-text-primary, text-text-secondary, text-text-tertiary
+   - Border       : border-border, border-border-subtle, border-border-strong
+   - Status       : text-success bg-success-bg border-success-border (dst.)
+   Opacity modifier didukung: bg-primary/40, bg-surface/85, dll.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. THEME TOKENS (LIGHT MODE — DEFAULT)
+   ========================================================================== */
 @theme {
   /* Custom Breakpoints */
   --breakpoint-tablet: 1032px;
-  /* Brand Colors */
-  --color-brand-25: #f2f7ff;
-  --color-brand-50: #ecf3ff;
-  --color-brand-100: #dde9ff;
-  --color-brand-200: #c2d6ff;
-  --color-brand-300: #9cb9ff;
-  --color-brand-400: #7592ff;
-  --color-brand-500: #465fff;
-  --color-brand-600: #3641f5;
-  --color-brand-700: #2a31d8;
-  --color-brand-800: #252dae;
-  --color-brand-900: #262e89;
-  --color-brand-950: #161950;
 
+  /* Brand */
+  --color-primary: #163A5F;
+  --color-primary-hover: #102D4A;
+  --color-primary-active: #0B2239;
+
+  --color-secondary: #0F766E;
+  --color-secondary-hover: #115E59;
+  --color-accent: #DDF5F0;
+
+  /* Background & Surface */
+  --color-background: #F7F9FC;
+  --color-surface: #FFFFFF;
+  --color-surface-secondary: #F2F4F7;
+  --color-surface-tertiary: #EAECF0;
+
+  /* Text */
+  --color-text-primary: #101828;
+  --color-text-secondary: #475467;
+  --color-text-tertiary: #667085;
+  --color-text-inverse: #FFFFFF;
+
+  /* Border */
+  --color-border: #D0D5DD;
+  --color-border-subtle: #EAECF0;
+  --color-border-strong: #98A2B3;
+
+  /* Semantic: Success */
+  --color-success: #15803D;
+  --color-success-bg: #DCFCE7;
+  --color-success-border: #86EFAC;
+
+  /* Semantic: Warning */
+  --color-warning: #92400E;
+  --color-warning-bg: #FEF3C7;
+  --color-warning-border: #FCD34D;
+
+  /* Semantic: Error */
+  --color-error: #B91C1C;
+  --color-error-bg: #FEE2E2;
+  --color-error-border: #FCA5A5;
+
+  /* Semantic: Info */
+  --color-info: #1D4ED8;
+  --color-info-bg: #DBEAFE;
+  --color-info-border: #93C5FD;
+
+  /* Interactive */
+  --color-focus-ring: #2563EB;
+  --color-selection: #DDF5F0;
+
+  /* Disabled */
+  --color-disabled-bg: #EAECF0;
+  --color-disabled-text: #667085;
+  --color-disabled-border: #D0D5DD;
+
+  /* Overlay */
+  --color-overlay: rgb(16 24 40 / 56%);
+
+  /* Design-system shadows (utility: shadow-ds-sm / shadow-ds-md / shadow-ds-lg)
+     Diberi prefix "ds" agar TIDAK menimpa shadow-sm/md/lg bawaan Tailwind. */
+  --shadow-ds-sm: 0 1px 2px rgb(16 24 40 / 5%);
+  --shadow-ds-md: 0 4px 12px rgb(16 24 40 / 8%);
+  --shadow-ds-lg: 0 12px 32px rgb(16 24 40 / 12%);
+
+  /* Design-system radius (utility: rounded-ds-sm ... rounded-ds-xl)
+     Diberi prefix "ds" agar TIDAK menimpa rounded-sm/md/lg bawaan Tailwind. */
+  --radius-ds-sm: 6px;
+  --radius-ds-md: 10px;
+  --radius-ds-lg: 16px;
+  --radius-ds-xl: 24px;
+
+  /* Motion (utility: ease-standard) */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ------------------------------------------------------------------------
+     Primitive scales (statis, tidak berubah per theme)
+     ------------------------------------------------------------------------ */
   /* Blue Light */
   --color-blue-light-25: #f5fbff;
   --color-blue-light-50: #f0f9ff;
@@ -44,7 +134,7 @@
   --color-gray-900: #101828;
   --color-gray-950: #0c111d;
 
-  /* Semantic Success */
+  /* Success Scale */
   --color-success-25: #f6fef9;
   --color-success-50: #ecfdf3;
   --color-success-100: #d1fadf;
@@ -58,7 +148,7 @@
   --color-success-900: #054f31;
   --color-success-950: #053321;
 
-  /* Semantic Error */
+  /* Error Scale */
   --color-error-25: #fffbfa;
   --color-error-50: #fef3f2;
   --color-error-100: #fee4e2;
@@ -72,7 +162,7 @@
   --color-error-900: #7a271a;
   --color-error-950: #55160c;
 
-  /* Semantic Warning */
+  /* Warning Scale */
   --color-warning-25: #fffcf5;
   --color-warning-50: #fffaeb;
   --color-warning-100: #fef0c7;
@@ -85,4 +175,210 @@
   --color-warning-800: #93370d;
   --color-warning-900: #7a2e0e;
   --color-warning-950: #4e1d09;
+}
+
+/* ==========================================================================
+   2. ALIASES (selalu mengikuti theme aktif)
+   ========================================================================== */
+@theme inline {
+  /* Nama sesuai spesifikasi token (bg/page, border/default, brand/...) */
+  --color-page: var(--color-background);
+  --color-bg-page: var(--color-background);
+  --color-bg-surface: var(--color-surface);
+  --color-bg-surface-secondary: var(--color-surface-secondary);
+  --color-default: var(--color-border);
+  --color-border-default: var(--color-border);
+  --color-brand-primary: var(--color-primary);
+  --color-brand-secondary: var(--color-secondary);
+  --color-brand-accent-bg: var(--color-accent);
+
+  /* Backward compatibility: class lama brand-* ikut design system */
+  --color-brand-25: var(--color-accent);
+  --color-brand-50: var(--color-accent);
+  --color-brand-100: var(--color-accent);
+  --color-brand-200: var(--color-border);
+  --color-brand-300: var(--color-border-strong);
+  --color-brand-400: var(--color-primary);
+  --color-brand-500: var(--color-primary);
+  --color-brand-600: var(--color-primary-hover);
+  --color-brand-700: var(--color-primary-active);
+  --color-brand-800: var(--color-primary-active);
+  --color-brand-900: var(--color-primary-active);
+  --color-brand-950: var(--color-accent);
+}
+
+/* ==========================================================================
+   3. DARK MODE OVERRIDES
+   Harus memakai selector yang sama dengan @custom-variant dark di globals.css
+   (class .dark pada <html>) supaya token & variant dark: selalu sinkron.
+   ========================================================================== */
+.dark,
+[data-theme="dark"],
+[data-color-scheme="dark"] {
+  color-scheme: dark;
+
+  /* Brand */
+  --color-primary: #8CB8E8;
+  --color-primary-hover: #A9CCF1;
+  --color-primary-active: #C6DDF7;
+
+  --color-secondary: #5EEAD4;
+  --color-secondary-hover: #99F6E4;
+  --color-accent: #123B38;
+
+  /* Background & Surface */
+  --color-background: #101820;
+  --color-surface: #1B2733;
+  --color-surface-secondary: #243342;
+  --color-surface-tertiary: #344054;
+
+  /* Text */
+  --color-text-primary: #F2F4F7;
+  --color-text-secondary: #B8C4D3;
+  --color-text-tertiary: #98A2B3;
+  --color-text-inverse: #101820;
+
+  /* Border */
+  --color-border: #475467;
+  --color-border-subtle: #344054;
+  --color-border-strong: #667085;
+
+  /* Semantic */
+  --color-success: #4ADE80;
+  --color-success-bg: #123522;
+  --color-success-border: #166534;
+
+  --color-warning: #FBBF24;
+  --color-warning-bg: #422D0A;
+  --color-warning-border: #92400E;
+
+  --color-error: #F87171;
+  --color-error-bg: #451A1A;
+  --color-error-border: #991B1B;
+
+  --color-info: #60A5FA;
+  --color-info-bg: #172F4F;
+  --color-info-border: #1D4ED8;
+
+  /* Interactive */
+  --color-focus-ring: #93C5FD;
+  --color-selection: #123B38;
+
+  /* Disabled */
+  --color-disabled-bg: #243342;
+  --color-disabled-text: #98A2B3;
+  --color-disabled-border: #344054;
+
+  /* Overlay */
+  --color-overlay: rgb(0 0 0 / 64%);
+
+  /* Shadows */
+  --shadow-ds-sm: 0 1px 2px rgb(0 0 0 / 16%);
+  --shadow-ds-md: 0 4px 12px rgb(0 0 0 / 24%);
+  --shadow-ds-lg: 0 12px 32px rgb(0 0 0 / 32%);
+}
+
+:root {
+  color-scheme: light;
+}
+
+/* ==========================================================================
+   4. REUSABLE UI COMPONENTS
+   Ditaruh di @layer components → utility Tailwind tetap bisa menimpanya,
+   mis. <div class="card p-6 rounded-2xl">.
+   ========================================================================== */
+@layer components {
+  .card {
+    color: var(--color-text-primary);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-ds-lg);
+    box-shadow: var(--shadow-ds-sm);
+  }
+
+  .button-primary,
+  .button-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(var(--spacing) * 2);
+    min-height: 44px;
+    padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+    color: var(--color-text-inverse);
+    border: 1px solid transparent;
+    border-radius: var(--radius-ds-md);
+    font-weight: 600;
+    transition: background-color 150ms var(--ease-standard);
+  }
+
+  .button-primary {
+    background-color: var(--color-primary);
+  }
+
+  .button-primary:hover {
+    background-color: var(--color-primary-hover);
+  }
+
+  .button-primary:active {
+    background-color: var(--color-primary-active);
+  }
+
+  .button-secondary {
+    background-color: var(--color-secondary);
+  }
+
+  .button-secondary:hover {
+    background-color: var(--color-secondary-hover);
+  }
+
+  .button-primary:disabled,
+  .button-secondary:disabled {
+    color: var(--color-disabled-text);
+    background-color: var(--color-disabled-bg);
+    border-color: var(--color-disabled-border);
+    cursor: not-allowed;
+  }
+
+  .input {
+    width: 100%;
+    min-height: 44px;
+    padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-ds-md);
+  }
+
+  .input::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  .input:focus-visible {
+    border-color: var(--color-focus-ring);
+    outline: none;
+  }
+
+  .status-success {
+    color: var(--color-success);
+    background-color: var(--color-success-bg);
+    border: 1px solid var(--color-success-border);
+  }
+
+  .status-warning {
+    color: var(--color-warning);
+    background-color: var(--color-warning-bg);
+    border: 1px solid var(--color-warning-border);
+  }
+
+  .status-error {
+    color: var(--color-error);
+    background-color: var(--color-error-bg);
+    border: 1px solid var(--color-error-border);
+  }
+
+  .status-info {
+    color: var(--color-info);
+    background-color: var(--color-info-bg);
+    border: 1px solid var(--color-info-border);
+  }
 }

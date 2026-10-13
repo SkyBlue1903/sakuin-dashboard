@@ -28,10 +28,7 @@ export function useTransactions<T = Transaction[]>(options?: {
       ? TRANSACTION_QUERY_KEYS.byCard(options.cardLast4)
       : TRANSACTION_QUERY_KEYS.lists(),
     queryFn: async () => {
-      const data = await cardApi.getTransactions();
-      if (options?.cardLast4) {
-        return data.filter((t) => t.cardLast4 === options.cardLast4);
-      }
+      const data = await cardApi.getTransactions(options?.cardLast4);
       return data;
     },
     initialData: () => {

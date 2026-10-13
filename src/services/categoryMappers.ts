@@ -1,5 +1,6 @@
 import type { CategoryItem, MerchantItem } from "@/models/category";
 import { Database, TablesInsert } from "@/lib/supabase/database.types";
+import { compressImageUrl } from "@/utils/imageOptimizer";
 
 type DbCategoryRow = Database["public"]["Tables"]["categories"]["Row"];
 type DbMerchantRow = Database["public"]["Tables"]["merchants"]["Row"];
@@ -33,8 +34,8 @@ export function mapMerchantToDb(
     ...(isNaN(numId) ? {} : { id: numId }),
     category_id: isNaN(numCatId) ? 1 : numCatId,
     name: merchant.name,
-    logo_url: merchant.logoUrl || null,
-    logo_dark_url: merchant.logoDarkUrl || null,
+    logo_url: merchant.logoUrl ? compressImageUrl(merchant.logoUrl) : null,
+    logo_dark_url: merchant.logoDarkUrl ? compressImageUrl(merchant.logoDarkUrl) : null,
     updated_at: new Date().toISOString(),
   };
 }
@@ -73,7 +74,7 @@ export function mapCategoryToDb(category: CategoryItem): TablesInsert<"categorie
     description: category.description || null,
     icon_type: category.iconType,
     icon_name: category.iconName || null,
-    icon_src: category.iconSrc || null,
+    icon_src: category.iconSrc ? compressImageUrl(category.iconSrc) : null,
     color: category.color,
     updated_at: new Date().toISOString(),
   };

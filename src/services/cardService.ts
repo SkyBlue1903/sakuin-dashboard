@@ -671,6 +671,18 @@ export const cardApi = {
       cardLast4: target.last4,
     };
     saveStoredTransactions([tx, ...getStoredTransactions()]);
+
+    // Simpan ke Supabase via API route
+    if (typeof window !== "undefined") {
+      fetch("/api/v1/transactions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tx),
+      }).catch((e) => {
+        console.warn("[cardApi.topUpCard] Gagal sinkronisasi transaksi ke Supabase:", e);
+      });
+    }
+
     return target;
   },
 
@@ -725,10 +737,24 @@ export const cardApi = {
   },
 
   /**
-   * Fetch riwayat transaksi
+   * Fetch riwayat transaksi (Murni dari Supabase via REST API dengan graceful fallback)
    */
-  async getTransactions(): Promise<Transaction[]> {
-    await delay(150);
-    return getStoredTransactions();
+  async getTransactions(cardLast4?: string): Promise<Transaction[]> {
+    if (typeof window !== "undefined") {
+      try {
+        const query = cardLast4 ? `?cardLast4=${encodeURIComponent(cardLast4)}` : "";
+        const res = await fetch(`/api/v1/transactions${query}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+            return json.data;
+          }
+        }
+      } catch (err) {
+        console.warn("[cardApi.getTransactions] Gagal fetch dari Supabase, menggunakan data lokal:", err);
+      }
+    }
+    const local = getStoredTransactions();
+    return cardLast4 ? local.filter((t) => t.cardLast4 === cardLast4) : local;
   },
 };

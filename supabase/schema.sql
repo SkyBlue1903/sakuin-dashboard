@@ -8,6 +8,7 @@
 -- ==============================================================================
 
 -- Reset Tabel Sebelumnya (Clean Slate)
+DROP TABLE IF EXISTS public.transactions CASCADE;
 DROP TABLE IF EXISTS public.sub_merchants CASCADE;
 DROP TABLE IF EXISTS public.merchants CASCADE;
 DROP TABLE IF EXISTS public.categories CASCADE;
@@ -45,14 +46,34 @@ CREATE TABLE public.sub_merchants (
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
 );
 
+-- 4. Tabel transactions (Riwayat Transaksi Kartu SakuCard)
+CREATE TABLE public.transactions (
+  id TEXT PRIMARY KEY,
+  merchant TEXT NOT NULL,
+  category_id BIGINT REFERENCES public.categories(id) ON DELETE SET NULL,
+  category_slug TEXT,
+  category TEXT NOT NULL,
+  date TEXT NOT NULL,
+  amount TEXT NOT NULL,
+  currency TEXT NOT NULL DEFAULT 'Rp',
+  status TEXT NOT NULL DEFAULT 'Success' CHECK (status IN ('Declined', 'Success', 'Pending')),
+  reason TEXT,
+  card_last4 TEXT NOT NULL DEFAULT '1995',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
+);
+
 -- Index Relasi
 CREATE INDEX idx_merchants_category_id ON public.merchants(category_id);
 CREATE INDEX idx_sub_merchants_merchant_id ON public.sub_merchants(merchant_id);
+CREATE INDEX idx_transactions_category_id ON public.transactions(category_id);
+CREATE INDEX idx_transactions_card_last4 ON public.transactions(card_last4);
+CREATE INDEX idx_transactions_created_at ON public.transactions(created_at DESC);
 
--- 4. Row Level Security (RLS) Configuration
+-- 5. Row Level Security (RLS) Configuration
 ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.merchants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sub_merchants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
 
 -- Policies: categories
 CREATE POLICY "Public select categories" ON public.categories FOR SELECT USING (true);
@@ -71,6 +92,12 @@ CREATE POLICY "Public select sub_merchants" ON public.sub_merchants FOR SELECT U
 CREATE POLICY "Public insert sub_merchants" ON public.sub_merchants FOR INSERT WITH CHECK (true);
 CREATE POLICY "Public update sub_merchants" ON public.sub_merchants FOR UPDATE USING (true);
 CREATE POLICY "Public delete sub_merchants" ON public.sub_merchants FOR DELETE USING (true);
+
+-- Policies: transactions
+CREATE POLICY "Public select transactions" ON public.transactions FOR SELECT USING (true);
+CREATE POLICY "Public insert transactions" ON public.transactions FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public update transactions" ON public.transactions FOR UPDATE USING (true);
+CREATE POLICY "Public delete transactions" ON public.transactions FOR DELETE USING (true);
 
 -- 5. Initial Seed Data (Categories)
 INSERT INTO public.categories (id, name, api_category_name, description, icon_type, icon_name, icon_src, color)
@@ -92,12 +119,12 @@ VALUES
   (2, 1, 'Indomaret', 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Logo_Indomaret.png'),
   (3, 1, 'Tokopedia', 'https://assets.tokopedia.net/assets-tokopedia-lite/v2/zeus/kratos/610e518b.png'),
   (4, 1, 'Shopee', 'https://upload.wikimedia.org/wikipedia/commons/f/fe/Shopee.svg'),
-  (5, 1, 'Superindo', 'https://upload.wikimedia.org/wikipedia/id/thumb/7/7b/Super_Indo_Logo.svg/1200px-Super_Indo_Logo.svg.png'),
+  (5, 1, 'Superindo', 'https://upload.wikimedia.org/wikipedia/id/thumb/7/7b/Super_Indo_Logo.svg/200px-Super_Indo_Logo.svg.png'),
   (6, 1, 'Uniqlo', 'https://upload.wikimedia.org/wikipedia/commons/9/92/UNIQLO_logo.svg'),
   (7, 1, 'Zara', 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Zara_Logo.svg'),
   (8, 1, 'Ace Hardware', 'https://upload.wikimedia.org/wikipedia/commons/b/b3/Ace_Hardware_logo.svg'),
-  (9, 1, 'Hypermart', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Blibli_logo.svg/1200px-Blibli_logo.svg.png'),
-  (10, 1, 'Blibli', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Blibli_logo.svg/1200px-Blibli_logo.svg.png'),
+  (9, 1, 'Hypermart', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Blibli_logo.svg/200px-Blibli_logo.svg.png'),
+  (10, 1, 'Blibli', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Blibli_logo.svg/200px-Blibli_logo.svg.png'),
   (11, 2, 'McDonald''s', 'https://upload.wikimedia.org/wikipedia/commons/3/36/McDonald%27s_Golden_Arches.svg'),
   (12, 2, 'HokBen', NULL),
   (13, 2, 'Gofood', 'https://upload.wikimedia.org/wikipedia/commons/8/82/Gojek_logo_2019.svg'),
@@ -107,7 +134,7 @@ VALUES
   (17, 2, 'Fore Coffee', 'https://fore.coffee/wp-content/uploads/2021/07/fore-logo-green.png'),
   (18, 2, 'Chatime', 'https://upload.wikimedia.org/wikipedia/en/b/b4/Chatime_logo.svg'),
   (19, 2, 'KFC Indonesia', 'https://upload.wikimedia.org/wikipedia/en/b/bf/KFC_logo.svg'),
-  (20, 2, 'Mixue', 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Mixue_Bingcheng_logo.svg/1200px-Mixue_Bingcheng_logo.svg.png'),
+  (20, 2, 'Mixue', 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Mixue_Bingcheng_logo.svg/200px-Mixue_Bingcheng_logo.svg.png'),
   (21, 2, 'Janji Jiwa', NULL),
   (22, 3, 'Pertamina', 'https://upload.wikimedia.org/wikipedia/commons/2/26/Pertamina_Logo.svg'),
   (23, 3, 'Shell', 'https://upload.wikimedia.org/wikipedia/en/e/e8/Shell_logo.svg'),
@@ -118,7 +145,7 @@ VALUES
   (28, 3, 'KRL Access', NULL),
   (29, 3, 'MRT Jakarta', NULL),
   (30, 3, 'Garuda Indonesia', 'https://upload.wikimedia.org/wikipedia/en/6/6d/Garuda_Indonesia_Logo.svg'),
-  (31, 3, 'Tiket.com', 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Logo_tiket.com.svg/1200px-Logo_tiket.com.svg.png'),
+  (31, 3, 'Tiket.com', 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Logo_tiket.com.svg/200px-Logo_tiket.com.svg.png'),
   (32, 4, 'GitHub Copilot', 'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png'),
   (33, 4, 'Vercel Pro Team', 'https://assets.vercel.com/image/upload/front/favicon/vercel/180x180.png'),
   (34, 4, 'Cursor AI', 'https://www.cursor.com/assets/images/logo.svg'),
@@ -146,10 +173,10 @@ VALUES
   (56, 7, 'coursiv.org', NULL),
   (57, 7, 'Udemy', 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Udemy_logo.svg'),
   (58, 7, 'Coursera', 'https://upload.wikimedia.org/wikipedia/commons/9/97/Coursera-Logo_600x600.svg'),
-  (59, 7, 'Ruangguru', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Logo_Ruangguru.svg/1200px-Logo_Ruangguru.svg.png'),
+  (59, 7, 'Ruangguru', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Logo_Ruangguru.svg/200px-Logo_Ruangguru.svg.png'),
   (60, 7, 'Dicoding Academy', NULL),
   (61, 7, 'Skillshare', NULL),
-  (62, 7, 'Gramedia', 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Gramedia_logo.svg/1200px-Gramedia_logo.svg.png'),
+  (62, 7, 'Gramedia', 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Gramedia_logo.svg/200px-Gramedia_logo.svg.png'),
   (63, 8, 'PLN Pascabayar', 'https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_PLN.svg'),
   (64, 8, 'Telkomsel Halo', 'https://upload.wikimedia.org/wikipedia/commons/b/bc/Telkomsel_2021_icon.svg'),
   (65, 8, 'Biznet Networks', NULL),
@@ -157,10 +184,10 @@ VALUES
   (67, 8, 'Indihome', NULL),
   (68, 8, 'First Media', NULL),
   (69, 8, 'BPJS Kesehatan', 'https://upload.wikimedia.org/wikipedia/commons/b/b4/BPJS_Kesehatan_logo.svg'),
-  (70, 9, 'Halodoc', 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Halodoc_Logo.svg/1200px-Halodoc_Logo.svg.png'),
-  (71, 9, 'Apotek Kimia Farma', 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Kimia_Farma_logo_2022.svg/1200px-Kimia_Farma_logo_2022.svg.png'),
+  (70, 9, 'Halodoc', 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Halodoc_Logo.svg/200px-Halodoc_Logo.svg.png'),
+  (71, 9, 'Apotek Kimia Farma', 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Kimia_Farma_logo_2022.svg/200px-Kimia_Farma_logo_2022.svg.png'),
   (72, 9, 'K24 Klik', NULL),
-  (73, 9, 'Guardian', 'https://upload.wikimedia.org/wikipedia/en/thumb/7/7b/Guardian_Pharmacy_Logo.svg/1200px-Guardian_Pharmacy_Logo.svg.png'),
+  (73, 9, 'Guardian', 'https://upload.wikimedia.org/wikipedia/en/thumb/7/7b/Guardian_Pharmacy_Logo.svg/200px-Guardian_Pharmacy_Logo.svg.png'),
   (74, 9, 'Watsons', NULL),
   (75, 9, 'Alodokter', NULL),
   (76, 9, 'Siloam Hospitals', NULL);
@@ -354,8 +381,11 @@ SELECT setval(pg_get_serial_sequence('public.categories', 'id'), (SELECT max(id)
 SELECT setval(pg_get_serial_sequence('public.merchants', 'id'), (SELECT max(id) FROM public.merchants));
 SELECT setval(pg_get_serial_sequence('public.sub_merchants', 'id'), (SELECT max(id) FROM public.sub_merchants));
 
+-- 9. Initial Seed Data: 42 Riwayat Transaksi Kartu SakuCard
+
+
 -- ==============================================================================
--- 9. Tabel guides (Panduan & Tutorial Interaktif)
+-- 10. Tabel guides (Panduan & Tutorial Interaktif)
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.guides (
   id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,

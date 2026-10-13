@@ -18,6 +18,7 @@ import {
 import type { MerchantItem, CategoryItem } from "@/models/category";
 import MerchantLogo from "./MerchantLogo";
 import { cn } from "@/utils";
+import { compressImageUrl } from "@/utils/imageOptimizer";
 import { Modal } from "@/views/ui/modal";
 
 interface EditMerchantModalProps {
@@ -141,8 +142,8 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
 
     onSave({
       name: name.trim(),
-      logoUrl: logoUrl.trim() || undefined,
-      logoDarkUrl: logoDarkUrl.trim() || undefined,
+      logoUrl: logoUrl.trim() ? compressImageUrl(logoUrl.trim()) : undefined,
+      logoDarkUrl: logoDarkUrl.trim() ? compressImageUrl(logoDarkUrl.trim()) : undefined,
       subMerchants: subMerchants.map((s) => s.trim().toUpperCase()),
     });
     onClose();

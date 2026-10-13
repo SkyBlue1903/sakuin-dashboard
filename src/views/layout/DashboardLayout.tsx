@@ -11,7 +11,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen w-full flex flex-col bg-gray-50 dark:bg-gray-950 font-sans">
+    <div className="relative min-h-screen w-full flex flex-col bg-background text-text-primary font-sans">
       {/* Sidebar Drawer and Dimmed Overlay Backdrop */}
       <AppSidebar />
       <Backdrop />

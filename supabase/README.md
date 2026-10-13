@@ -40,9 +40,25 @@ Telah disediakan skrip SQL lengkap di [`supabase/schema.sql`](file:///Users/angg
 | `PUT` | `/api/v1/merchants/:id` | Update nama/logo/alias/kategori merchant | `{ name, logoUrl, subMerchants, categoryId }` |
 | `DELETE` | `/api/v1/merchants/:id` | Hapus 1 merchant | Tanpa payload (0 byte) |
 
+### Transaksi Kartu (`/api/v1/transactions`)
+| Method | Endpoint | Fungsi | Payload / Parameter |
+|---|---|---|---|
+| `GET` | `/api/v1/transactions` | Ambil seluruh daftar transaksi kartu dari Supabase | Query: `?cardLast4=1995` (opsional) |
+| `POST` | `/api/v1/transactions` | Simpan riwayat transaksi baru ke Supabase (mis. saat Top Up) | Body: `Transaction` |
+
 ---
 
-## 3. Keunggulan Arsitektur Relasional Ini
+## 3. Setup Tabel Transaksi SakuCard di Supabase
+Telah disediakan skrip migrasi mandiri di [`supabase/transactions.sql`](file:///Users/mkpmobile/Documents/Personal/Latihan/sakuin-dashboard/supabase/transactions.sql) (atau gabungan di `schema.sql`).
+
+1. Buka dashboard proyek Anda di Supabase -> **SQL Editor**.
+2. Buka tab query baru, tempel isi dari [`supabase/transactions.sql`](file:///Users/mkpmobile/Documents/Personal/Latihan/sakuin-dashboard/supabase/transactions.sql).
+3. Klik **Run**.
+4. 42 transaksi awal kartu virtual SakuCard beserta relasi `category_id`, status, dan index otomatis terisi.
+
+---
+
+## 4. Keunggulan Arsitektur Relasional Ini
 - **Hemat Bandwidth**: Setiap mutasi merchant hanya mengirim puluhan byte data merchant yang bersangkutan, bukan seluruh daftar array kategori.
 - **Relational Integrity**: Menghapus kategori otomatis menghapus seluruh merchant miliknya secara bersih via PostgreSQL `ON DELETE CASCADE`.
 - **Fleksibel**: Memindahkan merchant ke kategori lain hanya perlu mengupdate kolom `category_id` saja.
