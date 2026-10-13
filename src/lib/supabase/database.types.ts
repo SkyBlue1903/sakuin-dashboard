@@ -143,6 +143,99 @@ export type Database = {
         };
         Relationships: [];
       };
+      infos: {
+        Row: {
+          id: number;
+          title: string;
+          banner_url: string;
+          banner_link: string | null;
+          short_description: string;
+          content_html: string;
+          published_at: string;
+          is_hidden: boolean;
+          is_highlight?: boolean;
+          hide_before_published?: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          title: string;
+          banner_url: string;
+          banner_link?: string | null;
+          short_description: string;
+          content_html: string;
+          published_at?: string;
+          is_hidden?: boolean;
+          is_highlight?: boolean;
+          hide_before_published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: number;
+          title?: string;
+          banner_url?: string;
+          banner_link?: string | null;
+          short_description?: string;
+          content_html?: string;
+          published_at?: string;
+          is_hidden?: boolean;
+          is_highlight?: boolean;
+          hide_before_published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      promos: {
+        Row: {
+          id: number;
+          title: string;
+          banner_url: string;
+          banner_link: string | null;
+          short_description: string;
+          content_html: string;
+          published_at: string;
+          takedown_at: string | null;
+          is_hidden: boolean;
+          is_highlight?: boolean;
+          hide_before_published?: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          title: string;
+          banner_url: string;
+          banner_link?: string | null;
+          short_description: string;
+          content_html: string;
+          published_at?: string;
+          takedown_at?: string | null;
+          is_hidden?: boolean;
+          is_highlight?: boolean;
+          hide_before_published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: number;
+          title?: string;
+          banner_url?: string;
+          banner_link?: string | null;
+          short_description?: string;
+          content_html?: string;
+          published_at?: string;
+          takedown_at?: string | null;
+          is_hidden?: boolean;
+          is_highlight?: boolean;
+          hide_before_published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       transactions: {
         Row: {
           id: string;

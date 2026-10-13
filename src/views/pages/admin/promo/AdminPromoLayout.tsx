@@ -1,25 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Sparkles,
   Plus,
   Search,
   Calendar,
   Clock,
-  ExternalLink,
   Eye,
   Edit2,
   Copy,
   Trash2,
   RotateCcw,
-  CheckCircle2,
   EyeOff,
   Gift,
-  Flame,
+  SlidersHorizontal,
 } from "lucide-react";
 import { cn } from "@/utils";
-import { usePromo, getPromoStatus, getPromoStatusBadge } from "@/stores/usePromoStore";
+import { usePromoStore, getPromoStatus, getPromoStatusBadge } from "@/stores/usePromoStore";
 import type { PromoItem } from "@/models/promo";
 import EditPromoModal from "@/views/admin/EditPromoModal";
 import PromoDetailModal from "@/views/admin/PromoDetailModal";
@@ -27,14 +25,16 @@ import DeletePromoModal from "@/views/admin/DeletePromoModal";
 import { useToast } from "@/stores/ToastContext";
 
 export const AdminPromoLayout: React.FC = () => {
-  const { promos, addPromo, updatePromo, deletePromo, duplicatePromo, resetToDefault } =
-    usePromo();
+  const { promos, isLoading, loadPromos, addPromo, updatePromo, deletePromo, duplicatePromo } =
+    usePromoStore();
   const { showToast } = useToast();
 
   // State
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState<"all" | "active" | "scheduled" | "expired">("all");
-  const [sortBy, setSortBy] = useState<"newest" | "ending_soon" | "title">("newest");
+  const [filterStatus, setFilterStatus] = useState<
+    "all" | "active" | "scheduled" | "expired" | "hidden" | "highlight"
+  >("all");
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "ending_soon" | "title">("newest");
 
   // Modals state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -42,23 +42,26 @@ export const AdminPromoLayout: React.FC = () => {
   const [previewingPromo, setPreviewingPromo] = useState<PromoItem | null>(null);
   const [deletingPromo, setDeletingPromo] = useState<PromoItem | null>(null);
 
-  // Filter only type === "promo"
-  const promoItems = promos.filter((p) => p.type === "promo");
+  // Load from Supabase on mount
+  useEffect(() => {
+    loadPromos(true);
+  }, [loadPromos]);
 
-  // Status counts
-  const now = new Date().getTime();
-  const totalCount = promoItems.length;
-  const activeCount = promoItems.filter((p) => getPromoStatus(p) === "active").length;
-  const scheduledCount = promoItems.filter((p) => getPromoStatus(p) === "scheduled").length;
-  const expiredCount = promoItems.filter((p) => getPromoStatus(p) === "expired").length;
+  // Filter only type === "promo"
+  const promoItems = promos.filter((p) => p.type === "promo" || !p.type);
 
   // Filter & Search logic
   const filteredPromos = promoItems
     .filter((promo) => {
       const status = getPromoStatus(promo);
+      const isHidden = Boolean(promo.isHidden);
+      const isHighlight = Boolean(promo.isHighlight);
+
       if (filterStatus === "active" && status !== "active") return false;
       if (filterStatus === "scheduled" && status !== "scheduled") return false;
       if (filterStatus === "expired" && status !== "expired") return false;
+      if (filterStatus === "hidden" && !isHidden) return false;
+      if (filterStatus === "highlight" && !isHighlight) return false;
 
       const q = searchQuery.toLowerCase().trim();
       if (!q) return true;
@@ -71,7 +74,10 @@ export const AdminPromoLayout: React.FC = () => {
     })
     .sort((a, b) => {
       if (sortBy === "newest") {
-        return new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime();
+        return Number(b.id) - Number(a.id);
+      }
+      if (sortBy === "oldest") {
+        return Number(a.id) - Number(b.id);
       }
       if (sortBy === "ending_soon") {
         const timeA = a.takedownAt ? new Date(a.takedownAt).getTime() : Infinity;
@@ -94,13 +100,71 @@ export const AdminPromoLayout: React.FC = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleSavePromo = (promoData: Omit<PromoItem, "id" | "createdAt" | "updatedAt">) => {
-    if (editingPromo) {
-      updatePromo(editingPromo.id, promoData);
-      showToast(`Promosi "${promoData.title}" berhasil diperbarui!`);
-    } else {
-      addPromo(promoData);
-      showToast(`Promosi "${promoData.title}" berhasil ditambahkan!`);
+  const handleSavePromo = async (promoData: Omit<PromoItem, "id" | "createdAt" | "updatedAt">) => {
+    try {
+      if (editingPromo) {
+        const res = await updatePromo(editingPromo.id, promoData);
+        showToast(res.message, "success");
+      } else {
+        const res = await addPromo(promoData);
+        showToast(res.message, "success");
+      }
+    } catch {
+      // Error handled with toast in store
+    }
+  };
+
+  const handleToggleHide = async (item: PromoItem) => {
+    const nextHidden = !item.isHidden;
+    try {
+      await updatePromo(item.id, { isHidden: nextHidden });
+      showToast(
+        nextHidden
+          ? `Promosi "${item.title}" sekarang disembunyikan dari pengguna.`
+          : `Promosi "${item.title}" sekarang ditampilkan ke pengguna.`,
+        "success"
+      );
+    } catch {
+      // Error handled in store
+    }
+  };
+
+  const handleToggleHighlight = async (item: PromoItem) => {
+    const nextHighlight = !item.isHighlight;
+    try {
+      await updatePromo(item.id, { isHighlight: nextHighlight });
+      showToast(
+        nextHighlight
+          ? `Promosi "${item.title}" dijadikan Highlight Unggulan.`
+          : `Promosi "${item.title}" dihapus dari Highlight.`,
+        "success"
+      );
+    } catch {
+      // Error handled in store
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deletingPromo) {
+      try {
+        const res = await deletePromo(deletingPromo.id);
+        showToast(res.message, "success");
+      } catch {
+        // Error handled in store
+      } finally {
+        setDeletingPromo(null);
+      }
+    }
+  };
+
+  const handleDuplicate = async (item: PromoItem) => {
+    try {
+      const duplicated = await duplicatePromo(item.id);
+      if (duplicated) {
+        showToast(`Promosi "${duplicated.title}" berhasil diduplikasi!`, "success");
+      }
+    } catch {
+      // Error handled in store
     }
   };
 
@@ -120,38 +184,20 @@ export const AdminPromoLayout: React.FC = () => {
     }
   };
 
-  const calculateDaysRemaining = (promo: PromoItem) => {
-    const down = promo.takedownAt ? new Date(promo.takedownAt).getTime() : 0;
-    const pub = promo.publishedAt ? new Date(promo.publishedAt).getTime() : 0;
-
-    if (now < pub) {
-      const diffDays = Math.ceil((pub - now) / (1000 * 60 * 60 * 24));
-      return `Mulai dalam ${diffDays} hari`;
-    }
-    if (down && now > down) {
-      return "Berakhir";
-    }
-    if (down) {
-      const diffDays = Math.ceil((down - now) / (1000 * 60 * 60 * 24));
-      return `Sisa ${diffDays} hari lagi`;
-    }
-    return "Aktif";
-  };
-
   return (
     <div className="w-full flex-1 md:overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
       {/* 1. Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-gray-100 dark:border-gray-800">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-brand-600 dark:text-brand-400 mb-1">
-            <Sparkles className="w-4 h-4" />
-            <span>Manajemen Promo & Penawaran Sakuin</span>
+          <div className="flex items-center gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400 mb-1">
+            <Gift className="w-4 h-4" />
+            <span>Manajemen Promosi Sakuin</span>
           </div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-            Kelola Promo
+            Kelola Promosi
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-2xl leading-relaxed">
-            Kelola banner promosi merchant, diskon belanja, jadwal tayang & takedown, serta checklist sembunyikan sebelum terbit.
+            Atur banner penawaran, periode promo, diskon merchant, dan program reward untuk pengguna (tersinkronisasi ke Supabase).
           </p>
         </div>
 
@@ -159,18 +205,22 @@ export const AdminPromoLayout: React.FC = () => {
         <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
           <button
             type="button"
-            onClick={resetToDefault}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-850 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
-            title="Reset ke dummy bawaan"
+            onClick={() => {
+              loadPromos(true);
+              showToast("Data promosi disegarkan dari Supabase");
+            }}
+            disabled={isLoading}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-850 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-semibold shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
+            title="Segarkan data dari database"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Reset Sampel (#DEV)</span>
+            <RotateCcw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
+            <span className="hidden sm:inline">Segarkan</span>
           </button>
 
           <button
             type="button"
             onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs sm:text-sm font-semibold shadow-xs transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold shadow-xs transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Promo</span>
@@ -178,240 +228,173 @@ export const AdminPromoLayout: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. Stat Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Promo */}
-        <div className="p-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-2xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-gray-400">Total Promo</span>
-            <div className="p-2 rounded-xl bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400">
-              <Gift className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-extrabold text-gray-900 dark:text-white">
-              {totalCount}
-            </span>
-            <span className="text-[11px] text-gray-400">penawaran</span>
-          </div>
-        </div>
-
-        {/* Sedang Aktif */}
-        <div className="p-4 rounded-2xl border border-emerald-100 dark:border-emerald-950/30 bg-emerald-50/20 dark:bg-emerald-950/10 shadow-2xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
-              Sedang Aktif
-            </span>
-            <div className="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400">
-              <Flame className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400">
-              {activeCount}
-            </span>
-            <span className="text-[11px] text-emerald-600 dark:text-emerald-400">berjalan</span>
-          </div>
-        </div>
-
-        {/* Dijadwalkan */}
-        <div className="p-4 rounded-2xl border border-purple-100 dark:border-purple-950/30 bg-purple-50/20 dark:bg-purple-950/10 shadow-2xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-purple-600 dark:text-purple-400">
-              Dijadwalkan
-            </span>
-            <div className="p-2 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400">
-              <Clock className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-extrabold text-purple-700 dark:text-purple-400">
-              {scheduledCount}
-            </span>
-            <span className="text-[11px] text-purple-600 dark:text-purple-400">mendatang</span>
-          </div>
-        </div>
-
-        {/* Telah Berakhir */}
-        <div className="p-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-850/30 shadow-2xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-gray-400">Telah Berakhir</span>
-            <div className="p-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-              <Clock className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-extrabold text-gray-700 dark:text-gray-300">
-              {expiredCount}
-            </span>
-            <span className="text-[11px] text-gray-400">selesai</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Search & Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
-        {/* Search */}
+      {/* 2. Search & Filter Bar (Dropdown Status & Dropdown Urutkan) */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pt-1">
+        {/* Search Input */}
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari judul promo atau merchant..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-850 text-xs text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            placeholder="Cari judul promo atau deskripsi..."
+            className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-850 text-xs text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
 
-        {/* Filter Pills & Sort */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-          <div className="flex items-center p-1 rounded-xl bg-gray-100 dark:bg-gray-800 text-xs">
-            <button
-              type="button"
-              onClick={() => setFilterStatus("all")}
-              className={cn(
-                "px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer whitespace-nowrap",
-                filterStatus === "all"
-                  ? "bg-white dark:bg-gray-900 text-brand-700 dark:text-brand-400 shadow-2xs font-semibold"
-                  : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-              )}
+        {/* Filter Dropdowns Section */}
+        <div className="flex items-center gap-2.5 flex-wrap">
+          {/* Filter Dropdown: Status Promosi */}
+          <div className="flex items-center gap-1.5">
+            <SlidersHorizontal className="w-3.5 h-3.5 text-gray-400 hidden sm:inline" />
+            <span className="text-xs text-gray-400 hidden sm:inline">Status:</span>
+            <select
+              value={filterStatus}
+              onChange={(e) =>
+                setFilterStatus(
+                  e.target.value as "all" | "active" | "scheduled" | "expired" | "hidden" | "highlight"
+                )
+              }
+              className="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-850 text-xs font-semibold text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
             >
-              Semua ({totalCount})
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterStatus("active")}
-              className={cn(
-                "px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer whitespace-nowrap",
-                filterStatus === "active"
-                  ? "bg-white dark:bg-gray-900 text-emerald-700 dark:text-emerald-400 shadow-2xs font-semibold"
-                  : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-              )}
-            >
-              Aktif ({activeCount})
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterStatus("scheduled")}
-              className={cn(
-                "px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer whitespace-nowrap",
-                filterStatus === "scheduled"
-                  ? "bg-white dark:bg-gray-900 text-purple-700 dark:text-purple-400 shadow-2xs font-semibold"
-                  : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-              )}
-            >
-              Terjadwal ({scheduledCount})
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterStatus("expired")}
-              className={cn(
-                "px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer whitespace-nowrap",
-                filterStatus === "expired"
-                  ? "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 shadow-2xs font-semibold"
-                  : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-              )}
-            >
-              Berakhir ({expiredCount})
-            </button>
+              <option value="all">Semua Status</option>
+              <option value="active">Aktif</option>
+              <option value="scheduled">Dijadwalkan</option>
+              <option value="expired">Berakhir</option>
+              <option value="hidden">Disembunyikan</option>
+              <option value="highlight">Highlight Unggulan</option>
+            </select>
           </div>
 
-          {/* Sort Selector */}
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
-            className="px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-850 text-xs font-medium text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-brand-500 cursor-pointer"
-          >
-            <option value="newest">Terbit Terbaru</option>
-            <option value="ending_soon">Segera Berakhir</option>
-            <option value="title">Judul (A-Z)</option>
-          </select>
+          {/* Filter Dropdown: Urutkan */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-gray-400 hidden sm:inline">Urutkan:</span>
+            <select
+              value={sortBy}
+              onChange={(e) =>
+                setSortBy(e.target.value as "newest" | "oldest" | "ending_soon" | "title")
+              }
+              className="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-850 text-xs font-semibold text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
+            >
+              <option value="newest">Terbaru Ditambahkan</option>
+              <option value="oldest">Terlama</option>
+              <option value="ending_soon">Segera Berakhir</option>
+              <option value="title">Judul (A-Z)</option>
+            </select>
+          </div>
+
+          <div className="px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-[11px] text-gray-500 dark:text-gray-400 font-medium">
+            {filteredPromos.length} promosi
+          </div>
         </div>
       </div>
 
-      {/* 4. Promo Cards List */}
-      {filteredPromos.length === 0 ? (
-        <div className="py-16 text-center rounded-3xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-8">
-          <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-brand-50 dark:bg-brand-950/40 flex items-center justify-center text-brand-500">
-            <Gift className="w-7 h-7" />
+      {/* 3. Grid Daftar Kartu Promosi */}
+      {isLoading && promoItems.length === 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 animate-pulse space-y-4"
+            >
+              <div className="w-full h-40 bg-gray-200 dark:bg-gray-800 rounded-xl" />
+              <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-3/4" />
+              <div className="h-3 bg-gray-200 dark:bg-gray-800 rounded w-full" />
+              <div className="h-3 bg-gray-200 dark:bg-gray-800 rounded w-1/2" />
+            </div>
+          ))}
+        </div>
+      ) : filteredPromos.length === 0 ? (
+        <div className="text-center py-16 px-4 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
+          <div className="inline-flex p-4 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 mb-3">
+            <Gift className="w-8 h-8" />
           </div>
-          <h3 className="text-base font-bold text-gray-800 dark:text-white">
-            Tidak Ada Promo Ditemukan
+          <h3 className="text-base font-bold text-gray-900 dark:text-white">
+            Tidak ada promosi ditemukan
           </h3>
-          <p className="text-xs text-gray-400 max-w-sm mx-auto mt-1 mb-5">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-sm mx-auto">
             {searchQuery
-              ? "Tidak ada item promo yang cocok dengan kata kunci pencarian Anda."
-              : "Belum ada promo dalam kategori filter ini."}
+              ? `Tidak ada promosi yang cocok dengan kata kunci "${searchQuery}".`
+              : "Belum ada promosi yang tersimpan di database. Silakan tambahkan promosi baru."}
           </p>
-          <button
-            type="button"
-            onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold cursor-pointer shadow-xs"
-          >
-            <Plus className="w-4 h-4" />
-            Buat Promo Baru
-          </button>
+          <div className="mt-5">
+            <button
+              type="button"
+              onClick={handleOpenCreateModal}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Tambah Promosi Sekarang</span>
+            </button>
+          </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredPromos.map((item) => {
             const badge = getPromoStatusBadge(item);
-            const pubTime = item.publishedAt ? new Date(item.publishedAt).getTime() : 0;
-            const isScheduled = now < pubTime;
-            const isHidden = item.hideBeforePublished && isScheduled;
+            const isHidden = Boolean(item.isHidden);
 
             return (
               <div
                 key={item.id}
-                className="group flex flex-col rounded-3xl border border-gray-100 bg-white shadow-2xs hover:shadow-md dark:border-gray-800 dark:bg-gray-900 overflow-hidden transition-all duration-200"
+                className={cn(
+                  "group rounded-2xl border bg-white dark:bg-gray-900 overflow-hidden flex flex-col transition-all duration-200 hover:shadow-md",
+                  isHidden
+                    ? "border-dashed border-gray-300 dark:border-gray-700 opacity-80"
+                    : "border-gray-200/80 dark:border-gray-800 hover:border-blue-500/30"
+                )}
               >
-                {/* Banner Thumbnail (1200:628 ratio) */}
-                <div
-                  onClick={() => setPreviewingPromo(item)}
-                  className="relative w-full aspect-[1200/628] bg-gray-100 dark:bg-gray-800 overflow-hidden cursor-pointer"
-                >
+                {/* Banner Thumbnail */}
+                <div className="relative aspect-video w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={item.bannerUrl}
                     alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=800&q=80";
+                    }}
                   />
 
-                  {/* Status badge top-left */}
-                  <div className="absolute top-3 left-3 flex flex-col gap-1 items-start">
+                  {/* Badges on Banner */}
+                  <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap">
                     <span
                       className={cn(
-                        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border backdrop-blur-md shadow-xs",
+                        "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border backdrop-blur-md shadow-2xs",
                         badge.colorClass
                       )}
                     >
                       <span className={cn("w-1.5 h-1.5 rounded-full", badge.dotClass)} />
                       {badge.label}
                     </span>
-                    {isHidden && (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/95 text-white backdrop-blur-md shadow-xs border border-amber-400/40">
-                        <EyeOff className="w-3 h-3" />
-                        Disembunyikan
+
+                    {item.isHighlight && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/90 text-white backdrop-blur-md shadow-2xs">
+                        <Sparkles className="w-3 h-3 text-amber-100" />
+                        Highlight
                       </span>
                     )}
                   </div>
 
-                  {/* Top-right indicator */}
-                  <div className="absolute top-3 right-3">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-black/60 text-white backdrop-blur-md shadow-xs">
-                      <Clock className="w-3 h-3" />
-                      <span>{calculateDaysRemaining(item)}</span>
-                    </span>
-                  </div>
+                  {/* Hidden Indicator Badge */}
+                  {isHidden && (
+                    <div className="absolute top-2.5 right-2.5">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-900/80 text-gray-200 backdrop-blur-md">
+                        <EyeOff className="w-3 h-3 text-amber-400" />
+                        Disembunyikan
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Card Content Body */}
-                <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3">
+                <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
                   <div>
                     {/* Title */}
                     <h3
                       onClick={() => setPreviewingPromo(item)}
-                      className="text-sm sm:text-base font-bold text-gray-900 dark:text-white line-clamp-2 hover:text-brand-600 dark:hover:text-brand-400 cursor-pointer transition-colors"
+                      className="text-sm sm:text-base font-bold text-gray-900 dark:text-white line-clamp-2 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors"
                     >
                       {item.title}
                     </h3>
@@ -422,48 +405,26 @@ export const AdminPromoLayout: React.FC = () => {
                     </p>
                   </div>
 
-                  {/* Schedule & Links Footer info */}
-                  <div className="space-y-2 pt-2 border-t border-gray-100 dark:border-gray-800/80">
-                    <div className="flex items-center justify-between text-[11px] text-gray-400">
+                  {/* Dates schedule */}
+                  <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 space-y-1 text-[11px] text-gray-400">
+                    <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3 text-brand-500" />
-                        Terbit: {formatDate(item.publishedAt)}
+                        <Calendar className="w-3 h-3 text-blue-500" />
+                        Terbit:
+                      </span>
+                      <span className="font-medium text-gray-700 dark:text-gray-300">
+                        {formatDate(item.publishedAt)}
                       </span>
                     </div>
                     {item.takedownAt && (
-                      <div className="flex items-center justify-between text-[11px] text-gray-400">
+                      <div className="flex items-center justify-between">
                         <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-amber-500" />
-                          Takedown: {formatDate(item.takedownAt)}
+                          <Clock className="w-3 h-3 text-red-500" />
+                          Selesai:
                         </span>
-                      </div>
-                    )}
-
-                    {/* Hidden from user status indicator */}
-                    {item.hideBeforePublished && (
-                      <div className="flex items-center gap-1.5 text-[11px] text-amber-600 dark:text-amber-400 bg-amber-50/80 dark:bg-amber-950/40 px-2.5 py-1.5 rounded-xl border border-amber-200/60 dark:border-amber-900/40">
-                        <EyeOff className="w-3.5 h-3.5 shrink-0" />
-                        <span className="leading-tight">
-                          {isHidden
-                            ? "Disembunyikan dari pengguna sebelum terbit"
-                            : "Sudah lewat tanggal terbit (terlihat publik)"}
+                        <span className="font-medium text-gray-700 dark:text-gray-300">
+                          {formatDate(item.takedownAt)}
                         </span>
-                      </div>
-                    )}
-
-                    {/* Banner Target Link if present */}
-                    {item.bannerLink && (
-                      <div className="pt-1">
-                        <a
-                          href={item.bannerLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[11px] font-medium text-brand-600 dark:text-brand-400 hover:underline max-w-full truncate"
-                          title={item.bannerLink}
-                        >
-                          <ExternalLink className="w-3 h-3 shrink-0" />
-                          <span className="truncate">{item.bannerLink}</span>
-                        </a>
                       </div>
                     )}
                   </div>
@@ -474,37 +435,69 @@ export const AdminPromoLayout: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setPreviewingPromo(item)}
-                    className="flex items-center gap-1 text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline cursor-pointer"
+                    className="flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     <span>Lihat Detail</span>
                   </button>
 
                   <div className="flex items-center gap-1">
+                    {/* Quick Visibility Toggle Button (Dibalik: ditampilkan = mata terbuka, hidden = mata dicoret) */}
+                    <button
+                      type="button"
+                      onClick={() => handleToggleHide(item)}
+                      className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                      title={
+                        isHidden
+                          ? "Sedang disembunyikan (klik untuk tampilkan)"
+                          : "Sedang ditampilkan (klik untuk sembunyikan)"
+                      }
+                    >
+                      {isHidden ? (
+                        <EyeOff className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+                      ) : (
+                        <Eye className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                      )}
+                    </button>
+
+                    {/* Quick Highlight Toggle Button */}
+                    <button
+                      type="button"
+                      onClick={() => handleToggleHighlight(item)}
+                      className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                      title={item.isHighlight ? "Hapus dari Highlight" : "Jadikan Highlight"}
+                    >
+                      <Sparkles
+                        className={cn(
+                          "w-3.5 h-3.5 transition-colors",
+                          item.isHighlight
+                            ? "text-amber-500 fill-amber-500"
+                            : "text-gray-400 hover:text-amber-500"
+                        )}
+                      />
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => handleOpenEdit(item)}
                       className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                      title="Edit Promo"
+                      title="Edit Promosi"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        duplicatePromo(item.id);
-                        showToast(`Promosi "${item.title}" berhasil diduplikasi!`);
-                      }}
+                      onClick={() => handleDuplicate(item)}
                       className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                      title="Duplikat Promo"
+                      title="Duplikasi Promosi"
                     >
                       <Copy className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
                       onClick={() => setDeletingPromo(item)}
-                      className="p-1.5 rounded-lg text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
-                      title="Hapus Promo"
+                      className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                      title="Hapus Promosi"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -516,8 +509,7 @@ export const AdminPromoLayout: React.FC = () => {
         </div>
       )}
 
-      {/* 5. Modals */}
-      {/* Promo Add/Edit Modal */}
+      {/* Modals */}
       <EditPromoModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
@@ -525,32 +517,24 @@ export const AdminPromoLayout: React.FC = () => {
         onSave={handleSavePromo}
       />
 
-      {/* Promo Detail Preview Modal */}
       <PromoDetailModal
         promo={previewingPromo}
         onClose={() => setPreviewingPromo(null)}
-        onEdit={(item) => {
+        onEdit={(p) => {
           setPreviewingPromo(null);
-          handleOpenEdit(item);
+          handleOpenEdit(p);
         }}
-        onDelete={(item) => {
+        onDelete={(p) => {
           setPreviewingPromo(null);
-          setDeletingPromo(item);
+          setDeletingPromo(p);
         }}
       />
 
-      {/* Promo Delete Modal */}
       <DeletePromoModal
-        isOpen={!!deletingPromo}
+        isOpen={Boolean(deletingPromo)}
         onClose={() => setDeletingPromo(null)}
         promo={deletingPromo}
-        onConfirm={() => {
-          if (deletingPromo) {
-            deletePromo(deletingPromo.id);
-            showToast(`Promosi "${deletingPromo.title}" berhasil dihapus.`);
-            setDeletingPromo(null);
-          }
-        }}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );
