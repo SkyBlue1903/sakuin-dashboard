@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { X, Pencil, Check, Sparkles } from "lucide-react";
-import { cn } from "@/utils";
-import { Modal } from "@/views/ui/modal";
+import React, { useState } from "react";
+import { X, Pencil, Check } from "lucide-react";
+import { Modal } from "@/shared/presentation/components/ui/Modal";
 
 interface EditCardNameModalProps {
   isOpen: boolean;
@@ -22,7 +21,7 @@ const PRESET_NAMES = [
   "Tabungan",
 ];
 
-export const EditCardNameModal: React.FC<EditCardNameModalProps> = ({
+const EditCardNameDialog: React.FC<EditCardNameModalProps> = ({
   isOpen,
   onClose,
   currentName,
@@ -31,12 +30,6 @@ export const EditCardNameModal: React.FC<EditCardNameModalProps> = ({
 }) => {
   const [name, setName] = useState(currentName);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      setName(currentName);
-    }
-  }, [isOpen, currentName]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,98 +45,103 @@ export const EditCardNameModal: React.FC<EditCardNameModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} maxWidth="md" className="p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-950/40 dark:text-blue-light-400">
-              <Pencil className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
-                Edit Nama Kartu
-              </h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Kartu Visa • **** {cardLast4}
-              </p>
-            </div>
+    <Modal isOpen={isOpen} onClose={onClose} maxWidth="md" className="p-6 bg-surface border border-border-subtle">
+      {/* Header */}
+      <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-subtle text-primary">
+            <Pencil className="h-5 w-5" />
           </div>
+          <div>
+            <h3 className="text-base sm:text-lg font-bold text-foreground">
+              Edit Nama Kartu
+            </h3>
+            <p className="text-xs text-foreground-secondary">
+              Kartu Visa • **** {cardLast4}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-full p-2 text-foreground-muted hover:text-foreground hover:bg-surface-hover transition-colors cursor-pointer"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="py-4 space-y-4">
+        <div>
+          <label className="text-xs font-semibold text-foreground mb-1.5 block">
+            Nama / Label Kartu
+          </label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Contoh: Kartu Belanja Online"
+            maxLength={28}
+            autoFocus
+            className="w-full rounded-xl border border-border-subtle bg-surface-subtle px-4 py-2.5 text-sm font-semibold text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+          />
+          <div className="flex justify-between text-[11px] text-foreground-muted mt-1">
+            <span>Beri nama unik untuk memudahkan identifikasi kartu</span>
+            <span>{name.length}/28</span>
+          </div>
+        </div>
+
+        {/* Quick preset chips */}
+        <div>
+          <span className="text-[11px] font-semibold text-foreground-secondary block mb-2">
+            Saran Cepat:
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            {PRESET_NAMES.map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => setName(preset)}
+                className="px-2.5 py-1 rounded-lg text-xs border border-border-subtle bg-surface-subtle hover:bg-surface-hover text-foreground-secondary transition-colors cursor-pointer"
+              >
+                {preset}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Buttons */}
+        <div className="pt-3 border-t border-border-subtle flex gap-2.5">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+            className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold border border-border-subtle text-foreground-secondary hover:bg-surface-hover transition-all cursor-pointer"
           >
-            <X className="h-5 w-5" />
+            Batal
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading || !name.trim()}
+            className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold bg-primary text-white hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs"
+          >
+            {isLoading ? (
+              <span>Menyimpan...</span>
+            ) : (
+              <>
+                <Check className="h-4 w-4" />
+                <span>Simpan Nama</span>
+              </>
+            )}
           </button>
         </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="py-4 space-y-4">
-          <div>
-            <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5 block">
-              Nama / Label Kartu
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Contoh: Kartu Belanja Online"
-              maxLength={28}
-              autoFocus
-              className="w-full rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-850 px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
-            />
-            <div className="flex justify-between text-[11px] text-gray-400 mt-1">
-              <span>Beri nama unik untuk memudahkan identifikasi kartu</span>
-              <span>{name.length}/28</span>
-            </div>
-          </div>
-
-          {/* Quick preset chips */}
-          <div>
-            <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 block mb-2">
-              Saran Cepat:
-            </span>
-            <div className="flex flex-wrap gap-1.5">
-              {PRESET_NAMES.map((preset) => (
-                <button
-                  key={preset}
-                  type="button"
-                  onClick={() => setName(preset)}
-                  className="px-2.5 py-1 rounded-lg text-xs border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-850 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors cursor-pointer"
-                >
-                  {preset}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex gap-2.5">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all cursor-pointer"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading || !name.trim()}
-              className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold bg-gray-900 text-white hover:bg-gray-850 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs"
-            >
-              {isLoading ? (
-                <span className="animate-pulse">Menyimpan...</span>
-              ) : (
-                <>
-                  <Check className="h-4 w-4" />
-                  <span>Simpan Nama</span>
-                </>
-              )}
-            </button>
-          </div>
-        </form>
+      </form>
     </Modal>
   );
+};
+
+export const EditCardNameModal: React.FC<EditCardNameModalProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <EditCardNameDialog {...props} />;
 };
 
 export default EditCardNameModal;

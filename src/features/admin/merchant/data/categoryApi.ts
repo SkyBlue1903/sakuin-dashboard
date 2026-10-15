@@ -1,4 +1,4 @@
-import type { CategoryItem, MerchantItem } from "@/models/category";
+import type { CategoryItem, MerchantItem } from "@/features/admin/merchant/domain/category";
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {

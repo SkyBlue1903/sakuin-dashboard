@@ -1,6 +1,6 @@
-import type { CategoryItem, MerchantItem } from "@/models/category";
-import { Database, TablesInsert } from "@/lib/supabase/database.types";
-import { compressImageUrl } from "@/utils/imageOptimizer";
+import type { CategoryItem, MerchantItem } from "@/features/admin/merchant/domain/category";
+import { Database, TablesInsert } from "@/shared/lib/supabase/database.types";
+import { compressImageUrl } from "@/shared/utils/imageOptimizer";
 
 type DbCategoryRow = Database["public"]["Tables"]["categories"]["Row"];
 type DbMerchantRow = Database["public"]["Tables"]["merchants"]["Row"];

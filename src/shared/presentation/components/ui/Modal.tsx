@@ -4,8 +4,8 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
-import { cn } from "@/utils";
-import { useLockBodyScroll } from "@/controllers/useLockBodyScroll";
+import { cn } from "@/shared/utils";
+import { useLockBodyScroll } from "@/shared/hooks/useLockBodyScroll";
 
 export type ModalMaxWidth =
   | "xs"

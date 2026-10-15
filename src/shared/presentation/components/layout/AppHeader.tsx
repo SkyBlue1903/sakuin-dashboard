@@ -2,10 +2,10 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useSidebar } from "@/stores/useSidebarStore";
-import ThemeSwitcher from "@/views/common/ThemeSwitcher";
+import { useSidebar } from "@/shared/presentation/stores/useSidebarStore";
+import ThemeSwitcher from "@/shared/presentation/components/ui/ThemeSwitcher";
 import { ChevronDown, LogOut, UserCircle } from "lucide-react";
-import { cn } from "@/utils";
+import { cn } from "@/shared/utils";
 
 export const AppHeader: React.FC = () => {
   const { isOpen, toggleSidebar, activeTitle } = useSidebar();
@@ -49,7 +49,7 @@ export const AppHeader: React.FC = () => {
   }, [isUserMenuOpen]);
 
   return (
-    <header className="flex h-16 w-full items-center border-b border-border-subtle bg-surface/85 backdrop-blur-2xl backdrop-saturate-[180%] shadow-ds-sm transition-colors">
+    <header className="flex h-16 w-full items-center border-b border-border-subtle bg-surface/95 backdrop-blur-md shadow-ds-sm transition-colors">
       <div className="flex grow items-center justify-between px-4 py-2 md:px-6">
         {/* Left: Sidebar toggle + Active Menu Title */}
         <div className="flex items-center gap-3 sm:gap-4 min-w-0">

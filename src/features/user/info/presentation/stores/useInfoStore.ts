@@ -1,10 +1,10 @@
 "use client";
 
 import { create } from "zustand";
-import { infoApi } from "@/services/infoApi";
-import { emitToast } from "@/stores/ToastContext";
-import type { InfoItem } from "@/models/info";
-import type { PromoItem } from "@/models/promo";
+import { infoApi } from "@/features/user/info/data/infoApi";
+import { emitToast } from "@/shared/presentation/stores/ToastContext";
+import type { InfoItem } from "@/features/user/info/domain/info";
+import type { PromoItem } from "@/features/user/promo/domain/promo";
 
 // Pembersihan cache legacy localStorage khusus untuk item informasi jika ada sisa dummy
 if (typeof window !== "undefined") {

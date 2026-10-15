@@ -3,25 +3,21 @@
 import React, { useState } from "react";
 import {
   Search,
-  Filter,
   X,
-  CreditCard,
   ShieldAlert,
   Loader2,
 } from "lucide-react";
-import { cn } from "@/utils";
-import CategoryIcon from "@/views/admin/CategoryIcon";
-import MerchantLogo from "@/views/admin/MerchantLogo";
-import TransactionMerchantAvatar from "@/views/card/TransactionMerchantAvatar";
-import LazyItem from "@/views/common/LazyItem";
-import { useCategory } from "@/stores/useCategoryStore";
-import type { CategoryItem, MerchantItem } from "@/models/category";
-import { Modal } from "@/views/ui/modal";
-import { useTransactions } from "@/controllers/useTransactions";
-import { useResponsiveInfiniteScroll } from "@/controllers/useResponsiveInfiniteScroll";
+import { cn } from "@/shared/utils";
+import TransactionMerchantAvatar from "@/features/user/card/presentation/components/TransactionMerchantAvatar";
+import LazyItem from "@/shared/presentation/components/ui/LazyItem";
+import { useCategory } from "@/features/admin/merchant/presentation/stores/useCategoryStore";
+import type { CategoryItem } from "@/features/admin/merchant/domain/category";
+import { Modal } from "@/shared/presentation/components/ui/Modal";
+import { useTransactions } from "@/features/user/card/presentation/hooks/useTransactions";
+import { useResponsiveInfiniteScroll } from "@/shared/hooks/useResponsiveInfiniteScroll";
 
 
-import { Transaction, INITIAL_TRANSACTIONS } from "@/services/cardService";
+import { Transaction, INITIAL_TRANSACTIONS } from "@/features/user/card/data/cardService";
 export type { Transaction };
 
 export const formatAmount = (amount: string, currency: string = "Rp") => {
@@ -142,32 +138,32 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
           "sticky top-16 md:top-0 z-20",
           "w-full pt-2 pb-3.5",
           "space-y-3",
-          "bg-gray-50/95 dark:bg-gray-950/95 backdrop-blur-md",
-          "border-b border-gray-200/80 dark:border-gray-800/80 shadow-xs",
+          "bg-background/95 backdrop-blur-md",
+          "border-b border-border-subtle shadow-ds-sm",
           "transition-all"
         )}
       >
         {/* Row 1: Title & Filter Tabs */}
         <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-2.5 w-full lg:max-w-none mx-auto px-4 sm:pr-6 lg:pr-8 xl:pr-10">
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+            <h2 className="text-base sm:text-lg font-bold text-text-primary">
               Transaksi Kartu
             </h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-text-secondary">
               Menampilkan {visibleTransactions.length} dari {filteredTransactions.length} transaksi
             </p>
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex items-center gap-1 self-start xl:self-auto bg-gray-100/90 dark:bg-gray-800/90 p-1 rounded-xl text-xs backdrop-blur-xs shrink-0 max-w-full overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1 self-start xl:self-auto bg-surface-secondary border border-border-subtle p-1 rounded-xl text-xs shrink-0 max-w-full overflow-x-auto no-scrollbar">
             <button
               type="button"
               onClick={() => setFilter("all")}
               className={cn(
                 "px-2.5 sm:px-3 py-1 rounded-lg font-medium transition-all cursor-pointer whitespace-nowrap",
                 filter === "all"
-                  ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-xs"
-                  : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                  ? "bg-surface text-text-primary font-semibold shadow-ds-sm"
+                  : "text-text-secondary hover:text-text-primary"
               )}
             >
               Semua ({transactions.length})
@@ -178,8 +174,8 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
               className={cn(
                 "px-2.5 sm:px-3 py-1 rounded-lg font-medium transition-all cursor-pointer whitespace-nowrap",
                 filter === "declined"
-                  ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-xs"
-                  : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                  ? "bg-surface text-text-primary font-semibold shadow-ds-sm"
+                  : "text-text-secondary hover:text-text-primary"
               )}
             >
               Ditolak ({totalDeclined})
@@ -190,8 +186,8 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
               className={cn(
                 "px-2.5 sm:px-3 py-1 rounded-lg font-medium transition-all cursor-pointer whitespace-nowrap",
                 filter === "success"
-                  ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-xs"
-                  : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                  ? "bg-surface text-text-primary font-semibold shadow-ds-sm"
+                  : "text-text-secondary hover:text-text-primary"
               )}
             >
               Berhasil ({totalSuccess})
@@ -202,13 +198,13 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
         {/* Row 2: Search Input (Ikut sticky di atas) */}
         <div className="w-full lg:max-w-none mx-auto px-4 sm:pr-6 lg:pr-8 xl:pr-10">
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari transaksi, merchant, atau kategori..."
-              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl bg-white dark:bg-gray-900/90 border border-gray-200/80 dark:border-gray-800 text-gray-800 dark:text-white placeholder-gray-400 shadow-2xs focus:outline-none focus:ring-1 focus:ring-brand-500 "
+              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl bg-surface border border-border text-text-primary placeholder:text-text-tertiary shadow-2xs focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
             />
           </div>
         </div>
@@ -216,12 +212,11 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
 
       {/* Main Transactions Container */}
       <div className="w-full lg:max-w-none mx-auto px-4 sm:pr-6 lg:pr-8 xl:pr-10">
-        <div className="rounded-2xl sm:rounded-3xl border border-gray-100 bg-white shadow-sm
-         dark:border-gray-800 dark:bg-gray-900 p-2 sm:p-4">
+        <div className="rounded-2xl border border-border-subtle bg-surface shadow-ds-sm p-2 sm:p-4">
           {/* Transaction List (Lazy Loaded per row with infinite scroll) */}
-          <div className="divide-y divide-gray-100 dark:divide-gray-800/80">
+          <div className="divide-y divide-border-subtle">
             {visibleTransactions.length === 0 ? (
-              <div className="py-12 text-center text-sm text-gray-400">
+              <div className="py-12 text-center text-sm text-text-tertiary">
                 Tidak ada transaksi yang cocok dengan pencarian atau filter Anda.
               </div>
             ) : (
@@ -231,7 +226,7 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
                   <LazyItem key={tx.id} placeholderHeight={64}>
                     <div
                       onClick={() => setSelectedTx(tx)}
-                      className="group flex items-center justify-between p-3 sm:p-3.5 rounded-2xl hover:bg-gray-50/80 dark:hover:bg-gray-800/50 cursor-pointer transition-all"
+                      className="group flex items-center justify-between p-3 sm:p-3.5 rounded-xl hover:bg-surface-secondary/70 cursor-pointer transition-all"
                     >
                       {/* Left: Merchant Logo / Category Icon / Initial + Merchant & Category / Date */}
                       <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
@@ -241,14 +236,14 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
                           logoDarkUrl={info.logoDarkUrl}
                           category={info.category}
                           size="lg"
-                          className="h-11 w-11 rounded-2xl group-hover:scale-105"
+                          className="h-11 w-11 rounded-xl group-hover:scale-102 transition-transform"
                         />
 
                         <div className="min-w-0">
-                          <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white truncate">
+                          <h3 className="text-sm sm:text-base font-semibold text-text-primary truncate">
                             {tx.merchant}
                           </h3>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                          <p className="text-xs text-text-tertiary mt-0.5 truncate">
                             {info.category ? info.category.name : (tx.category || "Tanpa Kategori")} • {tx.date}
                           </p>
                         </div>
@@ -256,20 +251,20 @@ export const RightSidebarContent: React.FC<RightSidebarContentProps> = ({
 
                       {/* Right: Amount + Status Badge */}
                       <div className="text-right shrink-0 pl-3">
-                        <div className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">
+                        <div className="text-sm sm:text-base font-semibold text-text-primary">
                           {formatAmount(tx.amount, tx.currency)}
                         </div>
 
                         {tx.status === "Declined" ? (
-                          <span className="inline-block mt-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-[11px] font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                          <span className="inline-block mt-1 rounded-full bg-surface-secondary px-2.5 py-0.5 text-[11px] font-medium text-text-secondary border border-border">
                             Ditolak
                           </span>
                         ) : tx.status === "Success" ? (
-                          <span className="inline-block mt-1 rounded-full bg-success-50 px-2.5 py-0.5 text-[11px] font-medium text-success-600 dark:bg-success-500/10 dark:text-success-400">
+                          <span className="inline-block mt-1 rounded-full bg-success-bg px-2.5 py-0.5 text-[11px] font-medium text-success border border-success-border">
                             Berhasil
                           </span>
                         ) : (
-                          <span className="inline-block mt-1 rounded-full bg-warning-50 px-2.5 py-0.5 text-[11px] font-medium text-warning-600 dark:bg-warning-500/10 dark:text-warning-400">
+                          <span className="inline-block mt-1 rounded-full bg-warning-bg px-2.5 py-0.5 text-[11px] font-medium text-warning border border-warning-border">
                             Menunggu
                           </span>
                         )}

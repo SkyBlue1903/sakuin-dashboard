@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { useSidebar } from "@/stores/useSidebarStore";
-import { cn } from "@/utils";
-import { useLockBodyScroll } from "@/controllers/useLockBodyScroll";
+import { useSidebar } from "@/shared/presentation/stores/useSidebarStore";
+import { cn } from "@/shared/utils";
+import { useLockBodyScroll } from "@/shared/hooks/useLockBodyScroll";
 
 const Backdrop: React.FC = () => {
   const { isOpen, closeSidebar } = useSidebar();

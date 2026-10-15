@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   X,
   Image as ImageIcon,
@@ -10,62 +10,39 @@ import {
   EyeOff,
   Loader2,
 } from "lucide-react";
-import { cn } from "@/utils";
-import HtmlEditor from "./HtmlEditor";
-import type { PromoItem } from "@/models/promo";
-import { Modal } from "@/views/ui/modal";
+import { cn } from "@/shared/utils";
+import HtmlEditor from "@/shared/presentation/components/ui/HtmlEditor";
+import type { GuideItem } from "@/features/user/guide/domain/guide";
+import { Modal } from "@/shared/presentation/components/ui/Modal";
 
 interface EditGuideModalProps {
   isOpen: boolean;
   onClose: () => void;
-  guide?: PromoItem | null;
-  onSave: (guideData: Omit<PromoItem, "id" | "createdAt" | "updatedAt">) => void | Promise<void>;
+  guide?: GuideItem | null;
+  onSave: (guideData: Omit<GuideItem, "id" | "createdAt" | "updatedAt">) => void | Promise<void>;
 }
 
 const SAMPLE_BANNER_PATH = "/images/sample-images/ads.sample.png";
 
-export const EditGuideModal: React.FC<EditGuideModalProps> = ({
+const EditGuideDialog: React.FC<EditGuideModalProps> = ({
   isOpen,
   onClose,
   guide,
   onSave,
 }) => {
-  const [title, setTitle] = useState("");
-  const [bannerUrl, setBannerUrl] = useState("");
-  const [shortDescription, setShortDescription] = useState("");
-  const [contentHtml, setContentHtml] = useState("");
-  const [isHidden, setIsHidden] = useState(false);
-  const [isHighlight, setIsHighlight] = useState(false);
+  const [title, setTitle] = useState(guide?.title || "");
+  const [bannerUrl, setBannerUrl] = useState(guide?.bannerUrl || SAMPLE_BANNER_PATH);
+  const [shortDescription, setShortDescription] = useState(guide?.shortDescription || "");
+  const [contentHtml, setContentHtml] = useState(
+    guide?.contentHtml ||
+      "<h3>Langkah-Langkah Panduan Sakuin</h3>\n<p>Tuliskan petunjuk, langkah demi langkah, dan penjelasan penggunaan fitur aplikasi di sini.</p>\n<ol>\n  <li>Langkah pertama...</li>\n  <li>Langkah kedua...</li>\n</ol>"
+  );
+  const [isHidden, setIsHidden] = useState(Boolean(guide?.isHidden));
+  const [isHighlight, setIsHighlight] = useState(Boolean(guide?.isHighlight));
   const [bannerPreviewError, setBannerPreviewError] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (isOpen) {
-      if (guide) {
-        setTitle(guide.title);
-        setBannerUrl(guide.bannerUrl);
-        setShortDescription(guide.shortDescription);
-        setContentHtml(guide.contentHtml);
-        setIsHidden(Boolean(guide.isHidden));
-        setIsHighlight(Boolean(guide.isHighlight));
-      } else {
-        setTitle("");
-        setBannerUrl(SAMPLE_BANNER_PATH);
-        setShortDescription("");
-        setContentHtml(
-          "<h3>Langkah-Langkah Panduan Sakuin</h3>\n<p>Tuliskan petunjuk, langkah demi langkah, dan penjelasan penggunaan fitur aplikasi di sini.</p>\n<ol>\n  <li>Langkah pertama...</li>\n  <li>Langkah kedua...</li>\n</ol>"
-        );
-        setIsHidden(false);
-        setIsHighlight(false);
-      }
-      setBannerPreviewError(false);
-      setErrors({});
-      setSubmitError(null);
-      setIsSubmitting(false);
-    }
-  }, [isOpen, guide]);
 
   if (!isOpen) return null;
 
@@ -378,7 +355,7 @@ export const EditGuideModal: React.FC<EditGuideModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl bg-secondary hover:bg-secondary/90 text-white text-sm font-semibold shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
@@ -396,6 +373,11 @@ export const EditGuideModal: React.FC<EditGuideModalProps> = ({
         </form>
     </Modal>
   );
+};
+
+export const EditGuideModal: React.FC<EditGuideModalProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <EditGuideDialog {...props} />;
 };
 
 export default EditGuideModal;

@@ -1,4 +1,4 @@
-import { Card, Transaction } from "@/models/card";
+import { Card, Transaction } from "@/features/user/card/domain/card";
 
 export type { Card, Transaction };
 

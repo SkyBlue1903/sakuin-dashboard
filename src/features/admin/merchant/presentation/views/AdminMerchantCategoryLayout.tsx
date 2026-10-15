@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import LeftSidebarContent from "./layout/LeftSidebarContent";
-import RightSidebarContent from "./layout/RightSidebarContent";
+import LeftSidebarContent from "./LeftSidebarContent";
+import RightSidebarContent from "./RightSidebarContent";
 
 export const AdminMerchantCategoryLayout: React.FC = () => {
   return (
@@ -13,7 +13,7 @@ export const AdminMerchantCategoryLayout: React.FC = () => {
               Left: Daftar Kategori (scrolls independently)
               Right: Daftar Merchant (scrolls independently)
         */}
-        <div className="flex flex-col md:flex-row items-stretch w-full md:h-full md:overflow-hidden mx-auto">
+        <div className="flex flex-col  md:flex-row items-stretch w-full md:h-full md:overflow-hidden mx-auto">
           {/* Left Column: Kategori List & Icon Picker */}
           <LeftSidebarContent />
 

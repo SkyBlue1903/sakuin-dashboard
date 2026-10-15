@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseServerClient } from "@/shared/lib/supabase/server";
 import {
   mapDbToCategory,
   mapMerchantToDb,
   mapSubMerchantToDb,
   DbCategoryWithRelations,
-} from "@/services/categoryMappers";
-import type { CategoryItem } from "@/models/category";
-import { TablesUpdate } from "@/lib/supabase/database.types";
-import { compressImageUrl } from "@/utils/imageOptimizer";
+} from "@/features/admin/merchant/data/categoryMappers";
+import type { CategoryItem } from "@/features/admin/merchant/domain/category";
+import { TablesUpdate } from "@/shared/lib/supabase/database.types";
+import { compressImageUrl } from "@/shared/utils/imageOptimizer";
 
 export async function GET(
   _request: NextRequest,

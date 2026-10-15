@@ -10,12 +10,11 @@ import {
   Trash2,
   ChevronRight,
   X,
-  ShieldCheck,
   Pencil,
   Palette,
 } from "lucide-react";
-import { cn } from "@/utils";
-import { useLockBodyScroll } from "@/controllers/useLockBodyScroll";
+import { cn } from "@/shared/utils";
+import { useLockBodyScroll } from "@/shared/hooks/useLockBodyScroll";
 
 interface CardActionsProps {
   isFrozen: boolean;
@@ -35,9 +34,7 @@ interface CardActionsProps {
 
 export const CardActions: React.FC<CardActionsProps> = ({
   isFrozen,
-  showDetails,
   onToggleFreeze,
-  onToggleDetails,
   onOpenTopUp,
   onOpenLimitSettings,
   onOpenChangePin,
@@ -45,7 +42,6 @@ export const CardActions: React.FC<CardActionsProps> = ({
   onOpenEditCardName,
   onOpenEditIllustration,
   cardName = "SakuCard",
-  cardLast4 = "8820",
   className,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -100,36 +96,33 @@ export const CardActions: React.FC<CardActionsProps> = ({
         type="button"
         onClick={onOpenTopUp}
         className={cn(
-          "w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl",
-          "bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800",
-          "shadow-xs hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-850",
-          "active:scale-[0.99] transition-all text-xs sm:text-sm font-semibold text-gray-900 dark:text-white cursor-pointer"
+          "w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl",
+          "bg-primary hover:bg-primary-hover active:bg-primary-active text-text-inverse font-semibold text-xs sm:text-sm",
+          "shadow-ds-sm active:scale-[0.99] transition-all cursor-pointer"
         )}
       >
-        <PlusCircle className="h-4 w-4 text-brand-500 dark:text-brand-400" />
-        <span>Top Up</span>
+        <PlusCircle className="h-4 w-4" />
+        <span>Top Up Saldo</span>
       </button>
 
-      {/* ROW 2: 2 Columns - Detail & Pengaturan */}
+      {/* ROW 2: 2 Columns - Bekukan & Pengaturan */}
       <div className="grid grid-cols-2 gap-2.5 sm:gap-3 w-full">
         {/* Bekukan Button */}
         <button
           type="button"
           onClick={onToggleFreeze}
           className={cn(
-            "group flex items-center justify-center gap-1.5 sm:gap-2 py-3 px-3 rounded-2xl",
-            "bg-white dark:bg-gray-900 border",
-            "shadow-xs hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-850",
-            "active:scale-95 transition-all text-xs sm:text-sm font-medium cursor-pointer",
+            "group flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 px-3 rounded-xl border",
+            "shadow-2xs active:scale-95 transition-all text-xs sm:text-sm font-medium cursor-pointer",
             isFrozen
-              ? "text-blue-light-600 dark:text-blue-light-400 border-blue-light-200 dark:border-blue-light-900/40 bg-blue-light-50/50 dark:bg-blue-light-950/20"
-              : "text-gray-800 dark:text-gray-200 border-gray-200/80 dark:border-gray-800"
+              ? "text-info border-info-border bg-info-bg/50 dark:bg-info-bg/25"
+              : "text-text-primary border-border bg-surface hover:bg-surface-secondary"
           )}
         >
           <Snowflake
             className={cn(
               "h-4 w-4 shrink-0 transition-transform group-hover:scale-110",
-              isFrozen ? "text-blue-light-500 animate-pulse" : "text-gray-500 dark:text-gray-400"
+              isFrozen ? "text-info" : "text-text-tertiary"
             )}
           />
           <span>{isFrozen ? "Buka Blokir" : "Bekukan"}</span>
@@ -141,12 +134,11 @@ export const CardActions: React.FC<CardActionsProps> = ({
             type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className={cn(
-              "w-full group flex items-center justify-center gap-1.5 sm:gap-2 py-3 px-3 rounded-2xl",
-              "bg-white dark:bg-gray-900 border",
-              "shadow-xs hover:bg-gray-50 dark:hover:bg-gray-850 active:scale-95 transition-all text-xs sm:text-sm font-medium cursor-pointer",
+              "w-full group flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 px-3 rounded-xl border",
+              "shadow-2xs active:scale-95 transition-all text-xs sm:text-sm font-medium cursor-pointer",
               isMenuOpen
-                ? "border-brand-300 dark:border-brand-700 text-brand-600 dark:text-brand-400"
-                : "border-gray-200/80 dark:border-gray-800 text-gray-800 dark:text-gray-200 hover:border-gray-300 dark:hover:border-gray-700"
+                ? "border-primary text-primary bg-surface-secondary"
+                : "border-border bg-surface text-text-primary hover:bg-surface-secondary"
             )}
             aria-expanded={isMenuOpen}
             aria-haspopup="true"
@@ -154,7 +146,7 @@ export const CardActions: React.FC<CardActionsProps> = ({
             <Settings
               className={cn(
                 "h-4 w-4 shrink-0 transition-transform duration-300",
-                isMenuOpen ? "rotate-90 text-brand-500" : "group-hover:rotate-45"
+                isMenuOpen ? "rotate-90 text-primary" : "text-text-tertiary group-hover:rotate-45"
               )}
             />
             <span>Pengaturan</span>
@@ -162,12 +154,12 @@ export const CardActions: React.FC<CardActionsProps> = ({
 
           {/* DESKTOP DROPDOWN (md:block) */}
           {isMenuOpen && (
-            <div className="hidden md:block absolute right-0 top-full mt-2 w-64 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-xl p-1.5 z-40 animate-in fade-in zoom-in-95 duration-150">
-              <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800 mb-1">
-                <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
+            <div className="hidden md:block absolute right-0 top-full mt-2 w-64 rounded-xl bg-surface border border-border shadow-ds-lg p-1.5 z-40 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-3 py-2 border-b border-border-subtle mb-1">
+                <span className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider block">
                   Atur Kartu
                 </span>
-                <span className="text-xs font-semibold text-gray-800 dark:text-gray-200 block truncate">
+                <span className="text-xs font-semibold text-text-primary block truncate">
                   {cardName}
                 </span>
               </div>
@@ -176,29 +168,29 @@ export const CardActions: React.FC<CardActionsProps> = ({
               <button
                 type="button"
                 onClick={() => handleAction(onOpenLimitSettings)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-xs cursor-pointer group"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left hover:bg-surface-secondary transition-colors text-xs cursor-pointer group text-text-primary"
               >
-                <div className="p-2 rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 group-hover:bg-brand-50 group-hover:text-brand-600 dark:group-hover:bg-brand-950/40 dark:group-hover:text-brand-400 transition-colors">
+                <div className="p-1.5 rounded-md bg-surface-secondary text-text-secondary group-hover:bg-accent group-hover:text-primary transition-colors">
                   <SlidersHorizontal className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="font-semibold text-gray-900 dark:text-white block">
+                  <span className="font-medium block">
                     Atur Limit Transaksi
                   </span>
                 </div>
               </button>
 
-              {/* 2. Edit Ilustrasi Kartu */}
+              {/* 2. Edit Tema Kartu */}
               <button
                 type="button"
                 onClick={() => handleAction(() => onOpenEditIllustration?.())}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-xs cursor-pointer group"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left hover:bg-surface-secondary transition-colors text-xs cursor-pointer group text-text-primary"
               >
-                <div className="p-2 rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 group-hover:bg-purple-50 group-hover:text-purple-600 dark:group-hover:bg-purple-950/40 dark:group-hover:text-purple-400 transition-colors">
+                <div className="p-1.5 rounded-md bg-surface-secondary text-text-secondary group-hover:bg-accent group-hover:text-primary transition-colors">
                   <Palette className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="font-semibold text-gray-900 dark:text-white block">
+                  <span className="font-medium block">
                     Edit Tema Kartu
                   </span>
                 </div>
@@ -208,13 +200,13 @@ export const CardActions: React.FC<CardActionsProps> = ({
               <button
                 type="button"
                 onClick={() => handleAction(() => onOpenEditCardName?.())}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-xs cursor-pointer group"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left hover:bg-surface-secondary transition-colors text-xs cursor-pointer group text-text-primary"
               >
-                <div className="p-2 rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 group-hover:bg-blue-light-50 group-hover:text-blue-light-600 dark:group-hover:bg-blue-light-950/40 dark:group-hover:text-blue-light-400 transition-colors">
+                <div className="p-1.5 rounded-md bg-surface-secondary text-text-secondary group-hover:bg-accent group-hover:text-primary transition-colors">
                   <Pencil className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="font-semibold text-gray-900 dark:text-white block">
+                  <span className="font-medium block">
                     Edit Nama Kartu
                   </span>
                 </div>
@@ -224,29 +216,29 @@ export const CardActions: React.FC<CardActionsProps> = ({
               <button
                 type="button"
                 onClick={() => handleAction(onOpenChangePin)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-xs cursor-pointer group"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left hover:bg-surface-secondary transition-colors text-xs cursor-pointer group text-text-primary"
               >
-                <div className="p-2 rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 group-hover:bg-warning-50 group-hover:text-warning-600 dark:group-hover:bg-warning-950/40 dark:group-hover:text-warning-400 transition-colors">
+                <div className="p-1.5 rounded-md bg-surface-secondary text-text-secondary group-hover:bg-warning-bg group-hover:text-warning transition-colors">
                   <KeyRound className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="font-semibold text-gray-900 dark:text-white block">
+                  <span className="font-medium block">
                     Ganti PIN
                   </span>
                 </div>
               </button>
 
-              {/* 4. Hapus Kartu (Danger) */}
+              {/* 5. Hapus Kartu (Danger) */}
               <button
                 type="button"
                 onClick={() => handleAction(onOpenDeleteCard)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-error-50 dark:hover:bg-error-950/40 transition-colors text-xs cursor-pointer group"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left text-error hover:bg-error-bg/60 transition-colors text-xs cursor-pointer group"
               >
-                <div className="p-2 rounded-lg bg-error-50 text-error-600 dark:bg-error-950/40 dark:text-error-400 group-hover:bg-error-100 dark:group-hover:bg-error-900/60 transition-colors">
+                <div className="p-1.5 rounded-md bg-error-bg text-error transition-colors">
                   <Trash2 className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="font-semibold text-error-600 dark:text-error-400 block">
+                  <span className="font-medium block">
                     Hapus Kartu
                   </span>
                 </div>
@@ -259,29 +251,29 @@ export const CardActions: React.FC<CardActionsProps> = ({
             <div className="md:hidden fixed inset-0 z-50 flex items-end justify-center overscroll-contain">
               {/* Dimmed backdrop */}
               <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 overscroll-contain"
+                className="fixed inset-0 bg-overlay backdrop-blur-xs animate-in fade-in duration-200 overscroll-contain"
                 onClick={() => setIsMenuOpen(false)}
               />
 
               {/* Slide-up Sheet */}
-              <div className="relative w-full rounded-t-3xl bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 p-5 pb-8 shadow-2xl z-10 animate-in slide-in-from-bottom duration-300">
+              <div className="relative w-full rounded-t-3xl bg-surface border-t border-border-subtle p-5 pb-8 shadow-ds-lg z-10 animate-in slide-in-from-bottom duration-300">
                 {/* Pull handle indicator */}
-                <div className="h-1.5 w-12 rounded-full bg-gray-300 dark:bg-gray-700 mx-auto mb-4" />
+                <div className="h-1.5 w-12 rounded-full bg-surface-tertiary mx-auto mb-4" />
 
                 {/* Header */}
-                <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800 mb-3">
+                <div className="flex items-center justify-between pb-3 border-b border-border-subtle mb-3">
                   <div>
-                    <h4 className="font-bold text-gray-900 dark:text-white text-base">
+                    <h4 className="font-bold text-text-primary text-base">
                       Atur Kartu
                     </h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-text-tertiary">
                       {cardName}
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => setIsMenuOpen(false)}
-                    className="p-2 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                    className="p-2 rounded-full text-text-tertiary hover:bg-surface-secondary transition-colors cursor-pointer"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -293,95 +285,95 @@ export const CardActions: React.FC<CardActionsProps> = ({
                   <button
                     type="button"
                     onClick={() => handleAction(onOpenLimitSettings)}
-                    className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800/80 active:bg-gray-100 transition-colors cursor-pointer text-left"
+                    className="w-full flex items-center justify-between p-3.5 rounded-xl hover:bg-surface-secondary active:bg-surface-tertiary transition-colors cursor-pointer text-left"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-xl bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                      <div className="p-2 rounded-lg bg-surface-secondary text-text-secondary">
                         <SlidersHorizontal className="h-5 w-5" />
                       </div>
                       <div>
-                        <span className="font-semibold text-sm text-gray-900 dark:text-white block">
+                        <span className="font-medium text-sm text-text-primary block">
                           Atur Limit Transaksi
                         </span>
                       </div>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                    <ChevronRight className="w-4 h-4 text-text-tertiary" />
                   </button>
 
-                  {/* 2. Edit Ilustrasi Kartu */}
+                  {/* 2. Edit Tema Kartu */}
                   <button
                     type="button"
                     onClick={() => handleAction(() => onOpenEditIllustration?.())}
-                    className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800/80 active:bg-gray-100 transition-colors cursor-pointer text-left"
+                    className="w-full flex items-center justify-between p-3.5 rounded-xl hover:bg-surface-secondary active:bg-surface-tertiary transition-colors cursor-pointer text-left"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-xl bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                      <div className="p-2 rounded-lg bg-surface-secondary text-text-secondary">
                         <Palette className="h-5 w-5" />
                       </div>
                       <div>
-                        <span className="font-semibold text-sm text-gray-900 dark:text-white block">
-                          Edit Temas Kartu
+                        <span className="font-medium text-sm text-text-primary block">
+                          Edit Tema Kartu
                         </span>
                       </div>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                    <ChevronRight className="w-4 h-4 text-text-tertiary" />
                   </button>
 
                   {/* 3. Edit Nama Kartu */}
                   <button
                     type="button"
                     onClick={() => handleAction(() => onOpenEditCardName?.())}
-                    className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800/80 active:bg-gray-100 transition-colors cursor-pointer text-left"
+                    className="w-full flex items-center justify-between p-3.5 rounded-xl hover:bg-surface-secondary active:bg-surface-tertiary transition-colors cursor-pointer text-left"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-xl bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                      <div className="p-2 rounded-lg bg-surface-secondary text-text-secondary">
                         <Pencil className="h-5 w-5" />
                       </div>
                       <div>
-                        <span className="font-semibold text-sm text-gray-900 dark:text-white block">
+                        <span className="font-medium text-sm text-text-primary block">
                           Edit Nama Kartu
                         </span>
                       </div>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                    <ChevronRight className="w-4 h-4 text-text-tertiary" />
                   </button>
 
                   {/* 4. Ganti PIN */}
                   <button
                     type="button"
                     onClick={() => handleAction(onOpenChangePin)}
-                    className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800/80 active:bg-gray-100 transition-colors cursor-pointer text-left"
+                    className="w-full flex items-center justify-between p-3.5 rounded-xl hover:bg-surface-secondary active:bg-surface-tertiary transition-colors cursor-pointer text-left"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-xl bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                      <div className="p-2 rounded-lg bg-warning-bg text-warning">
                         <KeyRound className="h-5 w-5" />
                       </div>
                       <div>
-                        <span className="font-semibold text-sm text-gray-900 dark:text-white block">
+                        <span className="font-medium text-sm text-text-primary block">
                           Ganti PIN
                         </span>
                       </div>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                    <ChevronRight className="w-4 h-4 text-text-tertiary" />
                   </button>
 
-                  {/* 4. Hapus Kartu (Danger) */}
+                  {/* 5. Hapus Kartu (Danger) */}
                   <button
                     type="button"
                     onClick={() => handleAction(onOpenDeleteCard)}
-                    className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-error-50 dark:hover:bg-error-950/30 active:bg-error-100 transition-colors cursor-pointer text-left"
+                    className="w-full flex items-center justify-between p-3.5 rounded-xl hover:bg-error-bg/60 active:bg-error-bg transition-colors cursor-pointer text-left"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-xl bg-error-50 text-error-600 dark:bg-error-950/40 dark:text-error-400">
+                      <div className="p-2 rounded-lg bg-error-bg text-error">
                         <Trash2 className="h-5 w-5" />
                       </div>
                       <div>
-                        <span className="font-semibold text-sm text-error-600 dark:text-error-400 block">
+                        <span className="font-medium text-sm text-error block">
                           Hapus Kartu
                         </span>
                       </div>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-error-400" />
+                    <ChevronRight className="w-4 h-4 text-error/60" />
                   </button>
                 </div>
               </div>

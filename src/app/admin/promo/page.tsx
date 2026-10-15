@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import CardLayout from "@/views/layout/CardLayout";
-import AdminPromoLayout from "@/views/pages/admin/promo/AdminPromoLayout";
+import CardLayout from "@/features/user/card/presentation/views/CardLayout";
+import AdminPromoLayout from "@/features/admin/promo/presentation/views/AdminPromoLayout";
 
 export const metadata: Metadata = {
   title: "Promo | Sakuin Dashboard",

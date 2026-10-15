@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import CardLayout from "@/views/layout/CardLayout";
-import AdminMerchantCategory from "@/views/pages/admin/merchant/AdminMerchantCategoryLayout";
+import CardLayout from "@/features/user/card/presentation/views/CardLayout";
+import AdminMerchantCategory from "@/features/admin/merchant/presentation/views/AdminMerchantCategoryLayout";
 
 export const metadata: Metadata = {
   title: "Kategori Merchant | Sakuin Dashboard",

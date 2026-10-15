@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import {
   X,
-  Palette,
   Check,
   Sparkles,
   Tag,
@@ -17,10 +16,10 @@ import {
   CategoryIcon,
   LUCIDE_ICONS_MAP,
   PRESET_CATEGORY_IMAGES,
-} from "./CategoryIcon";
-import type { CategoryItem } from "@/models/category";
-import { cn } from "@/utils";
-import { Modal } from "@/views/ui/modal";
+} from "@/features/admin/merchant/presentation/components/CategoryIcon";
+import type { CategoryItem } from "@/features/admin/merchant/domain/category";
+import { cn } from "@/shared/utils";
+import { Modal } from "@/shared/presentation/components/ui/Modal";
 
 interface CategoryIconPickerModalProps {
   isOpen: boolean;
@@ -51,59 +50,26 @@ const COLOR_OPTIONS = [
   { id: "indigo", name: "Indigo", bg: "bg-indigo-500" },
 ];
 
-export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = ({
+const CategoryIconPickerDialog: React.FC<CategoryIconPickerModalProps> = ({
   isOpen,
   onClose,
   categoryToEdit,
   onSave,
 }) => {
-  const [apiCategoryName, setApiCategoryName] = useState("");
-  const [name, setName] = useState("");
-  const [tableId, setTableId] = useState("");
+  const isEditing = Boolean(categoryToEdit);
+  const [apiCategoryName, setApiCategoryName] = useState(categoryToEdit?.apiCategoryName || "");
+  const [name, setName] = useState(categoryToEdit?.name || "");
+  const tableId = categoryToEdit?.id || "";
   const [copiedId, setCopiedId] = useState(false);
-  const [description, setDescription] = useState("");
-  const [color, setColor] = useState("blue");
-  const [iconType, setIconType] = useState<"lucide" | "image">("lucide");
-  const [iconName, setIconName] = useState("Tag");
-  const [iconSrc, setIconSrc] = useState("/images/category/belanja.svg");
+  const [description, setDescription] = useState(categoryToEdit?.description || "");
+  const [color, setColor] = useState(categoryToEdit?.color || "blue");
+  const [iconType, setIconType] = useState<"lucide" | "image">(categoryToEdit?.iconType || "lucide");
+  const [iconName, setIconName] = useState(categoryToEdit?.iconName || "Tag");
+  const [iconSrc, setIconSrc] = useState(categoryToEdit?.iconSrc || "/images/category/belanja.svg");
   const [iconSearch, setIconSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
 
-  const isEditing = Boolean(categoryToEdit);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isOpen) {
-      if (categoryToEdit) {
-        setTableId(categoryToEdit.id);
-        setApiCategoryName(categoryToEdit.apiCategoryName || "");
-        setName(categoryToEdit.name);
-        setDescription(categoryToEdit.description || "");
-        setColor(categoryToEdit.color || "blue");
-        setIconType(categoryToEdit.iconType || "lucide");
-        setIconName(categoryToEdit.iconName || "Tag");
-        setIconSrc(categoryToEdit.iconSrc || "/images/category/belanja.svg");
-      } else {
-        setTableId("");
-        setApiCategoryName("");
-        setName("");
-        setDescription("");
-        setColor("blue");
-        setIconType("lucide");
-        setIconName("Tag");
-        setIconSrc("/images/category/belanja.svg");
-      }
-      setIconSearch("");
-      setError(null);
-      setCopiedId(false);
-    }
-  }, [isOpen, categoryToEdit]);
-
-  if (!isOpen || !mounted) return null;
+  if (!isOpen) return null;
 
   const lucideIconNames = Object.keys(LUCIDE_ICONS_MAP).filter((k) =>
     k.toLowerCase().includes(iconSearch.toLowerCase().trim())
@@ -458,7 +424,7 @@ export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (
           <button
             type="button"
             onClick={handleSubmit}
-            className="px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 active:scale-95 text-white text-xs sm:text-sm font-semibold shadow-md transition-all cursor-pointer flex items-center gap-2"
+            className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover active:scale-95 text-white text-xs sm:text-sm font-semibold shadow-xs transition-all cursor-pointer flex items-center gap-2"
           >
             <Check className="w-4 h-4" />
             <span>{categoryToEdit ? "Simpan Perubahan" : "Buat Kategori"}</span>
@@ -466,6 +432,11 @@ export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (
         </div>
     </Modal>
   );
+};
+
+export const CategoryIconPickerModal: React.FC<CategoryIconPickerModalProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <CategoryIconPickerDialog {...props} />;
 };
 
 export default CategoryIconPickerModal;

@@ -2,9 +2,9 @@
 
 import React, { createContext } from "react";
 import { create } from "zustand";
-import { categoryApi } from "@/services/categoryApi";
-import { emitToast } from "@/stores/ToastContext";
-import type { CategoryItem, MerchantItem, MatchResult } from "@/models/category";
+import { categoryApi } from "@/features/admin/merchant/data/categoryApi";
+import { emitToast } from "@/shared/presentation/stores/ToastContext";
+import type { CategoryItem, MerchantItem, MatchResult } from "@/features/admin/merchant/domain/category";
 
 export type { CategoryItem, MerchantItem, MatchResult };
 
@@ -29,9 +29,9 @@ export const createMerchant = (
 export function normalizeCategoryList(rawCats: unknown[]): CategoryItem[] {
   if (!Array.isArray(rawCats)) return [];
 
-  return (rawCats as any[]).map((cat, catIdx) => {
-    const rawMerchants = Array.isArray(cat.merchants) ? cat.merchants : [];
-    const normalizedMerchants: MerchantItem[] = rawMerchants.map((m: any, mIdx: number) => {
+  return (rawCats as Record<string, unknown>[]).map((cat, catIdx) => {
+    const rawMerchants = Array.isArray(cat.merchants) ? (cat.merchants as unknown[]) : [];
+    const normalizedMerchants: MerchantItem[] = rawMerchants.map((m: unknown, mIdx: number) => {
       if (typeof m === "string") {
         return {
           id: String(mIdx + 1),
@@ -57,14 +57,15 @@ export function normalizeCategoryList(rawCats: unknown[]): CategoryItem[] {
     return {
       ...cat,
       id: String(cat.id || catIdx + 1),
-      apiCategoryName: cat.apiCategoryName || undefined,
-      description: cat.description || undefined,
-      iconType: cat.iconType || "image",
-      iconName: cat.iconName || undefined,
-      iconSrc: cat.iconSrc || undefined,
-      color: cat.color || "blue",
+      name: String(cat.name || `Kategori ${catIdx + 1}`),
+      apiCategoryName: typeof cat.apiCategoryName === "string" ? cat.apiCategoryName : undefined,
+      description: typeof cat.description === "string" ? cat.description : undefined,
+      iconType: (cat.iconType as "lucide" | "image") || "image",
+      iconName: typeof cat.iconName === "string" ? cat.iconName : undefined,
+      iconSrc: typeof cat.iconSrc === "string" ? cat.iconSrc : undefined,
+      color: typeof cat.color === "string" ? cat.color : "blue",
       merchants: normalizedMerchants,
-    };
+    } as CategoryItem;
   });
 }
 
@@ -664,5 +665,5 @@ export const CategoryProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   return <>{children}</>;
 };
 
-export const CategoryContext = createContext<any>(undefined);
+export const CategoryContext = createContext<unknown>(undefined);
 export default useCategoryStore;

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { mapDbGuideToGuide, DbGuideRow } from "@/models/guide";
-import { TablesUpdate } from "@/lib/supabase/database.types";
+import { getSupabaseServerClient } from "@/shared/lib/supabase/server";
+import { mapDbGuideToGuide, DbGuideRow } from "@/features/user/guide/domain/guide";
+import { TablesUpdate } from "@/shared/lib/supabase/database.types";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

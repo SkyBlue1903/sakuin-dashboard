@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import AppHeader from "@/views/layout/AppHeader";
-import AppSidebar from "@/views/layout/AppSidebar";
-import Backdrop from "@/views/layout/Backdrop";
+import AppHeader from "@/shared/presentation/components/layout/AppHeader";
+import AppSidebar from "@/shared/presentation/components/layout/AppSidebar";
+import Backdrop from "@/shared/presentation/components/layout/Backdrop";
 
 export default function DashboardLayout({
   children,

@@ -40,21 +40,21 @@ export function useResponsiveInfiniteScroll({
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
+  // Recalculate jika totalItems berubah (misal saat search/filter)
+  const [prevTotal, setPrevTotal] = useState(totalItems);
+  if (prevTotal !== totalItems) {
+    setPrevTotal(totalItems);
+    setVisibleCount(getAdaptiveInitialSize());
+  }
+
   // Kalibrasi viewport setelah mount di client
   useEffect(() => {
-    const adaptive = getAdaptiveInitialSize();
-    setVisibleCount(adaptive);
-  }, [getAdaptiveInitialSize]);
-
-  // Recalculate jika totalItems berubah (misal saat search/filter)
-  const prevTotalRef = useRef(totalItems);
-  useEffect(() => {
-    if (prevTotalRef.current !== totalItems) {
-      prevTotalRef.current = totalItems;
+    const id = requestAnimationFrame(() => {
       const adaptive = getAdaptiveInitialSize();
       setVisibleCount(adaptive);
-    }
-  }, [totalItems, getAdaptiveInitialSize]);
+    });
+    return () => cancelAnimationFrame(id);
+  }, [getAdaptiveInitialSize]);
 
 
 

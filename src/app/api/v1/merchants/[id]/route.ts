@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseServerClient } from "@/shared/lib/supabase/server";
 import {
   mapDbMerchantToMerchant,
   mapSubMerchantToDb,
   DbMerchantWithSubs,
-} from "@/services/categoryMappers";
-import { TablesUpdate } from "@/lib/supabase/database.types";
-import { compressImageUrl } from "@/utils/imageOptimizer";
+} from "@/features/admin/merchant/data/categoryMappers";
+import { TablesUpdate } from "@/shared/lib/supabase/database.types";
+import { compressImageUrl } from "@/shared/utils/imageOptimizer";
 
 export async function PUT(
   request: NextRequest,

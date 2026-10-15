@@ -5,15 +5,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Eye, EyeOff, Loader2 } from "lucide-react";
-import ThemeTogglerTwo from "@/views/common/ThemeTogglerTwo";
+import ThemeTogglerTwo from "@/shared/presentation/components/ui/ThemeTogglerTwo";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("info@gmail.com");
   const [password, setPassword] = useState("password123");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [infoNotice, setInfoNotice] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,28 +35,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-brand-950 dark:bg-gray-950 lg:bg-white lg:dark:bg-gray-900 overflow-x-hidden selection:bg-brand-500 selection:text-white">
-      {/* Mobile-Only Background: desktop brand color + dashboard.login.png watermark */}
-      <div className="absolute inset-0 z-0 lg:hidden overflow-hidden pointer-events-none select-none">
-        {/* Background color matching desktop right brand panel */}
-        <div className="absolute inset-0 bg-brand-950 dark:bg-[#0c0e2b]" />
-
-        {/* Background image: dashboard.login.png */}
-        <div className="absolute inset-0 flex items-center justify-center p-4">
-          <Image
-            src="/images/dashboard.login.png"
-            alt="Sakuin Background"
-            fill
-            priority
-            sizes="100vw"
-            className="object-contain object-center opacity-30 sm:opacity-35 scale-105"
-          />
-        </div>
-
-        {/* Ambient subtle vignette gradient for optimal text contrast */}
-        <div className="absolute inset-0 bg-gradient-to-b from-brand-950/80 via-brand-950/45 to-brand-950/90 dark:from-[#0c0e2b]/85 dark:via-transparent dark:to-[#0c0e2b]/95" />
-      </div>
-
+    <div className="relative min-h-screen w-full bg-background text-text-primary overflow-x-hidden selection:bg-primary selection:text-text-inverse">
       <div className="relative z-10 flex min-h-screen w-full flex-col lg:flex-row">
         {/* Left Column: Sign In Form */}
         <div className="flex w-full flex-1 flex-col justify-between p-6 sm:p-10 lg:w-1/2 lg:p-12 xl:p-16">
@@ -63,36 +43,50 @@ export default function LoginPage() {
           <div className="mx-auto mb-5 w-full max-w-md sm:pt-4">
             <Link
               href="/card"
-              className="inline-flex items-center text-sm font-medium text-gray-300 hover:text-white lg:text-gray-500 lg:hover:text-gray-700 lg:dark:text-gray-400 lg:dark:hover:text-gray-300 transition-colors"
+              className="inline-flex items-center text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
             >
               <ChevronLeft className="mr-1 h-5 w-5 rtl:rotate-180" />
               Kembali ke Dashboard
             </Link>
           </div>
 
-          {/* Form container (glassmorphic on mobile, clean flat on desktop) */}
+          {/* Form container */}
           <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-4 sm:py-8">
-            <div className="rounded-3xl border border-white/10 bg-brand-950/70 p-6 shadow-2xl backdrop-blur-xl sm:p-8 lg:rounded-none lg:border-none lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none">
+            <div className="rounded-2xl border border-border-subtle bg-surface p-6 shadow-ds-md sm:p-8 lg:rounded-none lg:border-none lg:bg-transparent lg:p-0 lg:shadow-none">
               {/* Header Title & Subtitle */}
-              <div className="mb-5 sm:mb-8">
-                <h1 className="mb-2 text-title-sm font-semibold text-white lg:text-gray-800 lg:dark:text-white/90 sm:text-title-md">
-                  Masuk
+              <div className="mb-6 sm:mb-8">
+                <h1 className="mb-2 text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">
+                  Masuk ke Sakuin
                 </h1>
-                <p className="text-sm text-gray-300 lg:text-gray-500 lg:dark:text-gray-400">
-                  Masukkan email dan kata sandi Anda untuk masuk!
+                <p className="text-sm text-text-secondary">
+                  Masukkan email dan kata sandi Anda untuk mengakses dashboard kartu virtual.
                 </p>
               </div>
+
+              {infoNotice && (
+                <div className="mb-5 rounded-xl border border-info-border bg-info-bg/80 dark:bg-info-bg/30 p-3.5 text-xs text-info flex items-start justify-between gap-2 animate-in fade-in duration-200">
+                  <div className="leading-relaxed">{infoNotice}</div>
+                  <button
+                    type="button"
+                    onClick={() => setInfoNotice(null)}
+                    className="p-0.5 text-info/70 hover:text-info cursor-pointer font-bold text-sm shrink-0"
+                    aria-label="Tutup pemberitahuan"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
 
               {/* Social Login Button (Full width) */}
               <div>
                 <button
                   type="button"
                   onClick={handleSocialSignIn}
-                  className="w-full inline-flex items-center justify-center gap-3 rounded-lg bg-white/10 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/15 border border-white/10 lg:bg-gray-100 lg:text-gray-700 lg:hover:bg-gray-200 lg:hover:text-gray-800 lg:dark:bg-white/5 lg:dark:text-white/90 lg:dark:hover:bg-white/10 lg:border-transparent cursor-pointer shadow-2xs"
+                  className="w-full inline-flex items-center justify-center gap-3 rounded-xl bg-surface border border-border px-6 py-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-secondary cursor-pointer shadow-2xs"
                 >
                   <svg
-                    width="20"
-                    height="20"
+                    width="18"
+                    height="18"
                     viewBox="0 0 20 20"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -118,38 +112,38 @@ export default function LoginPage() {
                 </button>
 
                 {/* Divider */}
-                <div className="relative py-3 sm:py-5">
+                <div className="relative py-4 sm:py-5">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-white/15 lg:border-gray-200 lg:dark:border-gray-800"></div>
+                    <div className="w-full border-t border-border-subtle"></div>
                   </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="bg-brand-950/90 lg:bg-white dark:bg-gray-900 px-3 sm:px-5 py-1 text-gray-300 lg:text-gray-400 rounded-full lg:rounded-none">
-                      Atau
+                  <div className="relative flex justify-center text-xs">
+                    <span className="bg-surface px-4 py-0.5 text-text-tertiary">
+                      atau dengan email
                     </span>
                   </div>
                 </div>
 
                 {/* Form Fields */}
                 <form onSubmit={handleSubmit}>
-                  <div className="space-y-5 sm:space-y-6">
+                  <div className="space-y-4 sm:space-y-5">
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-gray-200 lg:text-gray-700 lg:dark:text-gray-400">
-                        Email <span className="text-red-400 lg:text-red-500">*</span>
+                      <label className="mb-1.5 block text-xs font-semibold text-text-secondary">
+                        Email <span className="text-error">*</span>
                       </label>
                       <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="info@gmail.com"
+                        placeholder="contoh@sakuin.id"
                         required
                         disabled={isLoading}
-                        className="h-11 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-2.5 text-sm text-white placeholder:text-gray-400 focus:border-brand-400 focus:ring-3 focus:ring-brand-400/20 focus:outline-hidden lg:border-gray-300 lg:bg-transparent lg:text-gray-800 lg:dark:border-gray-700 lg:dark:bg-gray-900 lg:dark:text-white/90 lg:dark:placeholder:text-gray-500 lg:focus:border-brand-500 transition-colors"
+                        className="h-11 w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-hidden transition-colors"
                       />
                     </div>
 
                     <div>
-                      <label className="mb-1.5 block text-sm font-medium text-gray-200 lg:text-gray-700 lg:dark:text-gray-400">
-                        Kata Sandi <span className="text-red-400 lg:text-red-500">*</span>
+                      <label className="mb-1.5 block text-xs font-semibold text-text-secondary">
+                        Kata Sandi <span className="text-error">*</span>
                       </label>
                       <div className="relative">
                         <input
@@ -159,18 +153,18 @@ export default function LoginPage() {
                           placeholder="Masukkan kata sandi Anda"
                           required
                           disabled={isLoading}
-                          className="h-11 w-full rounded-lg border border-white/20 bg-white/10 ps-4 pe-11 py-2.5 text-sm text-white placeholder:text-gray-400 focus:border-brand-400 focus:ring-3 focus:ring-brand-400/20 focus:outline-hidden lg:border-gray-300 lg:bg-transparent lg:text-gray-800 lg:dark:border-gray-700 lg:dark:bg-gray-900 lg:dark:text-white/90 lg:dark:placeholder:text-gray-500 lg:focus:border-brand-500 transition-colors"
+                          className="h-11 w-full rounded-xl border border-border bg-surface ps-4 pe-11 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-hidden transition-colors"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-300 hover:text-white lg:text-gray-400 lg:hover:text-gray-600 lg:dark:text-gray-500 lg:dark:hover:text-gray-300 cursor-pointer"
+                          className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
                           aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
                         >
                           {showPassword ? (
-                            <EyeOff className="h-5 w-5" />
+                            <EyeOff className="h-4 w-4" />
                           ) : (
-                            <Eye className="h-5 w-5" />
+                            <Eye className="h-4 w-4" />
                           )}
                         </button>
                       </div>
@@ -178,56 +172,55 @@ export default function LoginPage() {
 
                     {/* Ingat saya & Lupa kata sandi */}
                     <div className="flex items-center justify-between">
-                      <label className="group flex cursor-pointer items-center gap-3 select-none">
-                        <div className="relative h-5 w-5">
+                      <label className="group flex cursor-pointer items-center gap-2.5 select-none">
+                        <div className="relative h-4 w-4">
                           <input
                             type="checkbox"
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
-                            className="h-5 w-5 cursor-pointer appearance-none rounded-md border border-white/30 bg-white/10 checked:bg-brand-500 checked:border-transparent lg:border-gray-300 lg:bg-transparent lg:dark:border-gray-700 transition-colors focus:outline-hidden"
+                            className="h-4 w-4 cursor-pointer appearance-none rounded border border-border bg-surface checked:bg-primary checked:border-primary transition-colors focus:outline-hidden"
                           />
                           {rememberMe && (
                             <svg
-                              className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-white"
+                              className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-text-inverse"
                               xmlns="http://www.w3.org/2000/svg"
-                              width="14"
-                              height="14"
+                              width="12"
+                              height="12"
                               viewBox="0 0 14 14"
                               fill="none"
                             >
                               <path
                                 d="M11.6666 3.5L5.24992 9.91667L2.33325 7"
                                 stroke="currentColor"
-                                strokeWidth="2"
+                                strokeWidth="2.5"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                               />
                             </svg>
                           )}
                         </div>
-                        <span className="block text-sm font-normal text-gray-200 lg:text-gray-700 lg:dark:text-gray-400">
+                        <span className="block text-xs text-text-secondary group-hover:text-text-primary transition-colors">
                           Ingat saya
                         </span>
                       </label>
 
-                      <Link
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          alert("Untuk demonstrasi, akun default telah terisi otomatis.");
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setInfoNotice("Akun demo telah disiapkan otomatis dengan email info@gmail.com dan kata sandi default.");
                         }}
-                        className="text-sm font-medium text-brand-300 hover:text-brand-200 lg:text-brand-500 lg:hover:text-brand-600 lg:dark:text-brand-400 transition-colors"
+                        className="text-xs font-semibold text-primary hover:text-primary-hover transition-colors cursor-pointer"
                       >
                         Lupa kata sandi?
-                      </Link>
+                      </button>
                     </div>
 
                     {/* Submit Button */}
-                    <div>
+                    <div className="pt-1">
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full flex items-center justify-center gap-2 rounded-lg bg-brand-500 py-3 px-4 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20 active:scale-[0.99] cursor-pointer disabled:opacity-70"
+                        className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover active:bg-primary-active py-3 px-4 text-sm font-semibold text-text-inverse shadow-ds-sm transition-all focus:outline-hidden focus:ring-2 focus:ring-primary/20 active:scale-[0.99] cursor-pointer disabled:opacity-70"
                       >
                         {isLoading ? (
                           <>
@@ -243,14 +236,14 @@ export default function LoginPage() {
                 </form>
 
                 {/* Footer Sign Up Link */}
-                <div className="mt-5">
-                  <p className="text-center text-sm font-normal text-gray-300 sm:text-start lg:text-gray-700 lg:dark:text-gray-400">
+                <div className="mt-5 text-center sm:text-left">
+                  <p className="text-xs text-text-secondary">
                     Belum punya akun?{" "}
                     <Link
                       href="/card"
-                      className="text-brand-300 hover:text-brand-200 lg:text-brand-500 lg:hover:text-brand-600 lg:dark:text-brand-400 transition-colors font-medium"
+                      className="text-primary hover:text-primary-hover font-semibold transition-colors"
                     >
-                      Daftar
+                      Daftar akun baru
                     </Link>
                   </p>
                 </div>
@@ -259,9 +252,10 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Right Column: Brand Banner with Sakuin Cards Image and Clean Background (Desktop only) */}
-        <div className="lg:w-1/2 w-full min-h-screen bg-brand-950 dark:bg-white/5 lg:flex items-center justify-center hidden p-8 lg:p-12 xl:p-16 select-none">
-          <div className="relative flex flex-col items-center justify-center max-w-lg text-center">
+        {/* Right Column: Brand Banner (Desktop only) */}
+        <div className="lg:w-1/2 w-full min-h-screen bg-primary text-text-inverse lg:flex items-center justify-center hidden p-8 lg:p-12 xl:p-16 select-none relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary-hover to-primary-active opacity-90" />
+          <div className="relative z-10 flex flex-col items-center justify-center max-w-lg text-center">
             <div className="block mb-6 transition-transform duration-500 hover:scale-[1.02]">
               <Image
                 width={540}

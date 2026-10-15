@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Wallet, ArrowDownToLine, Check, Sparkles } from "lucide-react";
-import { cn } from "@/utils";
-import { Modal } from "@/views/ui/modal";
+import { X, Wallet, ArrowDownToLine, Check } from "lucide-react";
+import { cn } from "@/shared/utils";
+import { Modal } from "@/shared/presentation/components/ui/Modal";
 
 interface TopUpModalProps {
   isOpen: boolean;

@@ -1,20 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   X,
   Image as ImageIcon,
   Sparkles,
   Link as LinkIcon,
   AlertCircle,
-  CheckCircle2,
-  ExternalLink,
   EyeOff,
 } from "lucide-react";
-import { cn } from "@/utils";
-import HtmlEditor from "./HtmlEditor";
-import type { PromoItem } from "@/models/promo";
-import { Modal } from "@/views/ui/modal";
+import { cn } from "@/shared/utils";
+import HtmlEditor from "@/shared/presentation/components/ui/HtmlEditor";
+import type { PromoItem } from "@/features/user/promo/domain/promo";
+import { Modal } from "@/shared/presentation/components/ui/Modal";
 
 interface EditPromoModalProps {
   isOpen: boolean;
@@ -37,66 +35,41 @@ const toDateTimeLocalString = (date: Date): string => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-export const EditPromoModal: React.FC<EditPromoModalProps> = ({
+const EditPromoDialog: React.FC<EditPromoModalProps> = ({
   isOpen,
   onClose,
   promo,
   onSave,
 }) => {
-  const [title, setTitle] = useState("");
-  const [bannerUrl, setBannerUrl] = useState("");
-  const [bannerLink, setBannerLink] = useState("");
-  const [shortDescription, setShortDescription] = useState("");
-  const [contentHtml, setContentHtml] = useState("");
-  const [publishedAt, setPublishedAt] = useState("");
-  const [takedownAt, setTakedownAt] = useState("");
-  const [hideBeforePublished, setHideBeforePublished] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
-  const [isHighlight, setIsHighlight] = useState(false);
+  const getDefaultDates = () => {
+    const now = new Date();
+    const nextMonth = new Date();
+    nextMonth.setDate(now.getDate() + 30);
+    return {
+      publishedAt: toDateTimeLocalString(now),
+      takedownAt: toDateTimeLocalString(nextMonth),
+    };
+  };
+
+  const defaultDates = getDefaultDates();
+
+  const [title, setTitle] = useState(promo?.title || "");
+  const [bannerUrl, setBannerUrl] = useState(promo?.bannerUrl || SAMPLE_BANNER_PATH);
+  const [bannerLink, setBannerLink] = useState(promo?.bannerLink || (promo ? "" : SAMPLE_BANNER_LINK));
+  const [shortDescription, setShortDescription] = useState(promo?.shortDescription || "");
+  const [contentHtml, setContentHtml] = useState(
+    promo?.contentHtml ||
+      "<h3>Detail Penawaran Promo</h3>\n<p>Tuliskan informasi lengkap benefit, tata cara klaim, dan syarat ketentuan promo di sini.</p>"
+  );
+  const [publishedAt, setPublishedAt] = useState(promo?.publishedAt || defaultDates.publishedAt);
+  const [takedownAt, setTakedownAt] = useState(promo?.takedownAt || defaultDates.takedownAt);
+  const [hideBeforePublished, setHideBeforePublished] = useState(promo?.hideBeforePublished ?? false);
+  const [isHidden, setIsHidden] = useState(Boolean(promo?.isHidden));
+  const [isHighlight, setIsHighlight] = useState(Boolean(promo?.isHighlight));
   const [bannerPreviewError, setBannerPreviewError] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (isOpen) {
-      if (promo) {
-        setTitle(promo.title);
-        setBannerUrl(promo.bannerUrl);
-        setBannerLink(promo.bannerLink || "");
-        setShortDescription(promo.shortDescription);
-        setContentHtml(promo.contentHtml);
-        setPublishedAt(promo.publishedAt || toDateTimeLocalString(new Date()));
-        setTakedownAt(promo.takedownAt || "");
-        setHideBeforePublished(promo.hideBeforePublished ?? false);
-        setIsHidden(Boolean(promo.isHidden));
-        setIsHighlight(Boolean(promo.isHighlight));
-      } else {
-        const now = new Date();
-        const nextMonth = new Date();
-        nextMonth.setDate(now.getDate() + 30);
-
-        setTitle("");
-        setBannerUrl(SAMPLE_BANNER_PATH);
-        setBannerLink(SAMPLE_BANNER_LINK);
-        setShortDescription("");
-        setHideBeforePublished(false);
-        setIsHidden(false);
-        setIsHighlight(false);
-        setContentHtml(
-          "<h3>Detail Penawaran Promo</h3>\n<p>Tuliskan informasi lengkap benefit, tata cara klaim, dan syarat ketentuan promo di sini.</p>"
-        );
-        setPublishedAt(toDateTimeLocalString(now));
-        setTakedownAt(toDateTimeLocalString(nextMonth));
-      }
-      setBannerPreviewError(false);
-      setErrors({});
-      setSubmitError(null);
-      setIsSaving(false);
-    }
-  }, [isOpen, promo]);
-
-  if (!isOpen) return null;
 
   const handleSetSampleBanner = () => {
     setBannerUrl(SAMPLE_BANNER_PATH);
@@ -535,7 +508,7 @@ export const EditPromoModal: React.FC<EditPromoModalProps> = ({
           <button
             type="submit"
             disabled={isSaving}
-            className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+            className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
           >
             {isSaving ? "Menyimpan..." : promo ? "Simpan Perubahan" : "Terbitkan Promosi"}
           </button>
@@ -543,6 +516,11 @@ export const EditPromoModal: React.FC<EditPromoModalProps> = ({
       </form>
     </Modal>
   );
+};
+
+export const EditPromoModal: React.FC<EditPromoModalProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <EditPromoDialog {...props} />;
 };
 
 export default EditPromoModal;

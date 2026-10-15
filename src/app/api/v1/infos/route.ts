@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseServerClient } from "@/shared/lib/supabase/server";
 import {
   mapDbInfoToInfo,
   mapInfoToDb,
   DbInfoRow,
   InfoItem,
-} from "@/models/info";
+} from "@/features/user/info/domain/info";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

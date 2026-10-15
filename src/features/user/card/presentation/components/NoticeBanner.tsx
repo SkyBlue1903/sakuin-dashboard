@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { AlertCircle, Info, AlertOctagon, X } from "lucide-react";
-import { cn } from "@/utils";
+import { cn } from "@/shared/utils";
 
 export type BannerVariant = "warning" | "info" | "danger";
 
@@ -47,35 +47,32 @@ export const NoticeBanner: React.FC<NoticeBannerProps> = ({
   if (!isVisible) return null;
 
   const variantStyles = {
-    // Kuning: Peringatan yang bisa dihilangkan
     warning: {
       container:
-        "bg-warning-50/90 dark:bg-warning-950/25 border-warning-200/80 dark:border-warning-800/50 text-warning-900 dark:text-warning-200",
-      icon: "text-warning-600 dark:text-warning-400",
-      title: "text-warning-900 dark:text-warning-300",
-      message: "text-warning-700 dark:text-warning-400",
+        "bg-warning-bg/80 border-warning-border text-warning dark:bg-warning-bg/30 dark:border-warning-border",
+      icon: "text-warning",
+      title: "text-warning font-semibold",
+      message: "text-warning/90 dark:text-warning",
       closeBtn:
-        "text-warning-600 dark:text-warning-400 hover:text-warning-900 dark:hover:text-warning-200 hover:bg-warning-100/80 dark:hover:bg-warning-900/40",
+        "text-warning/70 hover:text-warning hover:bg-warning/10",
       IconComponent: AlertCircle,
     },
-    // Biru: Informasi yang bisa dihilangkan
     info: {
       container:
-        "bg-blue-light-50/90 dark:bg-blue-light-950/25 border-blue-light-200/80 dark:border-blue-light-800/50 text-blue-light-900 dark:text-blue-light-200",
-      icon: "text-blue-light-600 dark:text-blue-light-400",
-      title: "text-blue-light-900 dark:text-blue-light-300",
-      message: "text-blue-light-700 dark:text-blue-light-400",
+        "bg-info-bg/75 border-info-border text-info dark:bg-info-bg/30 dark:border-info-border",
+      icon: "text-info",
+      title: "text-info font-semibold",
+      message: "text-info/90 dark:text-info",
       closeBtn:
-        "text-blue-light-600 dark:text-blue-light-400 hover:text-blue-light-900 dark:hover:text-blue-light-200 hover:bg-blue-light-100/80 dark:hover:bg-blue-light-900/40",
+        "text-info/70 hover:text-info hover:bg-info/10",
       IconComponent: Info,
     },
-    // Merah: Peringatan yang tidak bisa dihilangkan
     danger: {
       container:
-        "bg-error-50/90 dark:bg-error-950/25 border-error-200/80 dark:border-error-800/50 text-error-900 dark:text-error-200",
-      icon: "text-error-600 dark:text-error-400",
-      title: "text-error-900 dark:text-error-300",
-      message: "text-error-700 dark:text-error-400",
+        "bg-error-bg/75 border-error-border text-error dark:bg-error-bg/30 dark:border-error-border",
+      icon: "text-error",
+      title: "text-error font-semibold",
+      message: "text-error/90 dark:text-error",
       closeBtn: "",
       IconComponent: AlertOctagon,
     },

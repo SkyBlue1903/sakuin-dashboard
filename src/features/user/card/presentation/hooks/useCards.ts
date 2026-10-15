@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { cardApi, Card, INITIAL_CARDS } from "@/services/cardService";
-import { TRANSACTION_QUERY_KEYS } from "@/controllers/useTransactions";
+import { cardApi, Card, INITIAL_CARDS } from "@/features/user/card/data/cardService";
+import { TRANSACTION_QUERY_KEYS } from "@/features/user/card/presentation/hooks/useTransactions";
 
 /**
  * Query Key Factory untuk Card (hierarkis & type-safe)

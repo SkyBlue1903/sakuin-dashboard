@@ -16,13 +16,13 @@ import {
   Gift,
   SlidersHorizontal,
 } from "lucide-react";
-import { cn } from "@/utils";
-import { usePromoStore, getPromoStatus, getPromoStatusBadge } from "@/stores/usePromoStore";
-import type { PromoItem } from "@/models/promo";
-import EditPromoModal from "@/views/admin/EditPromoModal";
-import PromoDetailModal from "@/views/admin/PromoDetailModal";
-import DeletePromoModal from "@/views/admin/DeletePromoModal";
-import { useToast } from "@/stores/ToastContext";
+import { cn } from "@/shared/utils";
+import { usePromoStore, getPromoStatus, getPromoStatusBadge } from "@/features/user/promo/presentation/stores/usePromoStore";
+import type { PromoItem } from "@/features/user/promo/domain/promo";
+import EditPromoModal from "@/features/admin/promo/presentation/components/EditPromoModal";
+import PromoDetailModal from "@/features/user/promo/presentation/components/PromoDetailModal";
+import DeletePromoModal from "@/features/admin/promo/presentation/components/DeletePromoModal";
+import { useToast } from "@/shared/presentation/stores/ToastContext";
 
 export const AdminPromoLayout: React.FC = () => {
   const { promos, isLoading, loadPromos, addPromo, updatePromo, deletePromo, duplicatePromo } =
@@ -187,16 +187,16 @@ export const AdminPromoLayout: React.FC = () => {
   return (
     <div className="w-full flex-1 md:overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
       {/* 1. Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-gray-100 dark:border-gray-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-border-subtle">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400 mb-1">
+          <div className="flex items-center gap-2 text-xs font-semibold text-primary mb-1">
             <Gift className="w-4 h-4" />
             <span>Manajemen Promosi Sakuin</span>
           </div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-text-primary tracking-tight">
             Kelola Promosi
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-text-secondary mt-1 max-w-2xl leading-relaxed">
             Atur banner penawaran, periode promo, diskon merchant, dan program reward untuk pengguna (tersinkronisasi ke Supabase).
           </p>
         </div>
@@ -210,7 +210,7 @@ export const AdminPromoLayout: React.FC = () => {
               showToast("Data promosi disegarkan dari Supabase");
             }}
             disabled={isLoading}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-850 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-semibold shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border bg-surface hover:bg-surface-secondary text-text-secondary text-xs font-semibold shadow-ds-xs transition-colors cursor-pointer disabled:opacity-50"
             title="Segarkan data dari database"
           >
             <RotateCcw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
@@ -220,7 +220,7 @@ export const AdminPromoLayout: React.FC = () => {
           <button
             type="button"
             onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold shadow-xs transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-text-inverse text-xs sm:text-sm font-semibold shadow-ds-xs transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Promo</span>
@@ -232,13 +232,13 @@ export const AdminPromoLayout: React.FC = () => {
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pt-1">
         {/* Search Input */}
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari judul promo atau deskripsi..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-850 text-xs text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 rounded-xl border border-border bg-surface text-xs text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-ds-xs transition-all"
           />
         </div>
 
@@ -246,8 +246,8 @@ export const AdminPromoLayout: React.FC = () => {
         <div className="flex items-center gap-2.5 flex-wrap">
           {/* Filter Dropdown: Status Promosi */}
           <div className="flex items-center gap-1.5">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-gray-400 hidden sm:inline" />
-            <span className="text-xs text-gray-400 hidden sm:inline">Status:</span>
+            <SlidersHorizontal className="w-3.5 h-3.5 text-text-tertiary hidden sm:inline" />
+            <span className="text-xs text-text-tertiary hidden sm:inline">Status:</span>
             <select
               value={filterStatus}
               onChange={(e) =>
@@ -255,7 +255,7 @@ export const AdminPromoLayout: React.FC = () => {
                   e.target.value as "all" | "active" | "scheduled" | "expired" | "hidden" | "highlight"
                 )
               }
-              className="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-850 text-xs font-semibold text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
+              className="px-3 py-2 rounded-xl border border-border bg-surface text-xs font-semibold text-text-secondary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer shadow-ds-xs"
             >
               <option value="all">Semua Status</option>
               <option value="active">Aktif</option>
@@ -268,13 +268,13 @@ export const AdminPromoLayout: React.FC = () => {
 
           {/* Filter Dropdown: Urutkan */}
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-gray-400 hidden sm:inline">Urutkan:</span>
+            <span className="text-xs text-text-tertiary hidden sm:inline">Urutkan:</span>
             <select
               value={sortBy}
               onChange={(e) =>
                 setSortBy(e.target.value as "newest" | "oldest" | "ending_soon" | "title")
               }
-              className="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-850 text-xs font-semibold text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
+              className="px-3 py-2 rounded-xl border border-border bg-surface text-xs font-semibold text-text-secondary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer shadow-ds-xs"
             >
               <option value="newest">Terbaru Ditambahkan</option>
               <option value="oldest">Terlama</option>
@@ -283,7 +283,7 @@ export const AdminPromoLayout: React.FC = () => {
             </select>
           </div>
 
-          <div className="px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-[11px] text-gray-500 dark:text-gray-400 font-medium">
+          <div className="px-2.5 py-1 rounded-lg bg-surface-secondary text-[11px] text-text-tertiary font-medium border border-border-subtle">
             {filteredPromos.length} promosi
           </div>
         </div>
@@ -295,24 +295,24 @@ export const AdminPromoLayout: React.FC = () => {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 animate-pulse space-y-4"
+              className="rounded-2xl border border-border-subtle bg-surface p-4 animate-pulse space-y-4"
             >
-              <div className="w-full h-40 bg-gray-200 dark:bg-gray-800 rounded-xl" />
-              <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-3/4" />
-              <div className="h-3 bg-gray-200 dark:bg-gray-800 rounded w-full" />
-              <div className="h-3 bg-gray-200 dark:bg-gray-800 rounded w-1/2" />
+              <div className="w-full h-40 bg-surface-secondary rounded-xl" />
+              <div className="h-4 bg-surface-secondary rounded w-3/4" />
+              <div className="h-3 bg-surface-secondary rounded w-full" />
+              <div className="h-3 bg-surface-secondary rounded w-1/2" />
             </div>
           ))}
         </div>
       ) : filteredPromos.length === 0 ? (
-        <div className="text-center py-16 px-4 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
-          <div className="inline-flex p-4 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 mb-3">
+        <div className="text-center py-16 px-4 rounded-3xl border border-dashed border-border-subtle bg-surface">
+          <div className="inline-flex p-4 rounded-full bg-primary/10 text-primary mb-3">
             <Gift className="w-8 h-8" />
           </div>
-          <h3 className="text-base font-bold text-gray-900 dark:text-white">
+          <h3 className="text-base font-bold text-text-primary">
             Tidak ada promosi ditemukan
           </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-sm mx-auto">
+          <p className="text-xs text-text-secondary mt-1 max-w-sm mx-auto">
             {searchQuery
               ? `Tidak ada promosi yang cocok dengan kata kunci "${searchQuery}".`
               : "Belum ada promosi yang tersimpan di database. Silakan tambahkan promosi baru."}
@@ -321,7 +321,7 @@ export const AdminPromoLayout: React.FC = () => {
             <button
               type="button"
               onClick={handleOpenCreateModal}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-text-inverse text-xs font-semibold shadow-ds-xs transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Tambah Promosi Sekarang</span>
@@ -338,14 +338,14 @@ export const AdminPromoLayout: React.FC = () => {
               <div
                 key={item.id}
                 className={cn(
-                  "group rounded-2xl border bg-white dark:bg-gray-900 overflow-hidden flex flex-col transition-all duration-200 hover:shadow-md",
+                  "group rounded-2xl border bg-surface overflow-hidden flex flex-col transition-all duration-200 hover:shadow-ds-md",
                   isHidden
-                    ? "border-dashed border-gray-300 dark:border-gray-700 opacity-80"
-                    : "border-gray-200/80 dark:border-gray-800 hover:border-blue-500/30"
+                    ? "border-dashed border-border opacity-80"
+                    : "border-border-subtle hover:border-primary/40"
                 )}
               >
                 {/* Banner Thumbnail */}
-                <div className="relative aspect-video w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
+                <div className="relative aspect-video w-full overflow-hidden bg-surface-secondary">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={item.bannerUrl}
@@ -394,35 +394,35 @@ export const AdminPromoLayout: React.FC = () => {
                     {/* Title */}
                     <h3
                       onClick={() => setPreviewingPromo(item)}
-                      className="text-sm sm:text-base font-bold text-gray-900 dark:text-white line-clamp-2 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors"
+                      className="text-sm sm:text-base font-bold text-text-primary line-clamp-2 hover:text-primary cursor-pointer transition-colors"
                     >
                       {item.title}
                     </h3>
 
                     {/* Short Description */}
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-text-secondary mt-1.5 line-clamp-2 leading-relaxed">
                       {item.shortDescription}
                     </p>
                   </div>
 
                   {/* Dates schedule */}
-                  <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 space-y-1 text-[11px] text-gray-400">
+                  <div className="mt-4 pt-3 border-t border-border-subtle space-y-1 text-[11px] text-text-tertiary">
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3 text-blue-500" />
+                        <Calendar className="w-3 h-3 text-primary" />
                         Terbit:
                       </span>
-                      <span className="font-medium text-gray-700 dark:text-gray-300">
+                      <span className="font-medium text-text-secondary">
                         {formatDate(item.publishedAt)}
                       </span>
                     </div>
                     {item.takedownAt && (
                       <div className="flex items-center justify-between">
                         <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-red-500" />
+                          <Clock className="w-3 h-3 text-danger" />
                           Selesai:
                         </span>
-                        <span className="font-medium text-gray-700 dark:text-gray-300">
+                        <span className="font-medium text-text-secondary">
                           {formatDate(item.takedownAt)}
                         </span>
                       </div>
@@ -431,11 +431,11 @@ export const AdminPromoLayout: React.FC = () => {
                 </div>
 
                 {/* Card Bottom Actions Bar */}
-                <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-850/40 flex items-center justify-between">
+                <div className="px-4 py-3 border-t border-border-subtle bg-surface-secondary/40 flex items-center justify-between">
                   <button
                     type="button"
                     onClick={() => setPreviewingPromo(item)}
-                    className="flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                    className="flex items-center gap-1 text-xs font-semibold text-primary hover:underline cursor-pointer"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     <span>Lihat Detail</span>

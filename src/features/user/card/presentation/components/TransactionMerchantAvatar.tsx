@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { cn } from "@/utils";
-import { getOptimizedImageUrl } from "@/utils/imageOptimizer";
-import type { CategoryItem } from "@/models/category";
-import CategoryIcon from "@/views/admin/CategoryIcon";
-import { useOptionalTheme } from "@/stores/useThemeStore";
+import React, { useState } from "react";
+import { cn } from "@/shared/utils";
+import { getOptimizedImageUrl } from "@/shared/utils/imageOptimizer";
+import type { CategoryItem } from "@/features/admin/merchant/domain/category";
+import CategoryIcon from "@/features/admin/merchant/presentation/components/CategoryIcon";
+import { useOptionalTheme } from "@/shared/presentation/stores/useThemeStore";
 
 export interface TransactionMerchantAvatarProps {
   merchantName: string;
@@ -34,26 +34,23 @@ export const TransactionMerchantAvatar: React.FC<TransactionMerchantAvatarProps>
   const themeContext = useOptionalTheme();
   const isDark = themeContext ? themeContext.theme === "dark" : false;
 
-  const [merchantLoaded, setMerchantLoaded] = useState(false);
-  const [merchantError, setMerchantError] = useState(false);
-  const [categoryLoaded, setCategoryLoaded] = useState(false);
-  const [categoryError, setCategoryError] = useState(false);
+  const [loadedMerchantUrl, setLoadedMerchantUrl] = useState<string | null>(null);
+  const [errorMerchantUrl, setErrorMerchantUrl] = useState<string | null>(null);
+  const [loadedCategorySrc, setLoadedCategorySrc] = useState<string | null>(null);
+  const [errorCategorySrc, setErrorCategorySrc] = useState<string | null>(null);
 
   // Determine active merchant logo URL based on theme
   const hasDarkOption = Boolean(isDark && logoDarkUrl && logoDarkUrl.trim());
   const activeMerchantUrl = (
-    hasDarkOption && !merchantError
+    hasDarkOption && errorMerchantUrl !== logoDarkUrl?.trim()
       ? logoDarkUrl!.trim()
       : (logoUrl?.trim() || "")
   );
 
-  // Reset error & loaded states when relevant props change
-  useEffect(() => {
-    setMerchantLoaded(false);
-    setMerchantError(false);
-    setCategoryLoaded(false);
-    setCategoryError(false);
-  }, [activeMerchantUrl, category?.id, category?.iconSrc, isDark]);
+  const merchantLoaded = loadedMerchantUrl === activeMerchantUrl;
+  const merchantError = errorMerchantUrl === activeMerchantUrl;
+  const categoryLoaded = loadedCategorySrc === (category?.iconSrc || null);
+  const categoryError = errorCategorySrc === (category?.iconSrc || null);
 
   const sizeClasses = {
     sm: "h-8 w-8 text-xs rounded-xl",
@@ -68,8 +65,7 @@ export const TransactionMerchantAvatar: React.FC<TransactionMerchantAvatarProps>
   const renderInitialBadge = (isLoadingState: boolean = false) => (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center font-bold tracking-tight select-none border border-gray-200/80 dark:border-gray-800 bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700 dark:from-gray-800 dark:to-gray-850 dark:text-gray-200 shadow-2xs transition-all",
-        isLoadingState && "animate-pulse",
+        "flex shrink-0 items-center justify-center font-bold tracking-tight select-none border border-border-subtle bg-surface-subtle text-foreground-secondary shadow-2xs transition-all",
         sizeClasses,
         className
       )}
@@ -84,14 +80,14 @@ export const TransactionMerchantAvatar: React.FC<TransactionMerchantAvatarProps>
     return (
       <div
         className={cn(
-          "relative flex shrink-0 items-center justify-center overflow-hidden border border-gray-200/90 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-2xs transition-all",
+          "relative flex shrink-0 items-center justify-center overflow-hidden border border-border-subtle bg-surface p-1 shadow-2xs transition-all",
           sizeClasses,
           className
         )}
       >
         {/* Sambil memuat logo merchant, tampilkan inisial nama merchant */}
         {!merchantLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 animate-pulse">
+          <div className="absolute inset-0 flex items-center justify-center font-bold text-foreground-muted bg-surface-subtle">
             {firstLetter}
           </div>
         )}
@@ -102,15 +98,8 @@ export const TransactionMerchantAvatar: React.FC<TransactionMerchantAvatarProps>
           alt={merchantName}
           loading="lazy"
           decoding="async"
-          onLoad={() => setMerchantLoaded(true)}
-          onError={() => {
-            if (hasDarkOption && !merchantError) {
-              // Jika dark logo gagal, MerchantLogo logic bisa coba light
-              setMerchantError(true);
-            } else {
-              setMerchantError(true);
-            }
-          }}
+          onLoad={() => setLoadedMerchantUrl(activeMerchantUrl)}
+          onError={() => setErrorMerchantUrl(activeMerchantUrl)}
           className={cn(
             "h-full w-full object-contain transition-opacity duration-200",
             merchantLoaded ? "opacity-100" : "opacity-0"
@@ -127,14 +116,14 @@ export const TransactionMerchantAvatar: React.FC<TransactionMerchantAvatarProps>
       return (
         <div
           className={cn(
-            "relative flex shrink-0 items-center justify-center overflow-hidden border border-gray-200/90 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-2xs transition-all",
+            "relative flex shrink-0 items-center justify-center overflow-hidden border border-border-subtle bg-surface shadow-2xs transition-all",
             sizeClasses,
             className
           )}
         >
           {/* Sambil download/load gambar/ilustrasi kategori -> tampilkan inisial merchant */}
           {!categoryLoaded && (
-            <div className="absolute inset-0 flex items-center justify-center font-bold text-gray-700 dark:text-gray-200 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-850 animate-pulse">
+            <div className="absolute inset-0 flex items-center justify-center font-bold text-foreground-secondary bg-surface-subtle">
               {firstLetter}
             </div>
           )}
@@ -145,8 +134,8 @@ export const TransactionMerchantAvatar: React.FC<TransactionMerchantAvatarProps>
             alt={category.name || "Kategori"}
             loading="lazy"
             decoding="async"
-            onLoad={() => setCategoryLoaded(true)}
-            onError={() => setCategoryError(true)}
+            onLoad={() => setLoadedCategorySrc(category.iconSrc || null)}
+            onError={() => setErrorCategorySrc(category.iconSrc || null)}
             className={cn(
               "h-full w-full object-contain p-1.5 transition-opacity duration-200",
               categoryLoaded ? "opacity-100" : "opacity-0"

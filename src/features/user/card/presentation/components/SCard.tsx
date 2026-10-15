@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Snowflake, Copy, Check, Eye, EyeOff } from "lucide-react";
-import { cn } from "@/utils";
+import { Snowflake, Eye, EyeOff } from "lucide-react";
+import { cn } from "@/shared/utils";
 
 interface SCardProps {
   isFrozen?: boolean;
@@ -22,33 +22,20 @@ interface SCardProps {
 
 export const SCard: React.FC<SCardProps> = ({
   isFrozen = false,
-  showDetails = false,
-  cardNumber = "4532 8821 9012 1995",
   maskedNumber = "**** 1995",
-  cardHolder = "ERLANGGA A. ARIFIN",
-  expiryDate = "08/29",
-  cvv = "832",
   balance = 2450000,
   cardImage = "/images/card/gradient/card.gradient.1.png",
   className,
 }) => {
-  const [copied, setCopied] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
-
-  const handleCopy = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(cardNumber.replace(/\s+/g, ""));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const formattedBalance =
     typeof balance === "number"
       ? new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: "IDR",
-          maximumFractionDigits: 0,
-        }).format(balance)
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0,
+      }).format(balance)
       : balance;
 
   return (
@@ -73,18 +60,18 @@ export const SCard: React.FC<SCardProps> = ({
 
       {/* Frozen Overlay */}
       {isFrozen && (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-900/40 backdrop-blur-[3px] text-white transition-all rounded-[28px]">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md shadow-lg border border-white/30 mb-2 animate-pulse">
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-900/50 backdrop-blur-[2px] text-white transition-all rounded-[28px]">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md shadow-ds-md border border-white/30 mb-2">
             <Snowflake className="h-6 w-6 text-white" />
           </div>
-          <span className="text-xs font-bold tracking-widest uppercase bg-slate-900/70 px-3 py-1 rounded-full border border-white/20">
+          <span className="text-xs font-bold tracking-widest uppercase bg-slate-900/80 px-3 py-1 rounded-full border border-white/20">
             Kartu Dibekukan
           </span>
         </div>
       )}
 
       {/* Card Content Container */}
-      <div className="relative z-10 flex h-full flex-col justify-between">
+      <div className="relative z-10 flex h-full flex-col justify-between py-4" >
         {/* Top Header: Saldo Kartu + Eye + VIRTUAL Badge (Menempel Bersebelahan) */}
         <div className="flex items-start justify-between">
           <div className="flex flex-col">

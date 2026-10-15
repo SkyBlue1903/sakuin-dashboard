@@ -2,24 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useSidebar } from "@/stores/useSidebarStore";
-import { cn } from "@/utils";
+import { useSidebar } from "@/shared/presentation/stores/useSidebarStore";
+import { cn } from "@/shared/utils";
 import {
-  BoxCubeIcon,
-  CalenderIcon,
   ChevronDownIcon,
-  GridIcon,
   ListIcon,
-  PageIcon,
-  PieChartIcon,
-  PlugInIcon,
-  TableIcon,
   UserCircleIcon,
-} from "@/views/icons";
+} from "@/shared/presentation/components/icons";
 import { BookOpen, CreditCard, InfoIcon, Sparkles, X } from "lucide-react";
-import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
   name: string;
@@ -46,7 +37,7 @@ const sakuinNavItems: NavItem[] = [
   {
     name: "Panduan",
     icon: <BookOpen className="w-5 h-5" />,
-    path: "/guides",
+    path: "/guide",
   },
   {
     name: "Informasi",
@@ -57,7 +48,6 @@ const sakuinNavItems: NavItem[] = [
     name: "Promo",
     icon: <Sparkles className="w-5 h-5" />,
     path: "/promo",
-    new: true,
   },
   {
     name: "Detail Profil",
@@ -66,18 +56,8 @@ const sakuinNavItems: NavItem[] = [
   },
 ];
 
-// Menu Bawaan Template (TailAdmin)
+// Menu Administrasi Sakuin
 const templateNavItems: NavItem[] = [
-  // {
-  //   icon: <GridIcon />,
-  //   name: "Dashboard",
-  //   subItems: [{ name: "eCommerce", path: "/" }],
-  // },
-  // {
-  //   icon: <CalenderIcon />,
-  //   name: "Calendar",
-  //   path: "/calendar",
-  // },
   {
     icon: <UserCircleIcon />,
     name: "Pelanggan",
@@ -91,7 +71,7 @@ const templateNavItems: NavItem[] = [
   {
     name: "Panduan",
     icon: <BookOpen className="w-5 h-5" />,
-    path: "/admin/guides",
+    path: "/admin/guide",
   },
   {
     name: "Promo",
@@ -103,54 +83,10 @@ const templateNavItems: NavItem[] = [
     icon: <ListIcon />,
     path: "/admin/merchant",
   },
-  // {
-  //   name: "Tables",
-  //   icon: <TableIcon />,
-  //   subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-  // },
-  // {
-  //   name: "Pages",
-  //   icon: <PageIcon />,
-  //   subItems: [
-  //     { name: "Blank Page", path: "/blank" },
-  //     { name: "404 Error", path: "/error-404" },
-  //   ],
-  // },
 ];
 
-// const othersItems: NavItem[] = [
-//   {
-//     icon: <PieChartIcon />,
-//     name: "Charts",
-//     subItems: [
-//       { name: "Line Chart", path: "/line-chart", pro: false },
-//       { name: "Bar Chart", path: "/bar-chart", pro: false },
-//     ],
-//   },
-//   {
-//     icon: <BoxCubeIcon />,
-//     name: "UI Elements",
-//     subItems: [
-//       { name: "Alerts", path: "/alerts" },
-//       { name: "Avatar", path: "/avatars" },
-//       { name: "Badge", path: "/badge" },
-//       { name: "Buttons", path: "/buttons" },
-//       { name: "Images", path: "/images" },
-//       { name: "Videos", path: "/videos" },
-//     ],
-//   },
-//   {
-//     icon: <PlugInIcon />,
-//     name: "Authentication",
-//     subItems: [
-//       { name: "Sign In", path: "/login", pro: false },
-//       { name: "Sign Up", path: "/signup", pro: false },
-//     ],
-//   },
-// ];
-
 const AppSidebar: React.FC = () => {
-  const { isOpen, closeSidebar, activeTitle, setActiveTitle } = useSidebar();
+  const { isOpen, closeSidebar, setActiveTitle } = useSidebar();
   const pathname = usePathname();
 
   const [openSubmenu, setOpenSubmenu] = useState<{
@@ -421,30 +357,30 @@ const AppSidebar: React.FC = () => {
             setActiveTitle("SakuCard");
             closeSidebar();
           }}
-          className="flex items-center gap-2.5"
+          className="flex items-center gap-3 group"
         >
-          {/* <Image
-            className="dark:hidden"
-            src="/images/logo/logo.svg"
-            alt="Sakuin"
-            width={130}
-            height={36}
-            priority
-            style={{ width: "auto", height: "auto" }}
-          />
-          <Image
-            className="hidden dark:block"
-            src="/images/logo/logo-dark.svg"
-            alt="Sakuin"
-            width={130}
-            height={36}
-            priority
-            style={{ width: "auto", height: "auto" }}
-          /> */}
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-text-inverse shadow-ds-sm group-hover:scale-105 transition-transform">
+            <svg
+              className="h-5 w-5 text-accent"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="2" y="4" width="20" height="16" rx="4" />
+              <path d="M2 10h20" />
+              <circle cx="7" cy="15" r="1" fill="currentColor" />
+            </svg>
+          </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg font-bold tracking-tight text-text-primary truncate">
-              Sakuin.id
+            <h1 className="text-base font-bold tracking-tight text-text-primary truncate">
+              Sakuin<span className="text-secondary font-medium">.id</span>
             </h1>
+            <span className="text-[10px] text-text-tertiary block -mt-0.5 tracking-wider uppercase font-semibold">
+              Virtual Card
+            </span>
           </div>
         </Link>
 
@@ -462,10 +398,10 @@ const AppSidebar: React.FC = () => {
       {/* Nav List with custom scrollbar */}
       <div className="no-scrollbar flex flex-1 flex-col overflow-y-auto px-5 py-4 duration-300 ease-linear">
         <nav className="mb-6">
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-6">
             {/* Sakuin Menu */}
             <div>
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+              <h2 className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wider text-text-tertiary">
                 MENU PENGGUNA
               </h2>
               {renderMenuItems(sakuinNavItems, "sakuin")}
@@ -473,7 +409,7 @@ const AppSidebar: React.FC = () => {
 
             {/* Template Navigation */}
             <div>
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+              <h2 className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wider text-text-tertiary">
                 MENU ADMINISTRASI
               </h2>
               {renderMenuItems(templateNavItems, "template")}

@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, CreditCard, Wallet, Plus, Check, Sparkles } from "lucide-react";
-import { cn } from "@/utils";
-import { Modal } from "@/views/ui/modal";
-import { SCard } from "@/views/card/SCard";
+import { X, Wallet, Plus, Check } from "lucide-react";
+import { cn } from "@/shared/utils";
+import { Modal } from "@/shared/presentation/components/ui/Modal";
+import { SCard } from "@/features/user/card/presentation/components/SCard";
 
 interface AddCardModalProps {
   isOpen: boolean;
@@ -29,7 +29,7 @@ const PRESET_NAMES = [
   "Tabungan",
 ];
 
-export const AddCardModal: React.FC<AddCardModalProps> = ({
+const AddCardDialog: React.FC<AddCardModalProps> = ({
   isOpen,
   onClose,
   defaultCardNumber,
@@ -40,16 +40,6 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
   const [customAmount, setCustomAmount] = useState<string>("");
   const [isCustom, setIsCustom] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Update card name whenever defaultCardNumber changes
-  React.useEffect(() => {
-    if (isOpen) {
-      setCardName(`SakuCard ${defaultCardNumber}`);
-      setSelectedAmount(100000);
-      setIsCustom(false);
-      setCustomAmount("");
-    }
-  }, [isOpen, defaultCardNumber]);
 
   if (!isOpen) return null;
 
@@ -264,6 +254,11 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
         </form>
     </Modal>
   );
+};
+
+export const AddCardModal: React.FC<AddCardModalProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <AddCardDialog {...props} />;
 };
 
 export default AddCardModal;

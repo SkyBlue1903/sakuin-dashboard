@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Trash2, AlertTriangle } from "lucide-react";
-import { cn } from "@/utils";
-import { Modal } from "@/views/ui/modal";
+import { Trash2 } from "lucide-react";
+import { cn } from "@/shared/utils";
+import { Modal } from "@/shared/presentation/components/ui/Modal";
 
 interface DeleteCardModalProps {
   isOpen: boolean;

@@ -1,37 +1,29 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import Link from "next/link";
+import React, { useState } from "react";
 import {
-  ArrowLeft,
-  ShieldCheck,
-  CreditCard,
-  TrendingDown,
-  AlertCircle,
-  Sparkles,
   Lock,
   ChevronRight,
   ChevronLeft,
-  Eye,
   EyeOff,
   Copy,
   Check,
   Plus,
 } from "lucide-react";
-import SCard from "@/views/card/SCard";
-import CardActions from "@/views/card/CardActions";
-import CardTransactionsContent from "@/views/pages/card/layout/RightSidebarContent";
-import CardSettingsModal from "@/views/card/CardSettingsModal";
-import TopUpModal from "@/views/card/TopUpModal";
-import ChangePinModal from "@/views/card/ChangePinModal";
-import DeleteCardModal from "@/views/card/DeleteCardModal";
-import EditCardNameModal from "@/views/card/EditCardNameModal";
-import EditIllustrationModal from "@/views/card/EditIllustrationModal";
-import AddCardModal from "@/views/card/AddCardModal";
-import VerifyPinModal from "@/views/card/VerifyPinModal";
-import NoticeBanner from "@/views/card/NoticeBanner";
-import { cn } from "@/utils";
-import { useToast } from "@/stores/ToastContext";
+import SCard from "@/features/user/card/presentation/components/SCard";
+import CardActions from "@/features/user/card/presentation/components/CardActions";
+import CardTransactionsContent from "@/features/user/card/presentation/views/RightSidebarContent";
+import CardSettingsModal from "@/features/user/card/presentation/components/CardSettingsModal";
+import TopUpModal from "@/features/user/card/presentation/components/TopUpModal";
+import ChangePinModal from "@/features/user/card/presentation/components/ChangePinModal";
+import DeleteCardModal from "@/features/user/card/presentation/components/DeleteCardModal";
+import EditCardNameModal from "@/features/user/card/presentation/components/EditCardNameModal";
+import EditIllustrationModal from "@/features/user/card/presentation/components/EditIllustrationModal";
+import AddCardModal from "@/features/user/card/presentation/components/AddCardModal";
+import VerifyPinModal from "@/features/user/card/presentation/components/VerifyPinModal";
+import NoticeBanner from "@/features/user/card/presentation/components/NoticeBanner";
+import { cn } from "@/shared/utils";
+import { useToast } from "@/shared/presentation/stores/ToastContext";
 import {
   useCards,
   useCreateCard,
@@ -41,7 +33,7 @@ import {
   useToggleFreezeCard,
   useChangeCardPin,
   useDeleteCard,
-} from "@/controllers/useCards";
+} from "@/features/user/card/presentation/hooks/useCards";
 
 export const LeftSidebarContent: React.FC = () => {
   const { data: cards = [] } = useCards();
@@ -224,17 +216,17 @@ export const LeftSidebarContent: React.FC = () => {
             Left: Detail SakuCard (scrolls independently)
             Right: Daftar Transaksi (scrolls independently)
       */}
-      <div className="flex flex-col md:flex-row items-stretch w-full md:h-full md:overflow-hidden mx-auto">
+      <div className="flex flex-col py-8 md:flex-row items-stretch w-full md:h-full md:overflow-hidden mx-auto">
         {/* Left Column: Detail SakuCard (Scrolls independently on tablet/desktop) */}
         <div className="w-full md:w-[360px] lg:w-[400px] xl:w-[430px] 2xl:w-[460px] shrink-0 md:h-full md:overflow-y-auto custom-scrollbar isolate pt-0 pb-10">
 
-          {/* MOBILE ONLY: Papan Pemberitahuan ditampilkan di atas "SakuCard 1" */}
+          {/* MOBILE ONLY: Papan Pemberitahuan Informasi Keamanan */}
           {showNoticeBanner && (
             <div className="block md:hidden pt-3 pb-1 w-full max-w-[500px] mx-auto px-4 sm:pl-6">
               <NoticeBanner
-                variant="danger"
-                title="Pemberitahuan"
-                message="Untuk mengganti tipe papan, silakan ganti bagian `variant` pada komponen NoticeBanner, terdapat beberapa opsi seperti: `danger`, `warning`, dan `info`."
+                variant="info"
+                title="Keamanan Kartu Virtual"
+                message="Pastikan Anda tidak pernah membagikan nomor CVV, masa berlaku, atau kode verifikasi kepada siapa pun demi keamanan transaksi Anda."
                 onDismiss={() => setShowNoticeBanner(false)}
               />
             </div>
@@ -243,29 +235,29 @@ export const LeftSidebarContent: React.FC = () => {
           {/* Sticky Header Bar: Tombol Pindah Kartu (< >) & Tambah Kartu di Baris 1, Judul & Subtitle di Baris 2 */}
           <div
             className={cn(
-              "sticky top-16 md:top-0 z-20 w-full pt-2 pb-3.5 space-y-3 bg-gray-50/95 dark:bg-gray-950/95 backdrop-blur-md border-b border-gray-200/80 dark:border-gray-800/80 shadow-xs transition-all"
+              "sticky top-16 md:top-0 z-20 w-full py-6 pb-3.5 space-y-3 bg-background/95 backdrop-blur-md border-b border-border-subtle shadow-ds-sm transition-all"
             )}
           >
-            {/* Baris 1: < Kartu 1 dari 3 > {jarak selebar sidebar} <Tambah kartu */}
+            {/* Baris 1: < Kartu 1 dari 3 > & Tambah kartu */}
             <div className="flex items-center justify-between gap-2 sm:gap-3 w-full max-w-[500px] lg:max-w-none mx-auto px-4 sm:pl-6 lg:pl-8 xl:pl-10">
               {/* < Kartu 1 dari 3 > */}
-              <div className="flex h-9 items-center gap-0.5 sm:gap-1 px-1 bg-white dark:bg-gray-800 border border-gray-200/80 dark:border-gray-700 rounded-full shadow-2xs shrink-0">
+              <div className="flex h-9 items-center gap-0.5 sm:gap-1 px-1 bg-surface border border-border rounded-full shadow-2xs shrink-0">
                 <button
                   type="button"
                   onClick={handlePrevCard}
-                  className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 active:scale-95 transition-all cursor-pointer"
+                  className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-surface-secondary text-text-secondary hover:text-text-primary active:scale-95 transition-all cursor-pointer"
                   title="Kartu sebelumnya"
                   aria-label="Kartu sebelumnya"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <span className="px-1.5 sm:px-2 text-xs font-semibold text-gray-800 dark:text-gray-200 select-none whitespace-nowrap">
+                <span className="px-1.5 sm:px-2 text-xs font-semibold text-text-primary select-none whitespace-nowrap">
                   Kartu {activeCardIndex + 1} dari {cards.length}
                 </span>
                 <button
                   type="button"
                   onClick={handleNextCard}
-                  className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 active:scale-95 transition-all cursor-pointer"
+                  className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-surface-secondary text-text-secondary hover:text-text-primary active:scale-95 transition-all cursor-pointer"
                   title="Kartu berikutnya"
                   aria-label="Kartu berikutnya"
                 >
@@ -273,37 +265,36 @@ export const LeftSidebarContent: React.FC = () => {
                 </button>
               </div>
 
-              {/* Jarak selebar sidebar */}
               <div className="flex-1 min-w-0" />
 
-              {/* <Tambah kartu */}
+              {/* Tambah kartu */}
               <button
                 type="button"
                 onClick={() => setIsAddCardOpen(true)}
-                className="flex h-9 items-center gap-1.5 px-3 sm:px-4 rounded-full border border-gray-200/80 bg-white hover:bg-gray-50 text-xs font-semibold text-gray-800 shadow-2xs dark:border-gray-700 dark:bg-gray-800/90 dark:text-gray-200 dark:hover:bg-gray-700 active:scale-95 transition-all cursor-pointer shrink-0"
+                className="flex h-9 items-center gap-1.5 px-3 sm:px-4 rounded-full border border-border bg-surface hover:bg-surface-secondary text-xs font-semibold text-text-primary shadow-2xs active:scale-95 transition-all cursor-pointer shrink-0"
               >
-                <Plus className="w-3.5 h-3.5 text-brand-500" />
+                <Plus className="w-3.5 h-3.5 text-primary" />
                 <span>Tambah kartu</span>
               </button>
             </div>
 
             {/* Baris 2: SakuCard 1 <aktif/dibekukan> */}
-            <div className="flex items-center gap-2 w-full max-w-[500px] lg:max-w-none mx-auto px-4 sm:pl-6 lg:pl-8 xl:pl-10">
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            <div className="flex items-center gap-2.5 w-full max-w-[500px] lg:max-w-none mx-auto px-4 sm:pl-6 lg:pl-8 xl:pl-10">
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-text-primary">
                 {currentCard.name}
               </h2>
               <span
                 className={cn(
                   "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide",
                   isFrozen
-                    ? "bg-warning-100 text-warning-700 dark:bg-warning-950/60 dark:text-warning-300 border border-warning-200 dark:border-warning-800/50"
-                    : "bg-success-100 text-success-700 dark:bg-success-950/60 dark:text-success-300 border border-success-200 dark:border-success-800/50"
+                    ? "bg-warning-bg text-warning border border-warning-border"
+                    : "bg-success-bg text-success border border-success-border"
                 )}
               >
                 <span
                   className={cn(
                     "w-1.5 h-1.5 rounded-full",
-                    isFrozen ? "bg-warning-500" : "bg-success-500 animate-pulse"
+                    isFrozen ? "bg-warning" : "bg-success"
                   )}
                 />
                 {isFrozen ? "Dibekukan" : "Aktif"}
@@ -349,15 +340,15 @@ export const LeftSidebarContent: React.FC = () => {
             />
 
             {/* Detail Kartu SakuCard Panel */}
-            <div className="rounded-2xl sm:rounded-3xl border border-gray-100 bg-white p-5 sm:p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900 space-y-4 w-full">
-              <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800">
-                <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+            <div className="rounded-2xl border border-border-subtle bg-surface p-5 sm:p-6 shadow-ds-sm space-y-4 w-full">
+              <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
+                <span className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
                   Detail Kartu SakuCard
                 </span>
                 <button
                   type="button"
                   onClick={handleToggleDetails}
-                  className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="text-xs font-semibold text-primary hover:text-primary-hover flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   {showDetails ? (
                     <>
@@ -375,9 +366,9 @@ export const LeftSidebarContent: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4 text-xs sm:text-sm">
                 <div>
-                  <span className="text-gray-400 text-xs block">Nomor Kartu</span>
+                  <span className="text-text-tertiary text-xs block">Nomor Kartu</span>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="font-mono font-semibold text-gray-900 dark:text-white">
+                    <span className="font-mono font-semibold text-text-primary">
                       {showDetails ? currentCard.number : `**** ${currentCard.last4}`}
                     </span>
                     {showDetails && (
@@ -385,10 +376,10 @@ export const LeftSidebarContent: React.FC = () => {
                         type="button"
                         onClick={handleCopyCardNumber}
                         title="Salin nomor kartu"
-                        className="p-1 rounded text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
+                        className="p-1 rounded text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
                       >
                         {copiedNumber ? (
-                          <Check className="w-3.5 h-3.5 text-success-500" />
+                          <Check className="w-3.5 h-3.5 text-success" />
                         ) : (
                           <Copy className="w-3.5 h-3.5" />
                         )}
@@ -397,21 +388,21 @@ export const LeftSidebarContent: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <span className="text-gray-400 text-xs block">Nama Pemegang Kartu</span>
-                  <span className="font-semibold text-gray-900 dark:text-white block mt-0.5 truncate">
+                  <span className="text-text-tertiary text-xs block">Nama Pemegang Kartu</span>
+                  <span className="font-semibold text-text-primary block mt-0.5 truncate">
                     {currentCard.holder}
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-400 text-xs block">Masa Berlaku</span>
-                  <span className="font-mono font-semibold text-gray-900 dark:text-white block mt-0.5">
+                  <span className="text-text-tertiary text-xs block">Masa Berlaku</span>
+                  <span className="font-mono font-semibold text-text-primary block mt-0.5">
                     {showDetails ? currentCard.exp : "**/**"}
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-400 text-xs block">CVV</span>
+                  <span className="text-text-tertiary text-xs block">CVV</span>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="font-mono font-semibold text-gray-900 dark:text-white">
+                    <span className="font-mono font-semibold text-text-primary">
                       {showDetails ? currentCard.cvv : "***"}
                     </span>
                     {showDetails && (
@@ -419,10 +410,10 @@ export const LeftSidebarContent: React.FC = () => {
                         type="button"
                         onClick={handleCopyCvv}
                         title="Salin CVV"
-                        className="p-1 rounded text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
+                        className="p-1 rounded text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
                       >
                         {copiedCvv ? (
-                          <Check className="w-3.5 h-3.5 text-success-500" />
+                          <Check className="w-3.5 h-3.5 text-success" />
                         ) : (
                           <Copy className="w-3.5 h-3.5" />
                         )}
@@ -493,13 +484,13 @@ export const LeftSidebarContent: React.FC = () => {
               </div>
             </div> */}
 
-            {/* Notice Banner (Papan Peringatan) diletakkan di atas "Transaksi Kartu" */}
+            {/* Notice Banner Informasi Keamanan */}
             {showNoticeBanner && (
               <div className="hidden md:block pt-3 pb-1 w-full max-w-[500px] lg:max-w-none mx-auto px-4 sm:pr-6 lg:pr-8 xl:pr-10">
                 <NoticeBanner
-                  variant="danger"
-                  title="Pemberitahuan"
-                  message="Untuk mengganti tipe papan, silakan ganti bagian `variant` pada komponen NoticeBanner, terdapat beberapa opsi seperti: `danger`, `warning`, dan `info`."
+                  variant="info"
+                  title="Keamanan Kartu Virtual"
+                  message="Pastikan Anda tidak pernah membagikan nomor CVV, masa berlaku, atau kode verifikasi kepada siapa pun demi keamanan transaksi Anda."
                   onDismiss={() => setShowNoticeBanner(false)}
                 />
               </div>

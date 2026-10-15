@@ -1,10 +1,10 @@
 "use client";
 
 import { create } from "zustand";
-import { guideApi } from "@/services/guideApi";
-import { emitToast } from "@/stores/ToastContext";
-import type { GuideItem } from "@/models/guide";
-import type { PromoItem } from "@/models/promo";
+import { guideApi } from "@/features/user/guide/data/guideApi";
+import { emitToast } from "@/shared/presentation/stores/ToastContext";
+import type { GuideItem } from "@/features/user/guide/domain/guide";
+import type { PromoItem } from "@/features/user/promo/domain/promo";
 
 // Pembersihan cache legacy localStorage khusus untuk item guide jika ada sisa
 if (typeof window !== "undefined") {

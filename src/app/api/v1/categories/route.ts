@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseServerClient } from "@/shared/lib/supabase/server";
 import {
   mapDbToCategory,
   mapCategoryToDb,
   mapMerchantToDb,
   mapSubMerchantToDb,
   DbCategoryWithRelations,
-} from "@/services/categoryMappers";
-import type { CategoryItem } from "@/models/category";
+} from "@/features/admin/merchant/data/categoryMappers";
+import type { CategoryItem } from "@/features/admin/merchant/domain/category";
 
 export async function GET() {
   try {

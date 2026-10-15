@@ -1,5 +1,5 @@
-import type { Transaction } from "@/models/card";
-import type { Database, TablesInsert } from "@/lib/supabase/database.types";
+import type { Transaction } from "@/features/user/card/domain/card";
+import type { Database, TablesInsert } from "@/shared/lib/supabase/database.types";
 
 type DbTransactionRow = Database["public"]["Tables"]["transactions"]["Row"];
 

@@ -15,11 +15,10 @@ import {
   Key,
   Copy,
 } from "lucide-react";
-import type { MerchantItem, CategoryItem } from "@/models/category";
-import MerchantLogo from "./MerchantLogo";
-import { cn } from "@/utils";
-import { compressImageUrl } from "@/utils/imageOptimizer";
-import { Modal } from "@/views/ui/modal";
+import type { MerchantItem, CategoryItem } from "@/features/admin/merchant/domain/category";
+import MerchantLogo from "@/features/admin/merchant/presentation/components/MerchantLogo";
+import { compressImageUrl } from "@/shared/utils/imageOptimizer";
+import { Modal } from "@/shared/presentation/components/ui/Modal";
 
 interface EditMerchantModalProps {
   isOpen: boolean;
@@ -34,7 +33,7 @@ interface EditMerchantModalProps {
   }) => void;
 }
 
-export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
+const EditMerchantDialog: React.FC<EditMerchantModalProps> = ({
   isOpen,
   onClose,
   merchant,
@@ -44,69 +43,72 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
   const [name, setName] = useState(merchant.name);
   const [logoUrl, setLogoUrl] = useState(merchant.logoUrl || "");
   const [logoDarkUrl, setLogoDarkUrl] = useState(merchant.logoDarkUrl || "");
-  const [subMerchants, setSubMerchants] = useState<string[]>(merchant.subMerchants || []);
+  const [subMerchants, setSubMerchants] = useState<string[]>(
+    (merchant.subMerchants || []).map((s) => s.trim().toUpperCase())
+  );
   const [newSubInput, setNewSubInput] = useState("");
-  const [imageTestStatus, setImageTestStatus] = useState<"idle" | "loading" | "valid" | "error">(
-    "idle"
-  );
-  const [darkImageTestStatus, setDarkImageTestStatus] = useState<"idle" | "loading" | "valid" | "error">(
-    "idle"
-  );
   const [copiedId, setCopiedId] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    setName(merchant.name);
-    setLogoUrl(merchant.logoUrl || "");
-    setLogoDarkUrl(merchant.logoDarkUrl || "");
-    setSubMerchants((merchant.subMerchants || []).map((s) => s.trim().toUpperCase()));
-    setImageTestStatus(merchant.logoUrl ? "valid" : "idle");
-    setDarkImageTestStatus(merchant.logoDarkUrl ? "valid" : "idle");
-  }, [merchant, isOpen]);
+  const [testedLogoUrl, setTestedLogoUrl] = useState<{ url: string; status: "valid" | "error" } | null>(
+    merchant.logoUrl ? { url: merchant.logoUrl.trim(), status: "valid" } : null
+  );
+  const [testedDarkLogoUrl, setTestedDarkLogoUrl] = useState<{ url: string; status: "valid" | "error" } | null>(
+    merchant.logoDarkUrl ? { url: merchant.logoDarkUrl.trim(), status: "valid" } : null
+  );
 
   // Test image URL validity when user changes it
   useEffect(() => {
     const trimmed = logoUrl.trim();
-    if (!trimmed) {
-      setImageTestStatus("idle");
-      return;
-    }
+    if (!trimmed) return;
 
-    setImageTestStatus("loading");
+    let cancelled = false;
     const img = new Image();
     img.src = trimmed;
     img.onload = () => {
-      setImageTestStatus("valid");
+      if (!cancelled) setTestedLogoUrl({ url: trimmed, status: "valid" });
     };
     img.onerror = () => {
-      setImageTestStatus("error");
+      if (!cancelled) setTestedLogoUrl({ url: trimmed, status: "error" });
+    };
+    return () => {
+      cancelled = true;
     };
   }, [logoUrl]);
 
   // Test dark image URL validity when user changes it
   useEffect(() => {
     const trimmed = logoDarkUrl.trim();
-    if (!trimmed) {
-      setDarkImageTestStatus("idle");
-      return;
-    }
+    if (!trimmed) return;
 
-    setDarkImageTestStatus("loading");
+    let cancelled = false;
     const img = new Image();
     img.src = trimmed;
     img.onload = () => {
-      setDarkImageTestStatus("valid");
+      if (!cancelled) setTestedDarkLogoUrl({ url: trimmed, status: "valid" });
     };
     img.onerror = () => {
-      setDarkImageTestStatus("error");
+      if (!cancelled) setTestedDarkLogoUrl({ url: trimmed, status: "error" });
+    };
+    return () => {
+      cancelled = true;
     };
   }, [logoDarkUrl]);
 
-  if (!isOpen || !mounted) return null;
+  const imageTestStatus: "idle" | "loading" | "valid" | "error" = (() => {
+    const trimmed = logoUrl.trim();
+    if (!trimmed) return "idle";
+    if (testedLogoUrl?.url === trimmed) return testedLogoUrl.status;
+    return "loading";
+  })();
+
+  const darkImageTestStatus: "idle" | "loading" | "valid" | "error" = (() => {
+    const trimmed = logoDarkUrl.trim();
+    if (!trimmed) return "idle";
+    if (testedDarkLogoUrl?.url === trimmed) return testedDarkLogoUrl.status;
+    return "loading";
+  })();
+
+  if (!isOpen) return null;
 
   const handleAddSubMerchant = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -378,6 +380,27 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
                 className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-850 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-mono text-xs"
               />
             </div>
+            {logoDarkUrl.trim() && (
+              <div className="mt-1">
+                {darkImageTestStatus === "valid" && (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                    <Check className="w-3 h-3" />
+                    Dark Logo Valid
+                  </span>
+                )}
+                {darkImageTestStatus === "loading" && (
+                  <span className="text-[11px] text-primary">
+                    Memverifikasi logo dark...
+                  </span>
+                )}
+                {darkImageTestStatus === "error" && (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400">
+                    <AlertCircle className="w-3 h-3" />
+                    URL logo dark gagal dimuat
+                  </span>
+                )}
+              </div>
+            )}
             <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
               Otomatis digunakan saat tampilan dark mode aktif. Jika kosong, akan memakai logo utama.
             </p>
@@ -472,7 +495,7 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
             <button
               type="submit"
               disabled={!name.trim()}
-              className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-brand-500 hover:bg-brand-600 text-white shadow-sm active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-primary hover:bg-primary-hover text-white shadow-xs active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               Simpan Perubahan
             </button>
@@ -480,6 +503,11 @@ export const EditMerchantModal: React.FC<EditMerchantModalProps> = ({
         </form>
     </Modal>
   );
+};
+
+export const EditMerchantModal: React.FC<EditMerchantModalProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <EditMerchantDialog {...props} />;
 };
 
 export default EditMerchantModal;

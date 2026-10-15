@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { cardApi, Transaction, INITIAL_TRANSACTIONS } from "@/services/cardService";
+import { cardApi, Transaction, INITIAL_TRANSACTIONS } from "@/features/user/card/data/cardService";
 
 
 /**

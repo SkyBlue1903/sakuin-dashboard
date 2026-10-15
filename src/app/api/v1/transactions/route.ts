@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { mapDbToTransaction, mapTransactionToDb } from "@/services/transactionMappers";
-import { INITIAL_TRANSACTIONS, Transaction } from "@/services/cardService";
+import { getSupabaseServerClient } from "@/shared/lib/supabase/server";
+import { mapDbToTransaction, mapTransactionToDb } from "@/features/user/card/data/transactionMappers";
+import { INITIAL_TRANSACTIONS, Transaction } from "@/features/user/card/data/cardService";
 
 export async function GET(request: NextRequest) {
   try {

@@ -1,4 +1,4 @@
-import type { PromoItem } from "@/models/promo";
+import type { PromoItem } from "@/features/user/promo/domain/promo";
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {

@@ -13,10 +13,10 @@ import {
   Share2,
   EyeOff,
 } from "lucide-react";
-import { cn } from "@/utils";
-import { getPromoStatus, getPromoStatusBadge } from "@/stores/usePromoStore";
-import type { PromoItem } from "@/models/promo";
-import { Modal } from "@/views/ui/modal";
+import { cn } from "@/shared/utils";
+import { getPromoStatus, getPromoStatusBadge } from "@/features/user/promo/presentation/stores/usePromoStore";
+import type { PromoItem } from "@/features/user/promo/domain/promo";
+import { Modal } from "@/shared/presentation/components/ui/Modal";
 
 interface PromoDetailModalProps {
   promo: PromoItem | null;

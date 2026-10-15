@@ -1,5 +1,5 @@
-import type { PromoItem } from "./promo";
-import type { Database } from "@/lib/supabase/database.types";
+import type { PromoItem } from "@/features/user/promo/domain/promo";
+import type { Database } from "@/shared/lib/supabase/database.types";
 
 export type DbInfoRow = Database["public"]["Tables"]["infos"]["Row"];
 export type DbInfoInsert = Database["public"]["Tables"]["infos"]["Insert"];

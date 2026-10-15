@@ -1,9 +1,9 @@
 "use client";
 
 import { create } from "zustand";
-import { promoApi } from "@/services/promoApi";
-import { emitToast } from "@/stores/ToastContext";
-import type { PromoItem, PromoStatus, ContentType } from "@/models/promo";
+import { promoApi } from "@/features/user/promo/data/promoApi";
+import { emitToast } from "@/shared/presentation/stores/ToastContext";
+import type { PromoItem, PromoStatus, ContentType } from "@/features/user/promo/domain/promo";
 
 export { type PromoItem, type PromoStatus, type ContentType };
 
@@ -44,6 +44,13 @@ export const getPromoStatusBadge = (
         colorClass:
           "bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700",
         dotClass: "bg-gray-400",
+      };
+    default:
+      return {
+        label: "Aktif",
+        colorClass:
+          "bg-emerald-50 text-emerald-700 border-emerald-200/60 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/40",
+        dotClass: "bg-emerald-500",
       };
   }
 };

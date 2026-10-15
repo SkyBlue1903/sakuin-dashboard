@@ -2,10 +2,10 @@
 
 import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { useThemeStore } from "@/stores/useThemeStore";
-import { useSidebarStore } from "@/stores/useSidebarStore";
-import { usePromoStore } from "@/stores/usePromoStore";
-import { useCategoryStore } from "@/stores/useCategoryStore";
+import { useThemeStore } from "@/shared/presentation/stores/useThemeStore";
+import { useSidebarStore } from "@/shared/presentation/stores/useSidebarStore";
+import { usePromoStore } from "@/features/user/promo/presentation/stores/usePromoStore";
+import { useCategoryStore } from "@/features/admin/merchant/presentation/stores/useCategoryStore";
 
 export default function StoreInitializer({
   children,

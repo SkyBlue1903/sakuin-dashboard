@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { cn } from "@/utils";
+import { cn } from "@/shared/utils";
 
 interface LazyItemProps {
   children: React.ReactNode;

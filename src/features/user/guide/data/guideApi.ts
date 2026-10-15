@@ -1,5 +1,5 @@
-import type { GuideItem } from "@/models/guide";
-import type { PromoItem } from "@/models/promo";
+import type { GuideItem } from "@/features/user/guide/domain/guide";
+import type { PromoItem } from "@/features/user/promo/domain/promo";
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {

@@ -36,7 +36,7 @@ import {
   CreditCard,
   Layers,
 } from "lucide-react";
-import { cn } from "@/utils";
+import { cn } from "@/shared/utils";
 
 export const LUCIDE_ICONS_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   ShoppingBag,

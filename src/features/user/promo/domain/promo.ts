@@ -1,4 +1,4 @@
-import type { Database } from "@/lib/supabase/database.types";
+import type { Database } from "@/shared/lib/supabase/database.types";
 
 export type ContentType = "promo" | "info" | "guide";
 

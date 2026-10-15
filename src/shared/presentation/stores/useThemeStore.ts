@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ThemeMode, ResolvedTheme } from "@/models/navigation";
+import { ThemeMode, ResolvedTheme } from "@/shared/domain/navigation";
 
 interface ThemeState {
   theme: ResolvedTheme;

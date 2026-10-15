@@ -5,7 +5,7 @@ import "./globals.css";
 
 import QueryProvider from "@/providers/QueryProvider";
 import StoreInitializer from "@/providers/StoreInitializer";
-import { ToastProvider } from "@/stores/ToastContext";
+import { ToastProvider } from "@/shared/presentation/stores/ToastContext";
 
 
 const outfit = Outfit({

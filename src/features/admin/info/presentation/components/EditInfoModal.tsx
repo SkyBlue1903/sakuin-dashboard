@@ -1,26 +1,25 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   X,
   Image as ImageIcon,
   Sparkles,
   AlertCircle,
   Info as InfoIcon,
-  Calendar,
   EyeOff,
   ExternalLink,
 } from "lucide-react";
-import { cn } from "@/utils";
-import HtmlEditor from "./HtmlEditor";
-import type { PromoItem } from "@/models/promo";
-import { Modal } from "@/views/ui/modal";
+import { cn } from "@/shared/utils";
+import HtmlEditor from "@/shared/presentation/components/ui/HtmlEditor";
+import type { InfoItem } from "@/features/user/info/domain/info";
+import { Modal } from "@/shared/presentation/components/ui/Modal";
 
 interface EditInfoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  info?: PromoItem | null;
-  onSave: (infoData: Omit<PromoItem, "id" | "createdAt" | "updatedAt">) => Promise<void> | void;
+  info?: InfoItem | null;
+  onSave: (infoData: Omit<InfoItem, "id" | "createdAt" | "updatedAt">) => Promise<void> | void;
 }
 
 const SAMPLE_BANNER_PATH = "/images/sample-images/ads.sample.png";
@@ -36,55 +35,29 @@ const toDateTimeLocalString = (date: Date): string => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-export const EditInfoModal: React.FC<EditInfoModalProps> = ({
+const EditInfoDialog: React.FC<EditInfoModalProps> = ({
   isOpen,
   onClose,
   info,
   onSave,
 }) => {
-  const [title, setTitle] = useState("");
-  const [bannerUrl, setBannerUrl] = useState("");
-  const [bannerLink, setBannerLink] = useState("");
-  const [shortDescription, setShortDescription] = useState("");
-  const [contentHtml, setContentHtml] = useState("");
-  const [publishedAt, setPublishedAt] = useState("");
-  const [isHidden, setIsHidden] = useState(false);
-  const [isHighlight, setIsHighlight] = useState(false);
+  const [title, setTitle] = useState(info?.title || "");
+  const [bannerUrl, setBannerUrl] = useState(info?.bannerUrl || SAMPLE_BANNER_PATH);
+  const [bannerLink, setBannerLink] = useState(info?.bannerLink || "");
+  const [shortDescription, setShortDescription] = useState(info?.shortDescription || "");
+  const [contentHtml, setContentHtml] = useState(
+    info?.contentHtml ||
+      "<h3>Pemberitahuan Informasi Sakuin</h3>\n<p>Tuliskan penjelasan lengkap pengumuman, panduan fitur, atau pembaruan layanan untuk pengguna di sini.</p>"
+  );
+  const [publishedAt, setPublishedAt] = useState(
+    info?.publishedAt || toDateTimeLocalString(new Date())
+  );
+  const [isHidden, setIsHidden] = useState(Boolean(info?.isHidden));
+  const [isHighlight, setIsHighlight] = useState(Boolean(info?.isHighlight));
   const [bannerPreviewError, setBannerPreviewError] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (isOpen) {
-      if (info) {
-        setTitle(info.title);
-        setBannerUrl(info.bannerUrl);
-        setBannerLink(info.bannerLink || "");
-        setShortDescription(info.shortDescription);
-        setContentHtml(info.contentHtml);
-        setPublishedAt(info.publishedAt || toDateTimeLocalString(new Date()));
-        setIsHidden(Boolean(info.isHidden));
-        setIsHighlight(Boolean(info.isHighlight));
-      } else {
-        const now = new Date();
-        setTitle("");
-        setBannerUrl(SAMPLE_BANNER_PATH);
-        setBannerLink("");
-        setShortDescription("");
-        setContentHtml(
-          "<h3>Pemberitahuan Informasi Sakuin</h3>\n<p>Tuliskan penjelasan lengkap pengumuman, panduan fitur, atau pembaruan layanan untuk pengguna di sini.</p>"
-        );
-        setPublishedAt(toDateTimeLocalString(now));
-        setIsHidden(false);
-        setIsHighlight(false);
-      }
-      setBannerPreviewError(false);
-      setErrors({});
-      setSubmitError(null);
-      setIsSaving(false);
-    }
-  }, [isOpen, info]);
 
   if (!isOpen) return null;
 
@@ -442,7 +415,7 @@ export const EditInfoModal: React.FC<EditInfoModalProps> = ({
           <button
             type="submit"
             disabled={isSaving}
-            className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+            className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-semibold shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
           >
             <InfoIcon className="w-4 h-4" />
             <span>{isSaving ? "Menyimpan..." : info ? "Simpan Perubahan" : "Terbitkan Informasi"}</span>
@@ -451,6 +424,11 @@ export const EditInfoModal: React.FC<EditInfoModalProps> = ({
       </form>
     </Modal>
   );
+};
+
+export const EditInfoModal: React.FC<EditInfoModalProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <EditInfoDialog {...props} />;
 };
 
 export default EditInfoModal;

@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { cn } from "@/utils";
-import { useOptionalTheme } from "@/stores/useThemeStore";
-import { getOptimizedImageUrl } from "@/utils/imageOptimizer";
+import React, { useState } from "react";
+import { cn } from "@/shared/utils";
+import { useOptionalTheme } from "@/shared/presentation/stores/useThemeStore";
+import { getOptimizedImageUrl } from "@/shared/utils/imageOptimizer";
 
 interface MerchantLogoProps {
   name: string;
@@ -23,18 +23,21 @@ export const MerchantLogo: React.FC<MerchantLogoProps> = ({
   fallback,
 }) => {
   const themeContext = useOptionalTheme();
+  const isDark = themeContext ? themeContext.theme === "dark" : false;
+
   const [darkError, setDarkError] = useState(false);
   const [lightError, setLightError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const isDark = themeContext ? themeContext.theme === "dark" : false;
-
-  // Reset error states when URLs or theme change
-  useEffect(() => {
+  // Reset error states during render when URLs or theme change
+  const urlKey = `${logoUrl || ""}|${logoDarkUrl || ""}|${isDark ? "dark" : "light"}`;
+  const [prevUrlKey, setPrevUrlKey] = useState(urlKey);
+  if (prevUrlKey !== urlKey) {
+    setPrevUrlKey(urlKey);
     setDarkError(false);
     setLightError(false);
     setIsLoaded(false);
-  }, [logoUrl, logoDarkUrl, isDark]);
+  }
 
   const sizeClasses = {
     sm: "h-7 w-7 text-xs rounded-lg",
@@ -64,13 +67,13 @@ export const MerchantLogo: React.FC<MerchantLogoProps> = ({
     return (
       <div
         className={cn(
-          "relative flex shrink-0 items-center justify-center overflow-hidden border border-gray-200/90 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-2xs transition-all",
+          "relative flex shrink-0 items-center justify-center overflow-hidden border border-border-subtle bg-surface p-1 shadow-2xs transition-all",
           sizeClasses,
           className
         )}
       >
         {!isLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 animate-pulse text-[10px] font-bold text-gray-400">
+          <div className="absolute inset-0 flex items-center justify-center bg-surface-subtle text-[10px] font-bold text-foreground-muted">
             {firstLetter}
           </div>
         )}
@@ -101,7 +104,7 @@ export const MerchantLogo: React.FC<MerchantLogoProps> = ({
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center font-bold tracking-tight select-none border border-gray-200/80 dark:border-gray-800 bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700 dark:from-gray-800 dark:to-gray-850 dark:text-gray-200 shadow-2xs",
+        "flex shrink-0 items-center justify-center font-bold tracking-tight select-none border border-border-subtle bg-surface-subtle text-foreground-secondary shadow-2xs",
         sizeClasses,
         className
       )}

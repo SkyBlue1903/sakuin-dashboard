@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { X, Palette, Check, Info, Sparkles } from "lucide-react";
-import { cn } from "@/utils";
-import { Modal } from "@/views/ui/modal";
+import { cn } from "@/shared/utils";
+import { Modal } from "@/shared/presentation/components/ui/Modal";
 
 export interface CardIllustrationOption {
   id: string;
@@ -111,7 +111,7 @@ interface EditIllustrationModalProps {
   onSave: (selectedImage: string) => void;
 }
 
-export const EditIllustrationModal: React.FC<EditIllustrationModalProps> = ({
+const EditIllustrationDialog: React.FC<EditIllustrationModalProps> = ({
   isOpen,
   onClose,
   currentImage = "/images/card/gradient/card.gradient.1.png",
@@ -120,22 +120,10 @@ export const EditIllustrationModal: React.FC<EditIllustrationModalProps> = ({
   onSave,
 }) => {
   const [selectedImage, setSelectedImage] = useState(currentImage);
-  const [activeCategory, setActiveCategory] = useState<"gradient" | "geometric">("gradient");
+  const [activeCategory, setActiveCategory] = useState<"gradient" | "geometric">(
+    currentImage.includes("geometric") ? "geometric" : "gradient"
+  );
   const [isSaving, setIsSaving] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      setSelectedImage(currentImage);
-      // Auto-detect tab category based on current image
-      if (currentImage.includes("geometric")) {
-        setActiveCategory("geometric");
-      } else {
-        setActiveCategory("gradient");
-      }
-    }
-  }, [isOpen, currentImage]);
-
-  if (!isOpen) return null;
 
   const filteredDesigns = CARD_ILLUSTRATIONS.filter(
     (item) => item.category === activeCategory
@@ -297,7 +285,7 @@ export const EditIllustrationModal: React.FC<EditIllustrationModalProps> = ({
             type="button"
             onClick={handleSave}
             disabled={isSaving}
-            className="px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 active:scale-95 text-white text-xs sm:text-sm font-semibold shadow-md transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none flex items-center gap-2"
+            className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover active:scale-95 text-white text-xs sm:text-sm font-semibold shadow-xs transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none flex items-center gap-2"
           >
             {isSaving ? (
               <>
@@ -314,6 +302,11 @@ export const EditIllustrationModal: React.FC<EditIllustrationModalProps> = ({
         </div>
     </Modal>
   );
+};
+
+export const EditIllustrationModal: React.FC<EditIllustrationModalProps> = (props) => {
+  if (!props.isOpen) return null;
+  return <EditIllustrationDialog {...props} />;
 };
 
 export default EditIllustrationModal;

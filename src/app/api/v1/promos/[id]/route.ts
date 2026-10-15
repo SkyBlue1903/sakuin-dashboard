@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { mapDbPromoToPromo, DbPromoRow } from "@/models/promo";
-import { TablesUpdate } from "@/lib/supabase/database.types";
+import { getSupabaseServerClient } from "@/shared/lib/supabase/server";
+import { mapDbPromoToPromo, DbPromoRow } from "@/features/user/promo/domain/promo";
+import { TablesUpdate } from "@/shared/lib/supabase/database.types";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

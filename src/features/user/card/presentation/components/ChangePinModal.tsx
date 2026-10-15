@@ -2,8 +2,7 @@
 
 import React, { useState } from "react";
 import { X, KeyRound, Check, Eye, EyeOff } from "lucide-react";
-import { cn } from "@/utils";
-import { Modal } from "@/views/ui/modal";
+import { Modal } from "@/shared/presentation/components/ui/Modal";
 
 interface ChangePinModalProps {
   isOpen: boolean;

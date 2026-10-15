@@ -9,7 +9,7 @@ import React, {
   useCallback,
 } from "react";
 import { Sparkles, AlertCircle, Info, X } from "lucide-react";
-import { cn } from "@/utils";
+import { cn } from "@/shared/utils";
 
 export type ToastType = "success" | "error" | "info";
 

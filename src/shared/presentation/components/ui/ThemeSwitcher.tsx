@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useTheme } from "@/stores/useThemeStore";
-import type { ThemeMode } from "@/models/navigation";
-import { cn } from "@/utils";
+import { useTheme } from "@/shared/presentation/stores/useThemeStore";
+import type { ThemeMode } from "@/shared/domain/navigation";
+import { cn } from "@/shared/utils";
 
 export const ThemeSwitcher: React.FC = () => {
   const { theme, themeMode, setThemeMode } = useTheme();

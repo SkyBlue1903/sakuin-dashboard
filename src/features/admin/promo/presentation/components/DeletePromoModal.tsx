@@ -2,8 +2,8 @@
 
 import React from "react";
 import { AlertTriangle, X } from "lucide-react";
-import type { PromoItem } from "@/models/promo";
-import { Modal } from "@/views/ui/modal";
+import type { PromoItem } from "@/features/user/promo/domain/promo";
+import { Modal } from "@/shared/presentation/components/ui/Modal";
 
 interface DeletePromoModalProps {
   promo: PromoItem | null;

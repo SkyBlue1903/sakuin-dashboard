@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import CardLayout from "@/views/layout/CardLayout";
-import Info from "@/views/pages/info/Info";
+import CardLayout from "@/features/user/card/presentation/views/CardLayout";
+import Info from "@/features/user/info/presentation/views/InfoPage";
 
 export const metadata: Metadata = {
   title: "Informasi | Sakuin",
